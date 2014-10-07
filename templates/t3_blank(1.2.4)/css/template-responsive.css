@@ -1,0 +1,1425 @@
+/** 
+ *------------------------------------------------------------------------------
+ * @package       T3 Framework for Joomla!
+ *------------------------------------------------------------------------------
+ * @copyright     Copyright (C) 2004-2013 JoomlArt.com. All Rights Reserved.
+ * @license       GNU General Public License version 2 or later; see LICENSE.txt
+ * @authors       JoomlArt, JoomlaBamboo, (contribute to this project at github 
+ *                & Google group to become co-author)
+ * @Google group: https://groups.google.com/forum/#!forum/t3fw
+ * @Link:         http://t3-framework.org 
+ *------------------------------------------------------------------------------
+ */
+/** 
+ *------------------------------------------------------------------------------
+ * @package       T3 Framework for Joomla!
+ *------------------------------------------------------------------------------
+ * @copyright     Copyright (C) 2004-2013 JoomlArt.com. All Rights Reserved.
+ * @license       GNU General Public License version 2 or later; see LICENSE.txt
+ * @authors       JoomlArt, JoomlaBamboo, (contribute to this project at github 
+ *                & Google group to become co-author)
+ * @Google group: https://groups.google.com/forum/#!forum/t3fw
+ * @Link:         http://t3-framework.org 
+ *------------------------------------------------------------------------------
+ */
+/** 
+ *------------------------------------------------------------------------------
+ * @package       T3 Framework for Joomla!
+ *------------------------------------------------------------------------------
+ * @copyright     Copyright (C) 2004-2013 JoomlArt.com. All Rights Reserved.
+ * @license       GNU General Public License version 2 or later; see LICENSE.txt
+ * @authors       JoomlArt, JoomlaBamboo, (contribute to this project at github 
+ *                & Google group to become co-author)
+ * @Google group: https://groups.google.com/forum/#!forum/t3fw
+ * @Link:         https://github.com/t3framework/ 
+ *------------------------------------------------------------------------------
+*/
+/** 
+ *------------------------------------------------------------------------------
+ * @package       T3 Framework for Joomla!
+ *------------------------------------------------------------------------------
+ * @copyright     Copyright (C) 2004-2013 JoomlArt.com. All Rights Reserved.
+ * @license       GNU General Public License version 2 or later; see LICENSE.txt
+ * @authors       JoomlArt, JoomlaBamboo, (contribute to this project at github 
+ *                & Google group to become co-author)
+ * @Google group: https://groups.google.com/forum/#!forum/t3fw
+ * @Link:         http://t3-framework.org 
+ *------------------------------------------------------------------------------
+ */
+.clearfix {
+  *zoom: 1;
+}
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.clearfix:after {
+  clear: both;
+}
+.hide-text {
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
+  background-color: transparent;
+  border: 0;
+}
+.input-block-level {
+  display: block;
+  width: 100%;
+  min-height: 35px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+/** 
+ *------------------------------------------------------------------------------
+ * @package       T3 Framework for Joomla!
+ *------------------------------------------------------------------------------
+ * @copyright     Copyright (C) 2004-2013 JoomlArt.com. All Rights Reserved.
+ * @license       GNU General Public License version 2 or later; see LICENSE.txt
+ * @authors       JoomlArt, JoomlaBamboo, (contribute to this project at github 
+ *                & Google group to become co-author)
+ * @Google group: https://groups.google.com/forum/#!forum/t3fw
+ * @Link:         http://t3-framework.org 
+ *------------------------------------------------------------------------------
+ */
+/** 
+ *------------------------------------------------------------------------------
+ * @package       T3 Framework for Joomla!
+ *------------------------------------------------------------------------------
+ * @copyright     Copyright (C) 2004-2013 JoomlArt.com. All Rights Reserved.
+ * @license       GNU General Public License version 2 or later; see LICENSE.txt
+ * @authors       JoomlArt, JoomlaBamboo, (contribute to this project at github 
+ *                & Google group to become co-author)
+ * @Google group: https://groups.google.com/forum/#!forum/t3fw
+ * @Link:         http://t3-framework.org 
+ *------------------------------------------------------------------------------
+ */
+@media (min-width: 980px) and (max-width: 1199px) {
+  .row {
+    margin-left: -40px;
+    *zoom: 1;
+  }
+  .row:before,
+  .row:after {
+    display: table;
+    content: "";
+    line-height: 0;
+  }
+  .row:after {
+    clear: both;
+  }
+  [class*="span"] {
+    float: left;
+    min-height: 1px;
+    margin-left: 40px;
+  }
+  .container,
+  .navbar-static-top .container,
+  .navbar-fixed-top .container,
+  .navbar-fixed-bottom .container {
+    width: 932px;
+  }
+  .span12 {
+    width: 932px;
+  }
+  .span11 {
+    width: 851px;
+  }
+  .span10 {
+    width: 770px;
+  }
+  .span9 {
+    width: 689px;
+  }
+  .span8 {
+    width: 608px;
+  }
+  .span7 {
+    width: 527px;
+  }
+  .span6 {
+    width: 446px;
+  }
+  .span5 {
+    width: 365px;
+  }
+  .span4 {
+    width: 284px;
+  }
+  .span3 {
+    width: 203px;
+  }
+  .span2 {
+    width: 122px;
+  }
+  .span1 {
+    width: 41px;
+  }
+  .offset12 {
+    margin-left: 1012px;
+  }
+  .offset11 {
+    margin-left: 931px;
+  }
+  .offset10 {
+    margin-left: 850px;
+  }
+  .offset9 {
+    margin-left: 769px;
+  }
+  .offset8 {
+    margin-left: 688px;
+  }
+  .offset7 {
+    margin-left: 607px;
+  }
+  .offset6 {
+    margin-left: 526px;
+  }
+  .offset5 {
+    margin-left: 445px;
+  }
+  .offset4 {
+    margin-left: 364px;
+  }
+  .offset3 {
+    margin-left: 283px;
+  }
+  .offset2 {
+    margin-left: 202px;
+  }
+  .offset1 {
+    margin-left: 121px;
+  }
+  .row-fluid {
+    width: 100%;
+    *zoom: 1;
+  }
+  .row-fluid:before,
+  .row-fluid:after {
+    display: table;
+    content: "";
+    line-height: 0;
+  }
+  .row-fluid:after {
+    clear: both;
+  }
+  .row-fluid [class*="span"] {
+    display: block;
+    width: 100%;
+    min-height: 35px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    float: left;
+    margin-left: 4.291845493562231%;
+    *margin-left: 4.238654004200529%;
+  }
+  .row-fluid [class*="span"]:first-child {
+    margin-left: 0;
+  }
+  .row-fluid .controls-row [class*="span"] + [class*="span"] {
+    margin-left: 4.291845493562231%;
+  }
+  .row-fluid .span12 {
+    width: 100%;
+    *width: 99.94680851063829%;
+  }
+  .row-fluid .span11 {
+    width: 91.30901287553648%;
+    *width: 91.25582138617477%;
+  }
+  .row-fluid .span10 {
+    width: 82.61802575107296%;
+    *width: 82.56483426171125%;
+  }
+  .row-fluid .span9 {
+    width: 73.92703862660944%;
+    *width: 73.87384713724774%;
+  }
+  .row-fluid .span8 {
+    width: 65.23605150214593%;
+    *width: 65.18286001278422%;
+  }
+  .row-fluid .span7 {
+    width: 56.54506437768241%;
+    *width: 56.49187288832071%;
+  }
+  .row-fluid .span6 {
+    width: 47.85407725321889%;
+    *width: 47.80088576385719%;
+  }
+  .row-fluid .span5 {
+    width: 39.163090128755364%;
+    *width: 39.10989863939366%;
+  }
+  .row-fluid .span4 {
+    width: 30.472103004291846%;
+    *width: 30.418911514930144%;
+  }
+  .row-fluid .span3 {
+    width: 21.781115879828327%;
+    *width: 21.727924390466626%;
+  }
+  .row-fluid .span2 {
+    width: 13.090128755364807%;
+    *width: 13.036937266003106%;
+  }
+  .row-fluid .span1 {
+    width: 4.399141630901288%;
+    *width: 4.345950141539586%;
+  }
+  .row-fluid .offset12 {
+    margin-left: 108.58369098712447%;
+    *margin-left: 108.47730800840104%;
+  }
+  .row-fluid .offset12:first-child {
+    margin-left: 104.29184549356223%;
+    *margin-left: 104.18546251483882%;
+  }
+  .row-fluid .offset11 {
+    margin-left: 99.89270386266094%;
+    *margin-left: 99.78632088393753%;
+  }
+  .row-fluid .offset11:first-child {
+    margin-left: 95.60085836909872%;
+    *margin-left: 95.4944753903753%;
+  }
+  .row-fluid .offset10 {
+    margin-left: 91.20171673819743%;
+    *margin-left: 91.095333759474%;
+  }
+  .row-fluid .offset10:first-child {
+    margin-left: 86.9098712446352%;
+    *margin-left: 86.80348826591178%;
+  }
+  .row-fluid .offset9 {
+    margin-left: 82.5107296137339%;
+    *margin-left: 82.4043466350105%;
+  }
+  .row-fluid .offset9:first-child {
+    margin-left: 78.21888412017168%;
+    *margin-left: 78.11250114144826%;
+  }
+  .row-fluid .offset8 {
+    margin-left: 73.8197424892704%;
+    *margin-left: 73.71335951054697%;
+  }
+  .row-fluid .offset8:first-child {
+    margin-left: 69.52789699570816%;
+    *margin-left: 69.42151401698474%;
+  }
+  .row-fluid .offset7 {
+    margin-left: 65.12875536480686%;
+    *margin-left: 65.02237238608346%;
+  }
+  .row-fluid .offset7:first-child {
+    margin-left: 60.83690987124464%;
+    *margin-left: 60.73052689252123%;
+  }
+  .row-fluid .offset6 {
+    margin-left: 56.43776824034335%;
+    *margin-left: 56.33138526161995%;
+  }
+  .row-fluid .offset6:first-child {
+    margin-left: 52.145922746781125%;
+    *margin-left: 52.039539768057715%;
+  }
+  .row-fluid .offset5 {
+    margin-left: 47.74678111587983%;
+    *margin-left: 47.640398137156424%;
+  }
+  .row-fluid .offset5:first-child {
+    margin-left: 43.45493562231759%;
+    *margin-left: 43.348552643594196%;
+  }
+  .row-fluid .offset4 {
+    margin-left: 39.05579399141631%;
+    *margin-left: 38.949411012692906%;
+  }
+  .row-fluid .offset4:first-child {
+    margin-left: 34.763948497854074%;
+    *margin-left: 34.65756551913068%;
+  }
+  .row-fluid .offset3 {
+    margin-left: 30.36480686695279%;
+    *margin-left: 30.258423888229387%;
+  }
+  .row-fluid .offset3:first-child {
+    margin-left: 26.07296137339056%;
+    *margin-left: 25.966578394667156%;
+  }
+  .row-fluid .offset2 {
+    margin-left: 21.673819742489272%;
+    *margin-left: 21.56743676376587%;
+  }
+  .row-fluid .offset2:first-child {
+    margin-left: 17.381974248927037%;
+    *margin-left: 17.275591270203634%;
+  }
+  .row-fluid .offset1 {
+    margin-left: 12.98283261802575%;
+    *margin-left: 12.876449639302347%;
+  }
+  .row-fluid .offset1:first-child {
+    margin-left: 8.690987124463518%;
+    *margin-left: 8.584604145740116%;
+  }
+  input,
+  textarea,
+  .uneditable-input {
+    margin-left: 0;
+  }
+  .controls-row [class*="span"] + [class*="span"] {
+    margin-left: 40px;
+  }
+  input.span12, textarea.span12, .uneditable-input.span12 {
+    width: 918px;
+  }
+  input.span11, textarea.span11, .uneditable-input.span11 {
+    width: 837px;
+  }
+  input.span10, textarea.span10, .uneditable-input.span10 {
+    width: 756px;
+  }
+  input.span9, textarea.span9, .uneditable-input.span9 {
+    width: 675px;
+  }
+  input.span8, textarea.span8, .uneditable-input.span8 {
+    width: 594px;
+  }
+  input.span7, textarea.span7, .uneditable-input.span7 {
+    width: 513px;
+  }
+  input.span6, textarea.span6, .uneditable-input.span6 {
+    width: 432px;
+  }
+  input.span5, textarea.span5, .uneditable-input.span5 {
+    width: 351px;
+  }
+  input.span4, textarea.span4, .uneditable-input.span4 {
+    width: 270px;
+  }
+  input.span3, textarea.span3, .uneditable-input.span3 {
+    width: 189px;
+  }
+  input.span2, textarea.span2, .uneditable-input.span2 {
+    width: 108px;
+  }
+  input.span1, textarea.span1, .uneditable-input.span1 {
+    width: 27px;
+  }
+}
+@media (min-width: 768px) and (max-width: 979px) {
+  .offset-12 {
+    margin-left: -736px;
+  }
+  .offset-11 {
+    margin-left: -673px;
+  }
+  .offset-10 {
+    margin-left: -610px;
+  }
+  .offset-9 {
+    margin-left: -547px;
+  }
+  .offset-8 {
+    margin-left: -484px;
+  }
+  .offset-7 {
+    margin-left: -421px;
+  }
+  .offset-6 {
+    margin-left: -358px;
+  }
+  .offset-5 {
+    margin-left: -295px;
+  }
+  .offset-4 {
+    margin-left: -232px;
+  }
+  .offset-3 {
+    margin-left: -169px;
+  }
+  .offset-2 {
+    margin-left: -106px;
+  }
+  .offset-1 {
+    margin-left: -43px;
+  }
+}
+@media (min-width: 980px) and (max-width: 1199px) {
+  .offset-12 {
+    margin-left: -932px;
+  }
+  .offset-11 {
+    margin-left: -851px;
+  }
+  .offset-10 {
+    margin-left: -770px;
+  }
+  .offset-9 {
+    margin-left: -689px;
+  }
+  .offset-8 {
+    margin-left: -608px;
+  }
+  .offset-7 {
+    margin-left: -527px;
+  }
+  .offset-6 {
+    margin-left: -446px;
+  }
+  .offset-5 {
+    margin-left: -365px;
+  }
+  .offset-4 {
+    margin-left: -284px;
+  }
+  .offset-3 {
+    margin-left: -203px;
+  }
+  .offset-2 {
+    margin-left: -122px;
+  }
+  .offset-1 {
+    margin-left: -41px;
+  }
+}
+@media (min-width: 1200px) {
+  .offset-12 {
+    margin-left: -1196px;
+  }
+  .offset-11 {
+    margin-left: -1093px;
+  }
+  .offset-10 {
+    margin-left: -990px;
+  }
+  .offset-9 {
+    margin-left: -887px;
+  }
+  .offset-8 {
+    margin-left: -784px;
+  }
+  .offset-7 {
+    margin-left: -681px;
+  }
+  .offset-6 {
+    margin-left: -578px;
+  }
+  .offset-5 {
+    margin-left: -475px;
+  }
+  .offset-4 {
+    margin-left: -372px;
+  }
+  .offset-3 {
+    margin-left: -269px;
+  }
+  .offset-2 {
+    margin-left: -166px;
+  }
+  .offset-1 {
+    margin-left: -63px;
+  }
+}
+@media (min-width: 600px) and (max-width: 767px) {
+  .row,
+  .row-fluid {
+    width: 100%;
+    margin-left: 0;
+    *zoom: 1;
+  }
+  .row:before,
+  .row-fluid:before,
+  .row:after,
+  .row-fluid:after {
+    display: table;
+    content: "";
+    line-height: 0;
+  }
+  .row:after,
+  .row-fluid:after {
+    clear: both;
+  }
+  .row [class*="span"],
+  .row-fluid [class*="span"] {
+    display: block;
+    width: 100%;
+    min-height: 35px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    float: left;
+    margin-left: 2.717391304347826%;
+    *margin-left: 2.664199814986124%;
+  }
+  .row [class*="span"]:first-child:not(.pull-right),
+  .row-fluid [class*="span"]:first-child:not(.pull-right) {
+    margin-left: 0;
+  }
+  .row [class*="span"].pull-right:first-child + [class*="span"]:not(.pull-right),
+  .row-fluid [class*="span"].pull-right:first-child + [class*="span"]:not(.pull-right) {
+    margin-left: 0;
+  }
+  .row .span12,
+  .row-fluid .span12 {
+    width: 100%;
+    *width: 99.94680851063829%;
+  }
+  .row .span11,
+  .row-fluid .span11 {
+    width: 91.44021739130436%;
+    *width: 91.38702590194265%;
+  }
+  .row .span10,
+  .row-fluid .span10 {
+    width: 82.8804347826087%;
+    *width: 82.827243293247%;
+  }
+  .row .span9,
+  .row-fluid .span9 {
+    width: 74.32065217391305%;
+    *width: 74.26746068455134%;
+  }
+  .row .span8,
+  .row-fluid .span8 {
+    width: 65.76086956521739%;
+    *width: 65.70767807585568%;
+  }
+  .row .span7,
+  .row-fluid .span7 {
+    width: 57.201086956521735%;
+    *width: 57.14789546716003%;
+  }
+  .row .span6,
+  .row-fluid .span6 {
+    width: 48.641304347826086%;
+    *width: 48.588112858464385%;
+  }
+  .row .span5,
+  .row-fluid .span5 {
+    width: 40.08152173913044%;
+    *width: 40.028330249768736%;
+  }
+  .row .span4,
+  .row-fluid .span4 {
+    width: 31.52173913043478%;
+    *width: 31.46854764107308%;
+  }
+  .row .span3,
+  .row-fluid .span3 {
+    width: 22.96195652173913%;
+    *width: 22.908765032377428%;
+  }
+  .row .span2,
+  .row-fluid .span2 {
+    width: 14.402173913043478%;
+    *width: 14.348982423681777%;
+  }
+  .row .span1,
+  .row-fluid .span1 {
+    width: 5.842391304347826%;
+    *width: 5.789199814986124%;
+  }
+  .span12 .row [class*="span"] {
+    margin-left: 2.717391304347826%;
+    *margin-left: 2.664199814986124%;
+  }
+  .span12 .row [class*="span"]:first-child {
+    margin-left: 0;
+  }
+  .span12 .row .span12 {
+    width: 100%;
+    *width: 99.94680851063829%;
+  }
+  .span12 .row .span11 {
+    width: 91.44021739130436%;
+    *width: 91.38702590194265%;
+  }
+  .span12 .row .span10 {
+    width: 82.8804347826087%;
+    *width: 82.827243293247%;
+  }
+  .span12 .row .span9 {
+    width: 74.32065217391305%;
+    *width: 74.26746068455134%;
+  }
+  .span12 .row .span8 {
+    width: 65.76086956521739%;
+    *width: 65.70767807585568%;
+  }
+  .span12 .row .span7 {
+    width: 57.20108695652173%;
+    *width: 57.147895467160026%;
+  }
+  .span12 .row .span6 {
+    width: 48.641304347826086%;
+    *width: 48.588112858464385%;
+  }
+  .span12 .row .span5 {
+    width: 40.08152173913044%;
+    *width: 40.028330249768736%;
+  }
+  .span12 .row .span4 {
+    width: 31.521739130434785%;
+    *width: 31.468547641073084%;
+  }
+  .span12 .row .span3 {
+    width: 22.96195652173913%;
+    *width: 22.908765032377428%;
+  }
+  .span12 .row .span2 {
+    width: 14.402173913043478%;
+    *width: 14.348982423681777%;
+  }
+  .span12 .row .span1 {
+    width: 5.842391304347826%;
+    *width: 5.789199814986124%;
+  }
+  .span11 .row [class*="span"] {
+    margin-left: 2.9717682020802374%;
+    *margin-left: 2.918576712718535%;
+  }
+  .span11 .row [class*="span"]:first-child {
+    margin-left: 0;
+  }
+  .span11 .row .span11 {
+    width: 100%;
+    *width: 99.94680851063829%;
+  }
+  .span11 .row .span10 {
+    width: 90.63893016344726%;
+    *width: 90.58573867408555%;
+  }
+  .span11 .row .span9 {
+    width: 81.2778603268945%;
+    *width: 81.22466883753279%;
+  }
+  .span11 .row .span8 {
+    width: 71.91679049034174%;
+    *width: 71.86359900098003%;
+  }
+  .span11 .row .span7 {
+    width: 62.555720653788995%;
+    *width: 62.502529164427294%;
+  }
+  .span11 .row .span6 {
+    width: 53.194650817236244%;
+    *width: 53.14145932787454%;
+  }
+  .span11 .row .span5 {
+    width: 43.83358098068351%;
+    *width: 43.780389491321806%;
+  }
+  .span11 .row .span4 {
+    width: 34.47251114413075%;
+    *width: 34.41931965476905%;
+  }
+  .span11 .row .span3 {
+    width: 25.111441307578%;
+    *width: 25.0582498182163%;
+  }
+  .span11 .row .span2 {
+    width: 15.75037147102526%;
+    *width: 15.697179981663558%;
+  }
+  .span11 .row .span1 {
+    width: 6.389301634472511%;
+    *width: 6.336110145110808%;
+  }
+  .span10 .row [class*="span"] {
+    margin-left: 3.278688524590164%;
+    *margin-left: 3.2254970352284618%;
+  }
+  .span10 .row [class*="span"]:first-child {
+    margin-left: 0;
+  }
+  .span10 .row .span10 {
+    width: 100%;
+    *width: 99.94680851063829%;
+  }
+  .span10 .row .span9 {
+    width: 89.67213114754098%;
+    *width: 89.61893965817927%;
+  }
+  .span10 .row .span8 {
+    width: 79.34426229508196%;
+    *width: 79.29107080572025%;
+  }
+  .span10 .row .span7 {
+    width: 69.01639344262294%;
+    *width: 68.96320195326123%;
+  }
+  .span10 .row .span6 {
+    width: 58.68852459016393%;
+    *width: 58.63533310080223%;
+  }
+  .span10 .row .span5 {
+    width: 48.36065573770492%;
+    *width: 48.307464248343216%;
+  }
+  .span10 .row .span4 {
+    width: 38.0327868852459%;
+    *width: 37.979595395884196%;
+  }
+  .span10 .row .span3 {
+    width: 27.70491803278688%;
+    *width: 27.651726543425177%;
+  }
+  .span10 .row .span2 {
+    width: 17.377049180327866%;
+    *width: 17.323857690966165%;
+  }
+  .span10 .row .span1 {
+    width: 7.049180327868852%;
+    *width: 6.99598883850715%;
+  }
+  .span9 .row [class*="span"] {
+    margin-left: 3.656307129798903%;
+    *margin-left: 3.603115640437201%;
+  }
+  .span9 .row [class*="span"]:first-child {
+    margin-left: 0;
+  }
+  .span9 .row .span9 {
+    width: 100%;
+    *width: 99.94680851063829%;
+  }
+  .span9 .row .span8 {
+    width: 88.48263254113346%;
+    *width: 88.42944105177175%;
+  }
+  .span9 .row .span7 {
+    width: 76.9652650822669%;
+    *width: 76.91207359290519%;
+  }
+  .span9 .row .span6 {
+    width: 65.44789762340037%;
+    *width: 65.39470613403866%;
+  }
+  .span9 .row .span5 {
+    width: 53.93053016453382%;
+    *width: 53.87733867517212%;
+  }
+  .span9 .row .span4 {
+    width: 42.413162705667276%;
+    *width: 42.359971216305574%;
+  }
+  .span9 .row .span3 {
+    width: 30.895795246800727%;
+    *width: 30.842603757439026%;
+  }
+  .span9 .row .span2 {
+    width: 19.378427787934186%;
+    *width: 19.325236298572484%;
+  }
+  .span9 .row .span1 {
+    width: 7.861060329067642%;
+    *width: 7.8078688397059395%;
+  }
+  .span8 .row [class*="span"] {
+    margin-left: 4.132231404958678%;
+    *margin-left: 4.079039915596976%;
+  }
+  .span8 .row [class*="span"]:first-child {
+    margin-left: 0;
+  }
+  .span8 .row .span8 {
+    width: 100%;
+    *width: 99.94680851063829%;
+  }
+  .span8 .row .span7 {
+    width: 86.98347107438016%;
+    *width: 86.93027958501845%;
+  }
+  .span8 .row .span6 {
+    width: 73.96694214876032%;
+    *width: 73.91375065939862%;
+  }
+  .span8 .row .span5 {
+    width: 60.9504132231405%;
+    *width: 60.8972217337788%;
+  }
+  .span8 .row .span4 {
+    width: 47.93388429752066%;
+    *width: 47.88069280815896%;
+  }
+  .span8 .row .span3 {
+    width: 34.917355371900825%;
+    *width: 34.864163882539124%;
+  }
+  .span8 .row .span2 {
+    width: 21.90082644628099%;
+    *width: 21.84763495691929%;
+  }
+  .span8 .row .span1 {
+    width: 8.884297520661157%;
+    *width: 8.831106031299456%;
+  }
+  .span7 .row [class*="span"] {
+    margin-left: 4.750593824228029%;
+    *margin-left: 4.697402334866327%;
+  }
+  .span7 .row [class*="span"]:first-child {
+    margin-left: 0;
+  }
+  .span7 .row .span7 {
+    width: 100%;
+    *width: 99.94680851063829%;
+  }
+  .span7 .row .span6 {
+    width: 85.03562945368172%;
+    *width: 84.98243796432001%;
+  }
+  .span7 .row .span5 {
+    width: 70.07125890736343%;
+    *width: 70.01806741800172%;
+  }
+  .span7 .row .span4 {
+    width: 55.10688836104514%;
+    *width: 55.053696871683435%;
+  }
+  .span7 .row .span3 {
+    width: 40.142517814726844%;
+    *width: 40.08932632536514%;
+  }
+  .span7 .row .span2 {
+    width: 25.17814726840855%;
+    *width: 25.12495577904685%;
+  }
+  .span7 .row .span1 {
+    width: 10.213776722090262%;
+    *width: 10.160585232728561%;
+  }
+  .span6 .row [class*="span"] {
+    margin-left: 5.5865921787709505%;
+    *margin-left: 5.533400689409248%;
+  }
+  .span6 .row [class*="span"]:first-child {
+    margin-left: 0;
+  }
+  .span6 .row .span6 {
+    width: 100%;
+    *width: 99.94680851063829%;
+  }
+  .span6 .row .span5 {
+    width: 82.40223463687151%;
+    *width: 82.3490431475098%;
+  }
+  .span6 .row .span4 {
+    width: 64.80446927374301%;
+    *width: 64.7512777843813%;
+  }
+  .span6 .row .span3 {
+    width: 47.20670391061452%;
+    *width: 47.15351242125282%;
+  }
+  .span6 .row .span2 {
+    width: 29.608938547486037%;
+    *width: 29.555747058124336%;
+  }
+  .span6 .row .span1 {
+    width: 12.011173184357542%;
+    *width: 11.95798169499584%;
+  }
+  .span5 .row [class*="span"] {
+    margin-left: 6.779661016949152%;
+    *margin-left: 6.72646952758745%;
+  }
+  .span5 .row [class*="span"]:first-child {
+    margin-left: 0;
+  }
+  .span5 .row .span5 {
+    width: 100%;
+    *width: 99.94680851063829%;
+  }
+  .span5 .row .span4 {
+    width: 78.64406779661016%;
+    *width: 78.59087630724845%;
+  }
+  .span5 .row .span3 {
+    width: 57.28813559322033%;
+    *width: 57.23494410385863%;
+  }
+  .span5 .row .span2 {
+    width: 35.932203389830505%;
+    *width: 35.879011900468804%;
+  }
+  .span5 .row .span1 {
+    width: 14.576271186440678%;
+    *width: 14.523079697078977%;
+  }
+  .span4 .row [class*="span"] {
+    margin-left: 8.620689655172415%;
+    *margin-left: 8.567498165810713%;
+  }
+  .span4 .row [class*="span"]:first-child {
+    margin-left: 0;
+  }
+  .span4 .row .span4 {
+    width: 100%;
+    *width: 99.94680851063829%;
+  }
+  .span4 .row .span3 {
+    width: 72.84482758620689%;
+    *width: 72.79163609684518%;
+  }
+  .span4 .row .span2 {
+    width: 45.689655172413794%;
+    *width: 45.63646368305209%;
+  }
+  .span4 .row .span1 {
+    width: 18.53448275862069%;
+    *width: 18.48129126925899%;
+  }
+  .span3 .row [class*="span"] {
+    margin-left: 11.834319526627219%;
+    *margin-left: 11.781128037265518%;
+  }
+  .span3 .row [class*="span"]:first-child {
+    margin-left: 0;
+  }
+  .span3 .row .span3 {
+    width: 100%;
+    *width: 99.94680851063829%;
+  }
+  .span3 .row .span2 {
+    width: 62.72189349112427%;
+    *width: 62.66870200176257%;
+  }
+  .span3 .row .span1 {
+    width: 25.443786982248522%;
+    *width: 25.39059549288682%;
+  }
+  .span2 .row [class*="span"] {
+    margin-left: 18.867924528301888%;
+    *margin-left: 18.814733038940187%;
+  }
+  .span2 .row [class*="span"]:first-child {
+    margin-left: 0;
+  }
+  .span2 .row .span2 {
+    width: 100%;
+    *width: 99.94680851063829%;
+  }
+  .span2 .row .span1 {
+    width: 40.56603773584906%;
+    *width: 40.512846246487356%;
+  }
+  .span1 .row [class*="span"] {
+    margin-left: 46.51162790697674%;
+    *margin-left: 46.45843641761504%;
+  }
+  .span1 .row [class*="span"]:first-child {
+    margin-left: 0;
+  }
+  .span1 .row .span1 {
+    width: 100%;
+    *width: 99.94680851063829%;
+  }
+  .spanfirst {
+    margin-left: 0 !important;
+    clear: left;
+  }
+}
+.row .span50,
+.row-fluid .span50 {
+  width: 50%;
+  float: left;
+}
+.row .span33,
+.row-fluid .span33 {
+  width: 33.3333%;
+  float: left;
+}
+.row .span25,
+.row-fluid .span25 {
+  width: 25%;
+  float: left;
+}
+.row .span20,
+.row-fluid .span20 {
+  width: 20%;
+  float: left;
+}
+.row .span16,
+.row-fluid .span16 {
+  width: 16.6666%;
+  float: left;
+}
+/** 
+ *------------------------------------------------------------------------------
+ * @package       T3 Framework for Joomla!
+ *------------------------------------------------------------------------------
+ * @copyright     Copyright (C) 2004-2013 JoomlArt.com. All Rights Reserved.
+ * @license       GNU General Public License version 2 or later; see LICENSE.txt
+ * @authors       JoomlArt, JoomlaBamboo, (contribute to this project at github 
+ *                & Google group to become co-author)
+ * @Google group: https://groups.google.com/forum/#!forum/t3fw
+ * @Link:         http://t3-framework.org 
+ *------------------------------------------------------------------------------
+ */
+.hidden {
+  display: none !important;
+  visibility: hidden;
+}
+@media (min-width: 768px) and (max-width: 979px) {
+  .jumbotron {
+    padding: 25px 0;
+  }
+  .jumbotron h1 {
+    font-size: 32px;
+  }
+  .jumbotron p {
+    font-size: 16px;
+  }
+  .masthead {
+    padding: 50px 0;
+  }
+  .masthead h1 {
+    font-size: 64px;
+  }
+  .masthead p {
+    font-size: 32px;
+  }
+  .masthead .btn-large {
+    font-size: 18px;
+    padding: 14px 18px;
+    margin-top: 0;
+  }
+}
+@media (max-width: 767px) {
+  .jumbotron {
+    padding: 25px 0;
+  }
+  .jumbotron h1 {
+    font-size: 32px;
+  }
+  .jumbotron p {
+    font-size: 18px;
+  }
+  .masthead {
+    padding: 25px 0;
+  }
+  .masthead h1 {
+    font-size: 32px;
+  }
+  .masthead p {
+    font-size: 18px;
+  }
+  .masthead .btn-large {
+    font-size: 16px;
+    padding: 14px 18px;
+    margin-top: 0;
+  }
+}
+/** 
+ *------------------------------------------------------------------------------
+ * @package       T3 Framework for Joomla!
+ *------------------------------------------------------------------------------
+ * @copyright     Copyright (C) 2004-2013 JoomlArt.com. All Rights Reserved.
+ * @license       GNU General Public License version 2 or later; see LICENSE.txt
+ * @authors       JoomlArt, JoomlaBamboo, (contribute to this project at github 
+ *                & Google group to become co-author)
+ * @Google group: https://groups.google.com/forum/#!forum/t3fw
+ * @Link:         http://t3-framework.org 
+ *------------------------------------------------------------------------------
+ */
+/* MODULE STYLE
+--------------------------------------------------------- */
+/** 
+ *------------------------------------------------------------------------------
+ * @package       T3 Framework for Joomla!
+ *------------------------------------------------------------------------------
+ * @copyright     Copyright (C) 2004-2013 JoomlArt.com. All Rights Reserved.
+ * @license       GNU General Public License version 2 or later; see LICENSE.txt
+ * @authors       JoomlArt, JoomlaBamboo, (contribute to this project at github 
+ *                & Google group to become co-author)
+ * @Google group: https://groups.google.com/forum/#!forum/t3fw
+ * @Link:         https://github.com/t3framework/ 
+ *------------------------------------------------------------------------------
+*/
+@media (max-width: 767px) {
+  .always-show .mega > .mega-dropdown-menu,
+  .always-show .dropdown-menu {
+    display: block !important;
+  }
+  .navbar-collapse-fixed-top,
+  .navbar-collapse-fixed-bottom {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+  }
+  .navbar-collapse-fixed-top .nav-collapse.in,
+  .navbar-collapse-fixed-bottom .nav-collapse.in {
+    position: fixed;
+    width: 100%;
+    overflow-y: auto;
+    top: 80px;
+    bottom: 0;
+  }
+  .navbar-collapse-fixed-top .nav-collapse.in > *,
+  .navbar-collapse-fixed-bottom .nav-collapse.in > * {
+    padding-bottom: 50px;
+  }
+  .navbar-collapse-fixed-bottom {
+    bottom: 0;
+    top: auto;
+  }
+  .navbar-collapse-fixed-bottom .nav-collapse.in {
+    top: 0;
+    bottom: 80px;
+  }
+}
+/** 
+ *------------------------------------------------------------------------------
+ * @package       T3 Framework for Joomla!
+ *------------------------------------------------------------------------------
+ * @copyright     Copyright (C) 2004-2013 JoomlArt.com. All Rights Reserved.
+ * @license       GNU General Public License version 2 or later; see LICENSE.txt
+ * @authors       JoomlArt, JoomlaBamboo, (contribute to this project at github 
+ *                & Google group to become co-author)
+ * @Google group: https://groups.google.com/forum/#!forum/t3fw
+ * @Link:         http://t3-framework.org 
+ *------------------------------------------------------------------------------
+ */
+@media (max-width: 767px) {
+  .t3-navhelper {
+    margin-left: -20px;
+    margin-right: -20px;
+  }
+  .t3-mainnav {
+    background: #e6e6e6;
+    border-top: 1px solid #d9d9d9;
+    height: auto;
+    margin-left: -20px;
+    margin-right: -20px;
+  }
+  .t3-mainnav .navbar .btn-navbar {
+    margin-bottom: 12.5px;
+  }
+  .t3-mainnav .navbar .btn-navbar:hover {
+    cursor: pointer;
+  }
+  .t3-mainnav .nav-collapse {
+    margin-top: 12.5px;
+    background: #fff;
+  }
+  .t3-mainnav .nav-collapse .nav {
+    margin: 0;
+  }
+  .t3-mainnav .nav-collapse .nav > li > a {
+    margin-bottom: 0;
+  }
+  .t3-mainnav .nav-collapse .nav > li > a,
+  .t3-mainnav .nav-collapse .dropdown-menu a {
+    border-bottom: 1px solid #eeeeee;
+    padding: 12.5px 25px;
+    font-weight: bold;
+    text-shadow: none;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+  }
+  .t3-mainnav .nav-collapse .dropdown-menu li + li a {
+    margin-bottom: 0;
+  }
+  .t3-mainnav .nav-collapse .nav > li > a:hover {
+    background-color: #797979;
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  }
+  .t3-mainnav .nav-collapse .dropdown-menu a {
+    border-top: 1px solid #d9d9d9;
+    border-bottom: 0;
+    font-weight: normal;
+    padding: 12.5px 25px;
+  }
+  .t3-mainnav .nav-collapse .dropdown-menu a:hover {
+    background-color: #797979;
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  }
+  .t3-mainnav .nav-collapse .dropdown-menu {
+    margin: 0;
+    padding: 0;
+    background-color: #e6e6e6;
+    border: none;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+  }
+  .t3-mainnav.navbar-collapse-fixed-top {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .t3-mainnav .navbar .nav > li > .dropdown-menu:before,
+  .t3-mainnav .navbar .nav > li > .dropdown-menu:after,
+  .t3-mainnav .navbar .nav > li > .dropdown-menu .divider {
+    display: none;
+  }
+  .t3-mainnav .customization {
+    display: none;
+  }
+}
+/** 
+ *------------------------------------------------------------------------------
+ * @package       T3 Framework for Joomla!
+ *------------------------------------------------------------------------------
+ * @copyright     Copyright (C) 2004-2013 JoomlArt.com. All Rights Reserved.
+ * @license       GNU General Public License version 2 or later; see LICENSE.txt
+ * @authors       JoomlArt, JoomlaBamboo, (contribute to this project at github 
+ *                & Google group to become co-author)
+ * @Google group: https://groups.google.com/forum/#!forum/t3fw
+ * @Link:         http://t3-framework.org 
+ *------------------------------------------------------------------------------
+ */
+@media (max-width: 599px) {
+  article img[align=left],
+  .img_caption.left,
+  article img[align=right],
+  .img_caption.right,
+  .img-fulltext-left,
+  .img-fulltext-right {
+    float: none !important;
+    margin-left: 0;
+    margin-right: 0;
+    width: 100% !important;
+  }
+}
+/** 
+ *------------------------------------------------------------------------------
+ * @package       T3 Framework for Joomla!
+ *------------------------------------------------------------------------------
+ * @copyright     Copyright (C) 2004-2013 JoomlArt.com. All Rights Reserved.
+ * @license       GNU General Public License version 2 or later; see LICENSE.txt
+ * @authors       JoomlArt, JoomlaBamboo, (contribute to this project at github 
+ *                & Google group to become co-author)
+ * @Google group: https://groups.google.com/forum/#!forum/t3fw
+ * @Link:         http://t3-framework.org 
+ *------------------------------------------------------------------------------
+ */
+@media (max-width: 767px) {
+  h1 {
+    font-size: 32px;
+    line-height: 1.25;
+  }
+  h1 small {
+    font-size: 32px;
+  }
+  h2 {
+    font-size: 24px;
+    line-height: 1.25;
+  }
+  h2 small {
+    font-size: 24px;
+  }
+  h3 {
+    font-size: 20px;
+    line-height: 1.25;
+  }
+  h3 small {
+    font-size: 16px;
+  }
+  h4,
+  h5,
+  h6 {
+    font-size: 16px;
+    line-height: 1.25;
+  }
+  h4 small,
+  h5 small,
+  h6 small {
+    font-size: 16px -2px;
+  }
+}
+/** 
+ *------------------------------------------------------------------------------
+ * @package       T3 Framework for Joomla!
+ *------------------------------------------------------------------------------
+ * @copyright     Copyright (C) 2004-2013 JoomlArt.com. All Rights Reserved.
+ * @license       GNU General Public License version 2 or later; see LICENSE.txt
+ * @authors       JoomlArt, JoomlaBamboo, (contribute to this project at github 
+ *                & Google group to become co-author)
+ * @Google group: https://groups.google.com/forum/#!forum/t3fw
+ * @Link:         http://t3-framework.org 
+ *------------------------------------------------------------------------------
+ */
+@media (max-width: 767px) {
+  body {
+    padding-top: 50px;
+  }
+}
+@media (max-width: 767px) {
+  .logo {
+    float: left !important;
+    text-align: center;
+    width: 100% !important;
+  }
+  .head-search {
+    float: left !important;
+    margin-top: 25px;
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  .head-search form {
+    float: none;
+  }
+  .head-search .input {
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    height: 30px;
+  }
+  .head-search .input:focus {
+    width: 100%;
+  }
+  .t3-sl {
+    padding-bottom: 25px;
+    padding-top: 25px;
+  }
+  .t3-footer {
+    margin-left: -20px;
+    margin-right: -20px;
+  }
+  .t3-footnav {
+    padding: 25px 20px 0;
+    font-size: 14px;
+  }
+  .t3-footnav .module-title {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  .t3-copyright {
+    padding: 25px 20px 50px;
+    *zoom: 1;
+  }
+  .t3-copyright:before,
+  .t3-copyright:after {
+    display: table;
+    content: "";
+    line-height: 0;
+  }
+  .t3-copyright:after {
+    clear: both;
+  }
+  .copyright,
+  .poweredby {
+    float: none;
+    display: inline-block;
+  }
+  .poweredby {
+    margin-top: 12.5px;
+  }
+}

@@ -1,0 +1,523 @@
+/** 
+ *------------------------------------------------------------------------------
+ * @package       T3 Framework for Joomla!
+ *------------------------------------------------------------------------------
+ * @copyright     Copyright (C) 2004-2013 JoomlArt.com. All Rights Reserved.
+ * @license       GNU General Public License version 2 or later; see LICENSE.txt
+ * @authors       JoomlArt, JoomlaBamboo, (contribute to this project at github 
+ *                & Google group to become co-author)
+ * @Google group: https://groups.google.com/forum/#!forum/t3fw
+ * @Link:         http://t3-framework.org 
+ *------------------------------------------------------------------------------
+ */
+
+
+
+// ---------------------------------------------------------
+// HEADER
+// ---------------------------------------------------------
+
+.header {
+  height: 176px;
+  background: #1b1b1b url(../images/header-bg.png) repeat center top;
+}
+
+.home .header {
+	height: auto;
+}
+
+.head-mainnav {
+	clear: both;
+	padding-top: 20px;
+}
+
+.head-global {
+	float: left;
+	.clearfix();
+}
+
+.head-globalnav {
+	float: left;
+	width: 380px;
+}
+
+.head-actions {
+	float: left;
+	width: 220px;
+	margin-left: 20px;
+	margin-top: 30px;
+}
+
+.head-actions .custom {
+	.clearfix();
+}
+
+.head-actions a.btn {
+	width: 104px;
+	padding-left: 0px;
+	padding-right: 0px;
+	float: left;
+}
+
+.head-actions a.btn-donate {
+	float: right;
+}
+
+ul.menu-ghm {
+	margin: 25px 0 0 0;
+	float: left;
+}
+
+ul.menu-ghm > li {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	line-height: @baseLineHeight;
+	font-size: 13px;
+	font-weight: 600;
+	text-transform: lowercase;
+	float: left;
+	
+	&.item574,
+	&.item575 {
+		width: 114px;
+	}
+	&.item576,
+	&.item577 {
+		width: 122px;
+	}
+	&.item578,
+	&.item579 {
+		width: 144px;
+	}
+}
+
+ul.menu-ghm > li > a {
+	color: #b1b1b1;
+	text-decoration: none;
+	&:hover {
+		color: @white;
+		text-decoration: none;
+	}
+}
+
+ul.menu-ghm > li.active a {
+	color: #6e6e6e;
+}
+
+// Logo
+// ---------------------------------------------------------
+.logo {
+  float: left;
+
+  h1, h1 a {
+    display: inline-block;
+    line-height: 1;
+    margin: 0;
+  }
+
+}
+
+
+// Logo Image
+// ----------
+.logo-image {
+  overflow: hidden;
+  margin-top: 30px;
+
+  a {
+    background-image: url("@{T3LogoImage}");
+    background-repeat: no-repeat;
+    width: @T3logoWidth;
+    height: @T3logoHeight;
+  }
+
+  //hide sitename and slogan
+  span, small {
+    display: none;
+  }
+
+}
+
+
+
+// Logo Text
+// ----------
+.logo-text {
+
+  h1 {
+    color: @grayDark;
+  }
+
+  h1 a {
+    color: @grayDark;
+    text-decoration: none;
+  }
+
+  &:hover h1 a,
+  h1 a:hover,
+  h1 a:active,
+  h1 a:focus {
+    text-decoration: none;
+  }
+
+  // Taglines
+  .site-slogan {
+    display: block;
+    font-size: @baseFontSize;
+    margin-top: 5px;
+  }
+}
+
+
+
+.titlebar {
+	background: url(../images/title-bg.png) repeat-x center bottom; 
+	padding-bottom: 58px;
+}
+
+.titlebar-header {
+	padding: 42px 0 0 0;
+}
+
+ul.menu-pm {
+	margin: 20px 0 0 -36px;
+}
+
+ul.menu-pm > li {
+	list-style: none;
+	margin: 0;
+	padding: 0 0 0 36px;
+	line-height: @baseLineHeight;
+	font-size: 22px;
+	font-weight: 300;
+	text-transform: lowercase;
+	display: inline-block;
+	letter-spacing: .06em;
+	background: url(../images/nav-hash.png) no-repeat 12px center;
+}
+
+ul.menu-pm > li:first-child {
+	background: none;
+}
+
+ul.menu-pm > li > a {
+	color: #ffcceb;
+	text-decoration: none;
+	&:hover {
+		color: @white;
+		text-decoration: none;
+	}
+}
+
+ul.menu-pm > li.active a {
+	color: @grayDarker;
+}
+
+
+
+// ---------------------------------------------------------
+// MAIN BODY
+// ---------------------------------------------------------
+.mainbody {
+  padding: 50px 0;
+}
+
+// Content
+// -------
+.content {
+}
+
+// Sidebars
+// --------
+.sidebar {
+}
+
+.sidebar-1 {
+}
+
+.sidebar-2 {
+
+}
+
+.sidebar-inner {
+	padding: 18px 0 0 60px;
+}
+
+
+
+// ---------------------------------------------------------
+// FOOTER
+// ---------------------------------------------------------
+.footer {
+  .clearfix();
+}
+
+.footer-brand {
+	background: url(../images/footer-grunge.png) center top;
+	height: 54px;
+	.container {
+		position: relative;
+	}
+}
+
+.footer-logo {
+	background: url(../images/footer-logo.png) no-repeat;
+	width: 140px;
+	height: 66px;
+	position: absolute;
+	left: 400px;
+	top: 14px;
+}
+
+.footer-main {
+	background: #0d0d0d url(../images/footer-bg.jpg) repeat;
+}
+
+.footer-top {
+	padding: 70px 0 40px 0;
+}
+
+.footer-middle {
+	margin-left: 0px;
+	width: 240px;
+}
+
+.footer-actions {
+	.clearfix();
+}
+
+.footer-actions a.btn {
+	width: 104px;
+	padding-left: 0px;
+	padding-right: 0px;
+	float: left;
+}
+
+.footer-actions a.btn-donate {
+	float: right;
+}
+
+.footer .form-search {
+	margin-top: 25px;
+	label {
+		display: none;
+	}
+	input.input {
+		font-size: 13px;
+		height: 41px;
+		line-height: 41px;
+		padding: 0 14px 0 34px;
+		width: 100%;
+		-moz-box-sizing: border-box; 
+		-webkit-box-sizing: border-box; 
+		box-sizing: border-box;
+		border: none;
+		background: #e7e7e7 url(../images/search-input.png) no-repeat 9px center;     
+	}
+}
+
+
+
+.menu-social {
+	a {
+		display: inline-block;
+		margin-right: 10px;
+	}
+	.clearfix();
+}
+
+ul.menu-gfm {
+	margin: 25px 0 0 0;
+	float: left;
+}
+
+ul.menu-gfm > li {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	line-height: @baseLineHeight;
+	font-size: 13px;
+	text-transform: none;
+	width: 120px;	
+}
+
+ul.menu-gfm > li > a {
+	color: #868686;
+	text-decoration: none;
+	&:hover {
+		color: @white;
+		text-decoration: none;
+	}
+}
+
+
+// Foot Nav
+// --------
+ul.menu-mfm {
+	margin: 0;
+}
+	
+
+ul.menu-mfm > li {
+	/* width: 150px; */
+	margin-right: 50px;
+	float: left;
+	display: block;
+	&:last-child {
+		margin-right: 0px;
+	}
+	font-size: 16px;
+	line-height: @baseLineHeight;
+	text-transform: lowercase;	
+}
+	
+ul.menu-mfm > li > a {
+	color: @pink;
+	text-decoration: none;
+	&:hover {
+		color: @limeGreen;
+		text-decoration: none;
+	}
+}
+
+ul.menu-mfm ul {
+	margin: 0;
+}
+
+ul.menu-mfm ul	> li {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	line-height: @baseLineHeight;
+	font-size: 14px;
+	text-transform: none;	
+}
+	
+ul.menu-mfm ul	> li > a {
+	color: @darkerPink;
+	text-decoration: none;
+	&:hover {
+		color: @darkerLimeGreen;
+		text-decoration: none;
+	}
+}
+
+
+// Copyright
+// ---------
+.copyright {
+  font-size: 13px;
+  line-height: 1.1em;
+  padding: 32px 0 40px 0;
+  .clearfix();
+  color: #868686;
+  background: url(../images/copyright-line.png) no-repeat center top;
+  
+  p {
+	  margin: 0 0 0 55px;;
+	  float: right;	  
+	  &.copy-line {
+		  float: left;
+		  margin: 0px;
+	  }
+	  &.copy-addy {
+		  margin: 0px;
+	  }
+	  i {
+		  padding-right: 4px;
+	  }	  
+  }
+  
+  a {
+	  color: #868686;
+	  text-decoration: none;
+	  &:hover {
+		  color: @white;
+		  text-decoration: none;
+	  }
+  }
+  
+}
+
+
+
+
+
+#connect {
+	margin: 0 0 0 0;
+	padding: 26px 0 0 0;
+}
+#connect .connect-inner {
+	background: url(../images/mod-connect-bg.png) no-repeat center -110px;
+}
+.page-home #connect {
+	background: transparent url(../images/home3-line.png) repeat-x center top;
+}
+
+
+.home-1 {
+	background: transparent url(../images/testi-bg.png) repeat center top;
+	padding: 50px 0 0 0;
+}
+
+
+.home-2 {
+	background: transparent url(../images/home1-line.png) repeat-x center top;
+	padding: 80px 0 40px 0;
+	position: relative;
+}
+.home-2 .container {
+	position: relative;
+}
+.home-2 .module-homeactionbtn {
+	position: absolute; 
+	right: 0px;
+	top: 8px;
+	margin: 0;
+}
+
+
+.home-3 {
+	background: rgba(0,0,0,.05) url(../images/impact-bg.png) repeat center top;
+}
+.home-3-inner {
+	background: transparent url(../images/home2-line.png) repeat-x center top;
+	padding: 80px 0 40px 0;
+}
+.home-3 .container {
+	position: relative;
+}
+.home-3 .module-homeactionbtn {
+	position: absolute; 
+	right: 0px;
+	top: 8px;
+	margin: 0;
+}
+
+
+a.btn-homeaction {
+	line-height: 61px;
+	height: 61px;
+	font-size: 18px;
+	padding: 0 58px;
+}
+
+
+
+
+// ---------------------------------------------------------
+// MISC.
+// ---------------------------------------------------------
+.com_xmap #xmap h1 {
+	display: none;
+}
+
+.com_xmap #xmap h2 {
+	margin-top: 0px;
+}
+
+.hide-title #mainbody h1.page-title {
+	display: none;
+}
+
