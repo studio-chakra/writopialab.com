@@ -16,7 +16,7 @@
 class T3Admin {
 
 	protected $langs = array();
-	
+
 	/**
 	 * function render
 	 * render T3 administrator configuration form
@@ -24,17 +24,52 @@ class T3Admin {
 	 * @return render success or not
 	 */
 	public function render(){
-		$body = JResponse::getBody();
+		$input  = JFactory::getApplication()->input;
+		$body   = JResponse::getBody();
 		$layout = T3_ADMIN_PATH . '/admin/tpls/default.php';
-		if(file_exists($layout) && JFactory::getApplication()->input->getCmd('view') == 'style'){
+
+		if(file_exists($layout) && 'style' == $input->getCmd('view')){
+			
 			ob_start();
-			$this->loadParams();
+			$this->renderAdmin();
 			$buffer = ob_get_clean();
 
-			$body = preg_replace('@<form\s[^>]*name="adminForm"[^>]*>(.*)</form>@msU', $buffer, $body);
+			//this cause backtrack_limit in some server
+			//$body = preg_replace('@<form\s[^>]*name="adminForm"[^>]*>(.*)</form>@msU', $buffer, $body);
+			$opentags = explode('<form', $body);
+			$endtags = explode('</form>', $body);
+			$open = array_shift($opentags);
+			$close = array_pop($endtags);
+
+			//should not happend
+			if(count($opentags) > 1){
+	
+				$iopen = 0;
+				$iclose = count($opentags);
+
+				foreach ($opentags as $index => $value) {
+					if($iopen !== -1 && strpos($value, 'name="adminForm"') === false){
+						$iopen++;
+						$open = $open . '<form' . $value;
+					} else {
+						$iopen = -1;
+					}
+
+					if($iclose !== -1 && strpos($endtags[--$iclose], 'name="adminForm"') === false){
+						$close = $endtags[$iclose] . '</form>' . $close;
+					} else {
+						$iclose = -1;
+					}
+				}
+			}
+
+			$body = $open . $buffer . $close;
 		}
 
-		$body = $this->replaceToolbar($body);
+		if(!$input->getCmd('file')){
+			$body = $this->replaceToolbar($body);
+		}
+
 		$body = $this->replaceDoctype($body);
 
 		JResponse::setBody($body);
@@ -43,13 +78,9 @@ class T3Admin {
 	public function addAssets(){
 
 		// load template language
-		JFactory::getLanguage()->load(T3_PLUGIN, JPATH_ADMINISTRATOR);
 		JFactory::getLanguage()->load ('tpl_'.T3_TEMPLATE.'.sys', JPATH_ROOT, null, true);
 
 		$langs = array(
-			'lblCompile' => JText::_('T3_LBL_RECOMPILE'),
-			'lblThemer' => JText::_('T3_LBL_VIEWTHEMER'),
-			'enableThemeMagic' => JText::_('T3_MSG_ENABLE_THEMEMAGIC'),
 			'unknownError' => JText::_('T3_MSG_UNKNOWN_ERROR'),
 
 			'logoPresent' => JText::_('T3_LAYOUT_LOGO_TEXT'),
@@ -67,6 +98,9 @@ class T3Admin {
 			'askCloneLayout' => JText::_('T3_LAYOUT_ASK_ADD_LAYOUT'),
 			'correctLayoutName' => JText::_('T3_LAYOUT_ASK_CORRECT_NAME'),
 			'askDeleteLayout' => JText::_('T3_LAYOUT_ASK_DEL_LAYOUT'),
+			'askDeleteLayoutDesc' => JText::_('T3_LAYOUT_ASK_DEL_LAYOUT_DESC'),
+			'askPurgeLayout' => JText::_('T3_LAYOUT_ASK_DEL_LAYOUT'),
+			'askPurgeLayoutDesc' => JText::_('T3_LAYOUT_ASK_PURGE_LAYOUT_DESC'),
 
 			'lblDeleteIt' => JText::_('T3_LAYOUT_LABEL_DELETEIT'),
 			'lblCloneIt' => JText::_('T3_LAYOUT_LABEL_CLONEIT'),
@@ -83,27 +117,23 @@ class T3Admin {
 			'updateCheckUpdate' => JText::_('T3_OVERVIEW_CHECK_UPDATE'),
 			'updateChkComplete' => JText::_('T3_OVERVIEW_CHK_UPDATE_OK'),
 			'updateHasNew' => JText::_('T3_OVERVIEW_TPL_NEW'),
-			'updateCompare' => JText::_('T3_OVERVIEW_TPL_COMPARE')
+			'updateCompare' => JText::_('T3_OVERVIEW_TPL_COMPARE'),
+			'switchResponsiveMode' => JText::_('T3_MSG_SWITCH_RESPONSIVE_MODE')
 		);
 		
-		$japp = JFactory::getApplication();
-		$jdoc = JFactory::getDocument();
+		$japp   = JFactory::getApplication();
+		$jdoc   = JFactory::getDocument();
+		$db     = JFactory::getDbo();
+		$params = T3::getTplParams();
+		$input  = $japp->input;
 
-		$params = new JRegistry;
-		$db = JFactory::getDbo();
-
-		//get params of templates
-		$query = $db->getQuery(true);
-		$query
-			->select('params')
-			->from('#__template_styles')
-			->where('template='. $db->quote(T3_TEMPLATE));
-		
-		$db->setQuery($query);
-		$params->loadString($db->loadResult());
+		//just in case
+		if(!($params instanceof JRegistry)){
+			$params = new JRegistry;
+		}
 
 		//get extension id of framework and template
-		$query = $db->getQuery(true);
+		$query  = $db->getQuery(true);
 		$query
 			->select('extension_id')
 			->from('#__extensions')
@@ -117,37 +147,53 @@ class T3Admin {
 			$eids[] = $eid[0];
 		}
 
-		//check for version compactible
-		$jversion  = new JVersion;
-		if(!$jversion->isCompatible('3.0')){
+		//check for version compatible
+		if(version_compare(JVERSION, '3.0', 'ge')){
+			JHtml::_('bootstrap.framework');
+		} else {
 			$jdoc->addStyleSheet(T3_ADMIN_URL . '/admin/bootstrap/css/bootstrap.css');
-			
-			$jdoc->addScript(T3_ADMIN_URL . '/admin/js/jquery-1.8.0.min.js');
+
+			$jdoc->addScript(T3_ADMIN_URL . '/admin/js/jquery-1.8.3.min.js');
 			$jdoc->addScript(T3_ADMIN_URL . '/admin/bootstrap/js/bootstrap.js');
 			$jdoc->addScript(T3_ADMIN_URL . '/admin/js/jquery.noconflict.js');
 		}
 
-		$jdoc->addStyleSheet(T3_ADMIN_URL . '/admin/plugins/chosen/chosen.css');
-		$jdoc->addStyleSheet(T3_ADMIN_URL . '/includes/depend/css/depend.css');
-		$jdoc->addStyleSheet(T3_ADMIN_URL . '/admin/layout/css/layout-preview.css');
-		$jdoc->addStyleSheet(T3_ADMIN_URL . '/admin/layout/css/layout.css');
-		$jdoc->addStyleSheet(T3_ADMIN_URL . '/admin/css/admin.css');
-		if(!$jversion->isCompatible('3.0')){
-			$jdoc->addStyleSheet(T3_ADMIN_URL . '/admin/css/admin-j25.css');
-		} else {
-			$jdoc->addStyleSheet(T3_ADMIN_URL . '/admin/css/admin-j30.css');
+		if(!$this->checkAssetsLoaded('chosen.css', '_styleSheets')){
+			$jdoc->addStyleSheet(T3_ADMIN_URL . '/admin/plugins/chosen/chosen.css');
 		}
 
-		$jdoc->addScript(T3_ADMIN_URL . '/admin/plugins/chosen/chosen.jquery.min.js');	
+		$jdoc->addStyleSheet(T3_ADMIN_URL . '/includes/depend/css/depend.css');
+		$jdoc->addStyleSheet(T3_URL . '/css/layout-preview.css');
+		$jdoc->addStyleSheet(T3_ADMIN_URL . '/admin/layout/css/layout.css');
+		if(file_exists(T3_TEMPLATE_PATH . '/admin/layout-custom.css')) {
+			$jdoc->addStyleSheet(T3_TEMPLATE_URL . '/admin/layout-custom.css');
+		}
+		$jdoc->addStyleSheet(T3_ADMIN_URL . '/admin/css/admin.css');
+
+		if(version_compare(JVERSION, '3.0', 'ge')){
+			$jdoc->addStyleSheet(T3_ADMIN_URL . '/admin/css/admin-j30.css');
+
+			if($input->get('file') && version_compare(JVERSION, '3.2', 'ge')){
+				$jdoc->addStyleSheet(T3_ADMIN_URL . '/admin/css/file-manager.css');
+			}
+		} else {
+			$jdoc->addStyleSheet(T3_ADMIN_URL . '/admin/css/admin-j25.css');
+		}
+
+		if(!$this->checkAssetsLoaded('chosen.jquery.min.js', '_scripts')){
+			$jdoc->addScript(T3_ADMIN_URL . '/admin/plugins/chosen/chosen.jquery.min.js');	
+		}
+
 		$jdoc->addScript(T3_ADMIN_URL . '/includes/depend/js/depend.js');
 		$jdoc->addScript(T3_ADMIN_URL . '/admin/js/json2.js');
 		$jdoc->addScript(T3_ADMIN_URL . '/admin/js/jimgload.js');
 		$jdoc->addScript(T3_ADMIN_URL . '/admin/layout/js/layout.js');
 		$jdoc->addScript(T3_ADMIN_URL . '/admin/js/admin.js');
 
-		JFactory::getDocument()->addScriptDeclaration ( '
-			var T3Admin = window.T3Admin || {};
-			T3Admin.adminurl = \'' . JFactory::getURI()->toString() . '\';
+
+		$jdoc->addScriptDeclaration ( '
+			T3Admin = window.T3Admin || {};
+			T3Admin.adminurl = \'' . JUri::getInstance()->toString() . '\';
 			T3Admin.t3adminurl = \'' . T3_ADMIN_URL . '\';
 			T3Admin.baseurl = \'' . JURI::base(true) . '\';
 			T3Admin.rooturl = \'' . JURI::root() . '\';
@@ -159,7 +205,8 @@ class T3Admin {
 			T3Admin.eids = [' . implode($eids, ',') .'];
 			T3Admin.telement = \'' . T3_TEMPLATE . '\';
 			T3Admin.felement = \'' . T3_ADMIN . '\';
-			T3Admin.themerUrl = \'' . JFactory::getURI()->toString() . '&t3action=theme&t3task=thememagic' . '\';
+			T3Admin.themerUrl = \'' . JUri::getInstance()->toString() . '&t3action=theme&t3task=thememagic' . '\';
+			T3Admin.megamenuUrl = \'' . JUri::getInstance()->toString() . '&t3action=megamenu&t3task=megamenu' . '\';
 			T3Admin.t3updateurl = \'' . JURI::base() . 'index.php?option=com_installer&view=update&task=update.ajax' . '\';
 			T3Admin.t3layouturl = \'' . JURI::base() . 'index.php?t3action=layout' . '\';
 			T3Admin.jupdateUrl = \'' . JURI::base() . 'index.php?option=com_installer&view=update' . '\';'
@@ -178,9 +225,10 @@ class T3Admin {
 	 *
 	 * @return render success or not
 	 */
-	function loadParams(){
+	function renderAdmin(){
 		$frwXml = T3_ADMIN_PATH . '/'. T3_ADMIN . '.xml';
 		$tplXml = T3_TEMPLATE_PATH . '/templateDetails.xml';
+		$cusXml = T3Path::getPath('etc/assets.xml');
 		$jtpl = T3_ADMIN_PATH . '/admin/tpls/default.php';
 		
 		if(file_exists($tplXml) && file_exists($jtpl)){
@@ -195,9 +243,16 @@ class T3Admin {
 			
 			//remove all fields from group 'params' and reload them again in right other base on template.xml
 			$form->removeGroup('params');
+			//load the template
 			$form->loadFile(T3_PATH . '/params/template.xml');
-			$form->loadFile(T3_TEMPLATE_PATH . '/templateDetails.xml', true, '//config');
-			
+			//overwrite / extend with params of template
+			$form->loadFile($tplXml, true, '//config');
+			//overwrite / extend with custom config in custom/etc/assets.xml
+			if ($cusXml && file_exists($cusXml))
+				$form->loadFile($cusXml, true, '//config');
+			// extend parameters
+			T3Bot::prepareForm($form);
+
 			$xml = JFactory::getXML($tplXml);
 			$fxml = JFactory::getXML($frwXml);
 
@@ -221,6 +276,7 @@ class T3Admin {
 
 			include $jtpl;
 			
+			/*
 			//search for global parameters
 			$japp = JFactory::getApplication();
 			$pglobals = array();
@@ -230,6 +286,7 @@ class T3Admin {
 				}
 			}
 			$japp->setUserState('oparams', $pglobals);
+			*/
 
 			return true;
 		}
@@ -244,10 +301,11 @@ class T3Admin {
 		if(file_exists($t3toolbar) && class_exists('JToolBar')){
 			//get the existing toolbar html
 			jimport('joomla.language.help');
+			$params  = T3::getTplParams();
 			$toolbar = JToolBar::getInstance('toolbar')->render('toolbar');
 			$helpurl = JHelp::createURL($input->getCmd('view') == 'template' ? 'JHELP_EXTENSIONS_TEMPLATE_MANAGER_TEMPLATES_EDIT' : 'JHELP_EXTENSIONS_TEMPLATE_MANAGER_STYLES_EDIT');
 			$helpurl = htmlspecialchars($helpurl, ENT_QUOTES);
-		
+
 			//render our toolbar
 			ob_start();
 			include $t3toolbar;
@@ -262,6 +320,19 @@ class T3Admin {
 
 	function replaceDoctype($body){
 		return preg_replace('@<!DOCTYPE\s(.*?)>@', '<!DOCTYPE html>', $body);
+	}
+
+	function checkAssetsLoaded($pattern, $hash){
+		$doc = JFactory::getDocument();
+		$hash = $doc->$hash;
+
+		foreach ($hash as $path => $object) {
+			if(strpos($path, $pattern) !== false){
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
 

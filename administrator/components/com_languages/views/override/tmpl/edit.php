@@ -3,44 +3,46 @@
  * @package     Joomla.Administrator
  * @subpackage  com_languages
  *
- * @copyright   Copyright (C) 2005 - 2013 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 defined('_JEXEC') or die;
 
-JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
-JHtml::_('behavior.tooltip');
-JHtml::_('behavior.formvalidation');
+JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
+
+JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
 JHtml::_('formbehavior.chosen', 'select');
 
-?>
-<script type="text/javascript">
-		window.addEvent('domready', function()
-		{
-			document.id('jform_searchstring').addEvent('focus', function()
+$expired = ($this->state->get("cache_expired") == 1 ) ? '1' : '';
+
+JFactory::getDocument()->addScriptDeclaration('
+	jQuery(document).ready(function() {
+		document.getElementById("jform_searchstring").addEvent("focus", function() {
+			if (!Joomla.overrider.states.refreshed)
 			{
-				if (!Joomla.overrider.states.refreshed)
+				var expired = "' . $expired . '";
+				if (expired)
 				{
-					<?php if ($this->state->get('cache_expired')) : ?>
 					Joomla.overrider.refreshCache();
 					Joomla.overrider.states.refreshed = true;
-					<?php endif; ?>
 				}
-				this.removeClass('invalid');
-			});
+			}
+			this.removeClass("invalid");
 		});
-	Joomla.submitbutton = function(task)
-	{
-		if (task == 'override.cancel' || document.formvalidator.isValid(document.id('override-form')))
-		{
-			Joomla.submitform(task, document.getElementById('override-form'));
-		}
-	}
-</script>
+	});
 
-<form action="<?php echo JRoute::_('index.php?option=com_languages&id='.$this->item->key); ?>" method="post" name="adminForm" id="override-form" class="form-validate form-horizontal">
+	Joomla.submitbutton = function(task) {
+		if (task == "override.cancel" || document.formvalidator.isValid(document.getElementById("override-form")))
+		{
+			Joomla.submitform(task, document.getElementById("override-form"));
+		}
+	};
+');
+?>
+
+<form action="<?php echo JRoute::_('index.php?option=com_languages&id=' . $this->item->key); ?>" method="post" name="adminForm" id="override-form" class="form-validate form-horizontal">
 	<div class="row-fluid">
 		<div class="span6">
 			<fieldset>
@@ -74,14 +76,14 @@ JHtml::_('formbehavior.chosen', 'select');
 				</div>
 				<?php endif; ?>
 
-				<div class="control-group">
-					<div class="control-label">
-						<?php echo $this->form->getLabel('language'); ?>
+					<div class="control-group">
+						<div class="control-label">
+							<?php echo $this->form->getLabel('language'); ?>
+						</div>
+						<div class="controls">
+							<?php echo $this->form->getInput('language'); ?>
+						</div>
 					</div>
-					<div class="controls">
-						<?php echo $this->form->getInput('language'); ?>
-					</div>
-				</div>
 
 				<div class="control-group">
 					<div class="control-label">
@@ -112,7 +114,7 @@ JHtml::_('formbehavior.chosen', 'select');
 
 				<div class="control-group">
 					<?php echo $this->form->getInput('searchstring'); ?>
-					<button type="submit" class="btn btn-primary" onclick="Joomla.overrider.searchStrings();return false;">
+					<button type="submit" class="btn btn-primary" onclick="Joomla.overrider.searchStrings();return false;" formnovalidate>
 						<?php echo JText::_('COM_LANGUAGES_VIEW_OVERRIDE_SEARCH_BUTTON'); ?>
 					</button>
 					<span id="refresh-status" class="overrider-spinner  help-block">

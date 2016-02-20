@@ -3,18 +3,18 @@
  * @package     Joomla.Administrator
  * @subpackage  com_users
  *
- * @copyright   Copyright (C) 2005 - 2013 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE
  */
 
 defined('_JEXEC') or die;
 
+use Joomla\Registry\Registry;
+
 /**
  * User notes list view
  *
- * @package     Joomla.Administrator
- * @subpackage  com_users
- * @since       2.5
+ * @since  2.5
  */
 class UsersViewNotes extends JViewLegacy
 {
@@ -78,10 +78,10 @@ class UsersViewNotes extends JViewLegacy
 		// Get the component HTML helpers
 		JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 
-		// turn parameters into registry objects
+		// Turn parameters into registry objects
 		foreach ($this->items as $item)
 		{
-			$item->cparams = new JRegistry;
+			$item->cparams = new Registry;
 			$item->cparams->loadString($item->category_params);
 		}
 
@@ -99,9 +99,9 @@ class UsersViewNotes extends JViewLegacy
 	 */
 	protected function addToolbar()
 	{
-		$canDo = UsersHelper::getActions();
+		$canDo = JHelperContent::getActions('com_users', 'category', $this->state->get('filter.category_id'));
 
-		JToolbarHelper::title(JText::_('COM_USERS_VIEW_NOTES_TITLE'), 'user');
+		JToolbarHelper::title(JText::_('COM_USERS_VIEW_NOTES_TITLE'), 'users user');
 
 		if ($canDo->get('core.create'))
 		{
@@ -135,11 +135,12 @@ class UsersViewNotes extends JViewLegacy
 			JToolbarHelper::divider();
 		}
 
-		if ($canDo->get('core.admin'))
+		if ($canDo->get('core.admin') || $canDo->get('core.options'))
 		{
 			JToolbarHelper::preferences('com_users');
 			JToolbarHelper::divider();
 		}
+
 		JToolbarHelper::help('JHELP_USERS_USER_NOTES');
 
 		JHtmlSidebar::setAction('index.php?option=com_users&view=notes');
@@ -153,7 +154,26 @@ class UsersViewNotes extends JViewLegacy
 		JHtmlSidebar::addFilter(
 			JText::_('JOPTION_SELECT_CATEGORY'),
 			'filter_category_id',
-			JHtml::_('select.options', JHtml::_('category.options', 'com_users.notes'), 'value', 'text', $this->state->get('filter.category_id'))
+			JHtml::_('select.options', JHtml::_('category.options', 'com_users'), 'value', 'text', $this->state->get('filter.category_id'))
+		);
+	}
+
+	/**
+	 * Returns an array of fields the table can be sorted by
+	 *
+	 * @return  array  Array containing the field name to sort by as the key and display text as value
+	 *
+	 * @since   3.0
+	 */
+	protected function getSortFields()
+	{
+		return array(
+			'u.name' => JText::_('COM_USERS_USER_HEADING'),
+			'a.subject' => JText::_('COM_USERS_SUBJECT_HEADING'),
+			'c.title' => JText::_('COM_USERS_CATEGORY_HEADING'),
+			'a.state' => JText::_('JSTATUS'),
+			'a.review_time' => JText::_('COM_USERS_REVIEW_HEADING'),
+			'a.id' => JText::_('JGRID_HEADING_ID')
 		);
 	}
 }

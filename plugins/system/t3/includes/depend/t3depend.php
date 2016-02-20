@@ -39,14 +39,6 @@ class JFormFieldT3Depend extends JFormField
 	function loadAsset(){
 		if (!defined ('_T3_DEPEND_ASSET_')) {
 			define ('_T3_DEPEND_ASSET_', 1);
-			
-			if(!defined('T3')){
-				$t3url = str_replace(DIRECTORY_SEPARATOR, '/', JURI::base(true) . '/' . substr(dirname(__FILE__), strlen(JPATH_SITE)));
-				$t3url = str_replace('/administrator/', '/', $uri);
-				$t3url = str_replace('//', '/', $uri);
-			} else {
-				$t3url = T3_ADMIN_URL;
-			}
 
 			$jdoc = JFactory::getDocument();
 
@@ -56,10 +48,12 @@ class JFormFieldT3Depend extends JFormField
 				if(version_compare(JVERSION, '3.0', 'ge')){
 					JHtml::_('jquery.framework');
 				} else {
-					$jdoc->addScript(T3_ADMIN_URL . '/admin/js/jquery-1.8.0.min.js');
+					$jdoc->addScript(T3_ADMIN_URL . '/admin/js/jquery-1.8.3.min.js');
 					$jdoc->addScript(T3_ADMIN_URL . '/admin/js/jquery.noconflict.js');
 				}
+			}
 
+			if(JFactory::getApplication()->isSite() || !defined('T3_TEMPLATE')){
 				$jdoc->addStyleSheet(T3_ADMIN_URL . '/includes/depend/css/depend.css');
 				$jdoc->addScript(T3_ADMIN_URL . '/includes/depend/js/depend.js');
 			}
@@ -208,14 +202,14 @@ class JFormFieldT3Depend extends JFormField
 					<span class="icon-help editlinktip hasTip" title="'.htmlentities($_description).'">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
 					<a class="toggle-btn open" title="'.JText::_('Expand all').'" onclick="T3Depend.showseg(\''.$regionID.'\', \'level'.$level.'\'); return false;">'.JText::_('Expand all').'</a>
 					<a class="toggle-btn close" title="'.JText::_('Collapse all').'" onclick="T3Depend.showseg(\''.$regionID.'\', \'level'.$level.'\'); return false;">'.JText::_('Collapse all').'</a>
-		    	</h4>';
+		    </h4>';
 		} else {
 			$html = '
 				<h4 rel="'.$level.'" class="block-head block-head-'.$class_name.' open '.$class.' " '.$group.' id="'.$regionID.'">
 					<span class="block-setting" >'.$_title.$_url.'</span> 
 					<span class="icon-help editlinktip hasTip" title="'.htmlentities($_description).'">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
 					<a class="toggle-btn" title="'.JText::_('Click here to expand or collapse').'" onclick="T3Depend.segment(\''.$regionID.'\', \'level'.$level.'\'); return false;">open</a>
-		    	</h4>';
+		    </h4>';
 		} 
 		//<div class="block-des '.$class.'"  id="desc-'.$regionID.'">'.$_description.'</div>';
 		
@@ -261,7 +255,7 @@ class JFormFieldT3Depend extends JFormField
 		
 					if (is_array( $this->value ))
 					{
-						foreach ($value as $val)
+						foreach ($this->value as $val)
 						{
 							$val2 = is_object( $val ) ? $val->$key : $val;
 							if ($oval == $val2)
@@ -298,26 +292,23 @@ class JFormFieldT3Depend extends JFormField
 	function group(){
 		$this->loadAsset();
 
-		preg_match_all('/jform\\[([^\]]*)\\]/', $this->name, $matches);
-		$group_name = 'jform';
-		
-		if(!isset($matches[1]) || empty($matches[1])){
-			preg_match_all('/t3form\\[([^\]]*)\\]/', $this->name, $matches);
-			$group_name = 't3form';
-		}
-		
-		if(isset($matches[1]) && !empty($matches[1])):
+		if(preg_match_all('@\[([^\]]*)\]@', $this->name, $matches)):
+
+			$group_name = str_replace(end($matches[0]), '', $this->name);
 		?>
 		<script type="text/javascript">
 			jQuery(document).ready(function(){
 			<?php 
 			foreach ($this->element->children() as $option):
 				$elms = preg_replace('/\s+/', '', (string)$option[0]);
+				$vals = preg_replace('/\s+/', '', $option['value']);
+				$hide = isset($option['hide']) ? !in_array($option['hide'], array('false', '', '0', 'no', 'off')) : 1;
 			?>
 				T3Depend.add('<?php echo $option['for']; ?>', {
-					val: '<?php echo $option['value']; ?>',
+					vals: '<?php echo $vals ?>',
 					elms: '<?php echo $elms?>',
-					group: '<?php echo $group_name . '[' . @$matches[1][0] . ']'; ?>'
+					group: '<?php echo $group_name; ?>',
+					hide: <?php echo (int)$hide; ?>
 				});
 			<?php
 				endforeach;

@@ -2,10 +2,13 @@
 	<fields name="params">
 		<fieldset name="roksprocket" overwrite="false">
 			<field name="features_layout_title" type="label" label="ROKSPROCKET_FEATURES_LAYOUT_TITLE" default=""
-				   description="" optionorder="51" class="layout layout_features"/>
+				   description="" optionorder="51" class="layout layout_features"/>					   
+				
 			<field name="features_themes" label="ROKSPROCKET_THEMES_LABEL" type="containerlist" default="slideshow"
 				   description="ROKSPROCKET_THEMES_DESC" configkey="roksprocket.layouts.features.themes"
-				   optionorder="52" class="layout layout_features"/>
+				   optionorder="52" class="layout layout_features"/>   
+			
+			  
 			<field name="features_show_title" type="containerlist" default="1"
 				   label="ROKSPROCKET_FEATURES_SHOW_TITLE_LABEL" description="ROKSPROCKET_FEATURES_SHOW_TITLE_DESC"
 				   optionorder="53" class="layout layout_features">
@@ -61,6 +64,20 @@
 			<field name="features_autoplay_delay" type="textplus" default="5" append="s"
 				   label="ROKSPROCKET_AUTOPLAY_DELAY_LABEL" description="ROKSPROCKET_AUTOPLAY_DELAY_DESC"
 				   optionorder="59" class="layout layout_features"/>
+			
+			<field name="features_item_desktop" type="textplus" default="1"
+				   label="ROKSPROCKET_FEATURES_LAYOUT_ITEM_DESKTOP" description="ROKSPROCKET_FEATURES_LAYOUT_ITEM_DESKTOP"
+				   optionorder="59.1" class="layout layout_features"/>
+				   
+			<field name="features_item_table" type="textplus" default="1"
+				   label="ROKSPROCKET_FEATURES_LAYOUT_ITEM_TABLE" description="ROKSPROCKET_FEATURES_LAYOUT_ITEM_TABLE"
+				   optionorder="59.2" class="layout layout_features"/>
+				   
+			<field name="features_item_mobile" type="textplus" default="1"
+				   label="ROKSPROCKET_FEATURES_LAYOUT_ITEM_MOBILE" description="ROKSPROCKET_FEATURES_LAYOUT_ITEM_MOBILE"
+				   optionorder="59.3" class="layout layout_features"/>
+				   
+			
 
 			<field name="features_resize_enable" type="containerlist" default="0"
 				   label="ROKSPROCKET_RESIZE_ENABLE_LABEL" description="ROKSPROCKET_RESIZE_ENABLE_DESC"

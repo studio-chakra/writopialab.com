@@ -3,7 +3,7 @@
  * @package     Joomla.Administrator
  * @subpackage  com_templates
  *
- * @copyright   Copyright (C) 2005 - 2013 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -12,17 +12,16 @@ defined('_JEXEC') or die;
 /**
  * Methods supporting a list of template style records.
  *
- * @package     Joomla.Administrator
- * @subpackage  com_templates
- * @since       1.6
+ * @since  1.6
  */
 class TemplatesModelStyles extends JModelList
 {
 	/**
 	 * Constructor.
 	 *
-	 * @param   array  An optional associative array of configuration settings.
-	 * @see     JController
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     JControllerLegacy
 	 * @since   1.6
 	 */
 	public function __construct($config = array())
@@ -55,8 +54,6 @@ class TemplatesModelStyles extends JModelList
 	 */
 	protected function populateState($ordering = null, $direction = null)
 	{
-		$app = JFactory::getApplication('administrator');
-
 		// Load the filter state.
 		$search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
@@ -82,7 +79,7 @@ class TemplatesModelStyles extends JModelList
 	 * different modules that might need different sets of data or different
 	 * ordering requirements.
 	 *
-	 * @param   string  $id    A prefix for the store id.
+	 * @param   string  $id  A prefix for the store id.
 	 *
 	 * @return  string  A store id.
 	 */
@@ -126,7 +123,7 @@ class TemplatesModelStyles extends JModelList
 
 		// Filter by extension enabled
 		$query->select('extension_id AS e_id')
-			->join('LEFT', '#__extensions AS e ON e.element = a.template')
+			->join('LEFT', '#__extensions AS e ON e.element = a.template AND e.client_id = a.client_id')
 			->where('e.enabled = 1')
 			->where('e.type=' . $db->quote('template'));
 
@@ -138,6 +135,7 @@ class TemplatesModelStyles extends JModelList
 
 		// Filter by client.
 		$clientId = $this->getState('filter.client_id');
+
 		if (is_numeric($clientId))
 		{
 			$query->where('a.client_id = ' . (int) $clientId);
@@ -145,6 +143,7 @@ class TemplatesModelStyles extends JModelList
 
 		// Filter by search in title
 		$search = $this->getState('filter.search');
+
 		if (!empty($search))
 		{
 			if (stripos($search, 'id:') === 0)
@@ -153,15 +152,14 @@ class TemplatesModelStyles extends JModelList
 			}
 			else
 			{
-				$search = $db->quote('%' . $db->escape($search, true) . '%');
-				$query->where('a.template LIKE ' . $search . ' OR a.title LIKE ' . $search);
+				$search = $db->quote('%' . strtolower($search) . '%');
+				$query->where('(' . ' LOWER(a.template) LIKE ' . $search . ' OR LOWER(a.title) LIKE ' . $search . ')');
 			}
 		}
 
 		// Add the list ordering clause.
 		$query->order($db->escape($this->getState('list.ordering', 'a.title')) . ' ' . $db->escape($this->getState('list.direction', 'ASC')));
 
-		//echo nl2br(str_replace('#__','jos_',$query));
 		return $query;
 	}
 }

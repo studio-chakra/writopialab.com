@@ -3,7 +3,7 @@
  * @package     Joomla.Platform
  * @subpackage  Database
  *
- * @copyright   Copyright (C) 2005 - 2013 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE
  */
 
@@ -12,9 +12,7 @@ defined('JPATH_PLATFORM') or die;
 /**
  * Query Building Class.
  *
- * @package     Joomla.Platform
- * @subpackage  Database
- * @since       11.3
+ * @since  11.3
  */
 class JDatabaseQueryPostgresql extends JDatabaseQuery implements JDatabaseQueryLimitable
 {
@@ -70,6 +68,7 @@ class JDatabaseQueryPostgresql extends JDatabaseQuery implements JDatabaseQueryL
 			case 'select':
 				$query .= (string) $this->select;
 				$query .= (string) $this->from;
+
 				if ($this->join)
 				{
 					// Special case for joins
@@ -97,16 +96,6 @@ class JDatabaseQueryPostgresql extends JDatabaseQuery implements JDatabaseQueryL
 				if ($this->order)
 				{
 					$query .= (string) $this->order;
-				}
-
-				if ($this->limit)
-				{
-					$query .= (string) $this->limit;
-				}
-
-				if ($this->offset)
-				{
-					$query .= (string) $this->offset;
 				}
 
 				if ($this->forUpdate)
@@ -168,6 +157,7 @@ class JDatabaseQueryPostgresql extends JDatabaseQuery implements JDatabaseQueryL
 					}
 
 					$elements = $this->values->getElements();
+
 					if (!($elements[0] instanceof $this))
 					{
 						$query .= ' VALUES ';
@@ -186,7 +176,11 @@ class JDatabaseQueryPostgresql extends JDatabaseQuery implements JDatabaseQueryL
 			default:
 				$query = parent::__toString();
 				break;
+		}
 
+		if ($this instanceof JDatabaseQueryLimitable)
+		{
+			$query = $this->processLimit($query, $this->limit, $this->offset);
 		}
 
 		return $query;
@@ -197,7 +191,7 @@ class JDatabaseQueryPostgresql extends JDatabaseQuery implements JDatabaseQueryL
 	 *
 	 * @param   string  $clause  Optionally, the name of the clause to clear, or nothing to clear the whole query.
 	 *
-	 * @return  void
+	 * @return  JDatabaseQueryPostgresql  Returns this object to allow chaining.
 	 *
 	 * @since   11.3
 	 */
@@ -272,7 +266,7 @@ class JDatabaseQueryPostgresql extends JDatabaseQuery implements JDatabaseQueryL
 	 *
 	 * @return  string  Returns the cast value.
 	 *
-	 * @since   11.1
+	 * @since   11.3
 	 */
 	public function castAsChar($value)
 	{
@@ -319,20 +313,20 @@ class JDatabaseQueryPostgresql extends JDatabaseQuery implements JDatabaseQueryL
 	/**
 	 * Sets the FOR UPDATE lock on select's output row
 	 *
-	 * @param   string   $table_name  The table to lock
-	 * @param   boolean  $glue        The glue by which to join the conditions. Defaults to ',' .
+	 * @param   string  $table_name  The table to lock
+	 * @param   string  $glue        The glue by which to join the conditions. Defaults to ',' .
 	 *
-	 * @return  JDatabaseQuery  FOR UPDATE query element
+	 * @return  JDatabaseQueryPostgresql  FOR UPDATE query element
 	 *
 	 * @since   11.3
 	 */
-	public function forUpdate ($table_name, $glue = ',')
+	public function forUpdate($table_name, $glue = ',')
 	{
 		$this->type = 'forUpdate';
 
-		if ( is_null($this->forUpdate) )
+		if (is_null($this->forUpdate))
 		{
-			$glue = strtoupper($glue);
+			$glue            = strtoupper($glue);
 			$this->forUpdate = new JDatabaseQueryElement('FOR UPDATE', 'OF ' . $table_name, "$glue ");
 		}
 		else
@@ -346,20 +340,20 @@ class JDatabaseQueryPostgresql extends JDatabaseQuery implements JDatabaseQueryL
 	/**
 	 * Sets the FOR SHARE lock on select's output row
 	 *
-	 * @param   string   $table_name  The table to lock
-	 * @param   boolean  $glue        The glue by which to join the conditions. Defaults to ',' .
+	 * @param   string  $table_name  The table to lock
+	 * @param   string  $glue        The glue by which to join the conditions. Defaults to ',' .
 	 *
-	 * @return  JDatabaseQuery  FOR SHARE query element
+	 * @return  JDatabaseQueryPostgresql  FOR SHARE query element
 	 *
 	 * @since   11.3
 	 */
-	public function forShare ($table_name, $glue = ',')
+	public function forShare($table_name, $glue = ',')
 	{
 		$this->type = 'forShare';
 
-		if ( is_null($this->forShare) )
+		if (is_null($this->forShare))
 		{
-			$glue = strtoupper($glue);
+			$glue           = strtoupper($glue);
 			$this->forShare = new JDatabaseQueryElement('FOR SHARE', 'OF ' . $table_name, "$glue ");
 		}
 		else
@@ -475,7 +469,7 @@ class JDatabaseQueryPostgresql extends JDatabaseQuery implements JDatabaseQueryL
 	/**
 	 * Sets the NOWAIT lock on select's output row
 	 *
-	 * @return  JDatabaseQuery  NO WAIT query element
+	 * @return  JDatabaseQueryPostgresql  NO WAIT query element
 	 *
 	 * @since   11.3
 	 */
@@ -483,7 +477,7 @@ class JDatabaseQueryPostgresql extends JDatabaseQuery implements JDatabaseQueryL
 	{
 		$this->type = 'noWait';
 
-		if ( is_null($this->noWait) )
+		if (is_null($this->noWait))
 		{
 			$this->noWait = new JDatabaseQueryElement('NOWAIT', null);
 		}
@@ -494,13 +488,13 @@ class JDatabaseQueryPostgresql extends JDatabaseQuery implements JDatabaseQueryL
 	/**
 	 * Set the LIMIT clause to the query
 	 *
-	 * @param   int  $limit  An int of how many row will be returned
+	 * @param   integer  $limit  An int of how many row will be returned
 	 *
-	 * @return  JDatabaseQuery  Returns this object to allow chaining.
+	 * @return  JDatabaseQueryPostgresql  Returns this object to allow chaining.
 	 *
 	 * @since   11.3
 	 */
-	public function limit( $limit = 0 )
+	public function limit($limit = 0)
 	{
 		if (is_null($this->limit))
 		{
@@ -513,13 +507,13 @@ class JDatabaseQueryPostgresql extends JDatabaseQuery implements JDatabaseQueryL
 	/**
 	 * Set the OFFSET clause to the query
 	 *
-	 * @param   int  $offset  An int for skipping row
+	 * @param   integer  $offset  An int for skipping row
 	 *
-	 * @return  JDatabaseQuery  Returns this object to allow chaining.
+	 * @return  JDatabaseQueryPostgresql  Returns this object to allow chaining.
 	 *
 	 * @since   11.3
 	 */
-	public function offset( $offset = 0 )
+	public function offset($offset = 0)
 	{
 		if (is_null($this->offset))
 		{
@@ -534,11 +528,11 @@ class JDatabaseQueryPostgresql extends JDatabaseQuery implements JDatabaseQueryL
 	 *
 	 * @param   mixed  $pkCol  The name of the primary key column.
 	 *
-	 * @return  JDatabaseQuery  Returns this object to allow chaining.
+	 * @return  JDatabaseQueryPostgresql  Returns this object to allow chaining.
 	 *
 	 * @since   11.3
 	 */
-	public function returning( $pkCol )
+	public function returning($pkCol)
 	{
 		if (is_null($this->returning))
 		{
@@ -558,7 +552,7 @@ class JDatabaseQueryPostgresql extends JDatabaseQuery implements JDatabaseQueryL
 	 * @param   integer  $limit   The limit for the result set
 	 * @param   integer  $offset  The offset for the result set
 	 *
-	 * @return  JDatabaseQuery  Returns this object to allow chaining.
+	 * @return  JDatabaseQueryPostgresql  Returns this object to allow chaining.
 	 *
 	 * @since   12.1
 	 */
@@ -579,9 +573,9 @@ class JDatabaseQueryPostgresql extends JDatabaseQuery implements JDatabaseQueryL
 	 * @param   integer  $limit   The limit for the result set
 	 * @param   integer  $offset  The offset for the result set
 	 *
-	 * @return string
+	 * @return  string
 	 *
-	 * @since 12.1
+	 * @since   12.1
 	 */
 	public function processLimit($query, $limit, $offset = 0)
 	{
@@ -611,8 +605,8 @@ class JDatabaseQueryPostgresql extends JDatabaseQuery implements JDatabaseQueryL
 	 * @return  string  The string with the appropriate sql for addition of dates
 	 *
 	 * @since   13.1
-	 * @note Not all drivers support all units. Check appropriate references
-	 * @link http://www.postgresql.org/docs/9.0/static/functions-datetime.html.
+	 * @note    Not all drivers support all units. Check appropriate references
+	 * @link    http://www.postgresql.org/docs/9.0/static/functions-datetime.html.
 	 */
 	public function dateAdd($date, $interval, $datePart)
 	{
@@ -624,5 +618,24 @@ class JDatabaseQueryPostgresql extends JDatabaseQuery implements JDatabaseQueryL
 		{
 			return "timestamp '" . $date . "' - interval '" . ltrim($interval, '-') . " " . $datePart . "'";
 		}
+	}
+
+	/**
+	 * Return correct regexp operator for Postgresql.
+	 *
+	 * Ensure that the regexp operator is Postgresql compatible.
+	 *
+	 * Usage:
+	 * $query->where('field ' . $query->regexp($search));
+	 *
+	 * @param   string  $value  The regex pattern.
+	 *
+	 * @return  string  Returns the regex operator.
+	 *
+	 * @since   11.3
+	 */
+	public function regexp($value)
+	{
+		return ' ~* ' . $value;
 	}
 }

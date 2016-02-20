@@ -37,7 +37,7 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 	<fieldset class="filters btn-toolbar">
 		<?php if ($this->params->get('filter_field') != 'hide') :?>
 			<div class="btn-group">
-				<label class="filter-search-lbl element-invisible" for="filter-search"><span class="label label-warning"><?php echo JText::_('JUNPUBLISHED'); ?></span><?php echo JText::_('COM_WEBLINKS_FILTER_LABEL').'&#160;'; ?></label>
+				<label class="filter-search-lbl element-invisible" for="filter-search"><span class="label label-warning"><?php echo JText::_('JUNPUBLISHED'); ?></span><?php echo JText::_('JGLOBAL_FILTER_LABEL').'&#160;'; ?></label>
 				<input type="text" name="filter-search" id="filter-search" value="<?php echo $this->escape($this->state->get('list.filter')); ?>" class="input" onchange="document.adminForm.submit();"<?php if(version_compare(JVERSION, '3.0', 'ge')) : ?> title="<?php echo JText::_('COM_WEBLINKS_FILTER_SEARCH_DESC'); ?>" placeholder="<?php echo JText::_('COM_WEBLINKS_FILTER_SEARCH_DESC'); ?>"<?php endif; ?> />
 			</div>
 		<?php endif; ?>
@@ -128,14 +128,14 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 						?>
 						</strong>
 
+						<?php if (($this->params->get('show_link_description')) and ($item->description != '')) : ?>
+							<?php echo $item->description; ?>
+						<?php endif; ?>
+						
 						<?php if ($this->params->get('show_tags', 1) && !empty($item->tags)) : ?>
 							<?php $tagsData = $item->tags->getItemTags('com_weblinks.weblink', $item->id); ?>
 							<?php $this->item->tagLayout = new JLayoutFile('joomla.content.tags'); ?>
 							<?php echo $this->item->tagLayout->render($tagsData); ?>
-						<?php endif; ?>
-
-						<?php if (($this->params->get('show_link_description')) and ($item->description != '')) : ?>
-							<?php echo $item->description; ?>
 						<?php endif; ?>
 
 						</li>

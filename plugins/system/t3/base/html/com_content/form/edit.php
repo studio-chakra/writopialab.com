@@ -13,7 +13,11 @@ JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.calendar');
 JHtml::_('behavior.formvalidation');
-JHtml::_('formbehavior.chosen', 'select');
+
+if(version_compare(JVERSION, '3.0', 'ge')){
+	JHtml::_('formbehavior.chosen', 'select');
+	JHtml::_('behavior.modal', 'a.modal_jform_contenthistory');
+}
 
 // Create shortcut to parameters.
 $params = $this->state->get('params');
@@ -26,6 +30,26 @@ if (!$editoroptions)
 {
 	$params->show_urls_images_frontend = '0';
 }
+
+//T3: customize
+$fieldsets   = $this->form->getFieldsets('attribs');
+$extrafields = array();
+
+foreach ($fieldsets as $fieldset) {
+	if(isset($fieldset->group) && $fieldset->group == 'extrafields'){
+		$extrafields[] = $fieldset;
+	}
+}
+
+if(count($extrafields)){
+	if(is_string($this->item->attribs)){
+		$this->item->attribs = json_decode($this->item->attribs);
+	}
+	$tmp = new stdClass;
+	$tmp->attribs = $this->item->attribs;
+	$this->form->bind($tmp);
+}
+//T3: customize
 ?>
 
 <script type="text/javascript">
@@ -51,6 +75,9 @@ if (!$editoroptions)
 		<fieldset>
 			<ul class="nav nav-tabs">
 				<li class="active"><a href="#editor" data-toggle="tab"><?php echo JText::_('JEDITOR') ?></a></li>
+				<?php if(count($extrafields)) : ?>
+				<li><a href="#extrafields" data-toggle="tab"><?php echo JText::_('T3_EXTRA_FIELDS_GROUP_LABEL') ?></a></li>
+				<?php endif; ?>
 				<?php if ($params->get('show_urls_images_frontend') ) : ?>
 				<li><a href="#images" data-toggle="tab"><?php echo JText::_('COM_CONTENT_IMAGES_AND_URLS') ?></a></li>
 				<?php endif; ?>
@@ -83,6 +110,24 @@ if (!$editoroptions)
 
 					<?php echo $this->form->getInput('articletext'); ?>
 				</div>
+				
+				<?php if(count($extrafields)) : ?>
+				<div class="tab-pane" id="extrafields">
+					<?php foreach ($extrafields as $extraset) : ?>
+						<?php foreach ($this->form->getFieldset($extraset->name) as $field) : ?>
+							<div class="form-group">
+								<div class="control-label">
+									<?php echo $field->label; ?>
+								</div>
+								<div class="controls">
+									<?php echo $field->input; ?>
+								</div>
+							</div>
+						<?php endforeach ?>
+					<?php endforeach ?>
+				</div>
+				<?php endif; ?>
+				
 				<?php if ($params->get('show_urls_images_frontend')): ?>
 				<div class="tab-pane" id="images">
 					<div class="control-group">
@@ -223,10 +268,18 @@ if (!$editoroptions)
 					</div>
 					<div class="control-group">
 						<div class="control-label">
-							<?php echo $this->form->getLabel('tags', 'metadata'); ?>
+							<?php if(version_compare(JVERSION, '3.1.5', 'ge')) : ?>
+								<?php echo $this->form->getLabel('tags'); ?>
+							<?php else: ?>	
+							 	<?php echo $this->form->getLabel('tags', 'metadata'); ?>
+							<?php endif ?>
 						</div>
 						<div class="controls">
-							<?php echo $this->form->getInput('tags', 'metadata'); ?>
+							<?php if(version_compare(JVERSION, '3.1.5', 'ge')) : ?>
+								<?php echo $this->form->getInput('tags'); ?>
+							<?php else: ?>
+								<?php echo $this->form->getInput('tags', 'metadata'); ?>
+							<?php endif ?>
 						</div>
 					</div>
 

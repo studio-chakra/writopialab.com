@@ -3,7 +3,7 @@
  * @package     Joomla.Platform
  * @subpackage  Session
  *
- * @copyright   Copyright (C) 2005 - 2013 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE
  */
 
@@ -12,11 +12,9 @@ defined('JPATH_PLATFORM') or die;
 /**
  * Custom session storage handler for PHP
  *
- * @package     Joomla.Platform
- * @subpackage  Session
- * @see         http://www.php.net/manual/en/function.session-set-save-handler.php
- * @todo        When dropping compatibility with PHP 5.3 use the SessionHandlerInterface and the SessionHandler class
- * @since       11.1
+ * @see    http://www.php.net/manual/en/function.session-set-save-handler.php
+ * @todo   When dropping compatibility with PHP 5.3 use the SessionHandlerInterface and the SessionHandler class
+ * @since  11.1
  */
 abstract class JSessionStorage
 {
@@ -197,7 +195,7 @@ abstract class JSessionStorage
 	 * @return  boolean  True on success, false otherwise.
 	 *
 	 * @since   11.1
-	 * @deprecated  12.3 Use JSessionStorage::isSupported() instead.
+	 * @deprecated  12.3 (Platform) & 4.0 (CMS) - Use JSessionStorage::isSupported() instead.
 	 */
 	public static function test()
 	{

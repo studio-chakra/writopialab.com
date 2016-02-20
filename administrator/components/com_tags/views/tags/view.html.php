@@ -3,7 +3,7 @@
  * @package     Joomla.Administrator
  * @subpackage  com_tags
  *
- * @copyright   Copyright (C) 2005 - 2013 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -12,9 +12,7 @@ defined('_JEXEC') or die;
 /**
  * Tags view class for the Tags package.
  *
- * @package     Joomla.Administrator
- * @subpackage  com_tags
- * @since       3.1
+ * @since  3.1
  */
 class TagsViewTags extends JViewLegacy
 {
@@ -25,21 +23,26 @@ class TagsViewTags extends JViewLegacy
 	protected $state;
 
 	/**
-	 * Display the view
+	 * Execute and display a template script.
+	 *
+	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 *
+	 * @return  mixed   A string if successful, otherwise a Error object.
 	 */
 	public function display($tpl = null)
 	{
-		$this->state		= $this->get('State');
-		$this->items		= $this->get('Items');
-		$this->pagination	= $this->get('Pagination');
-
-		TagsHelper::addSubmenu('tags');
+		$this->state      = $this->get('State');
+		$this->items      = $this->get('Items');
+		$this->pagination = $this->get('Pagination');
 
 		// Check for errors.
-		if (count($errors = $this->get('Errors'))) {
+		if (count($errors = $this->get('Errors')))
+		{
 			JError::raiseError(500, implode("\n", $errors));
+
 			return false;
 		}
+
 		// Preprocess the list of items to find ordering divisions.
 		foreach ($this->items as &$item)
 		{
@@ -47,17 +50,17 @@ class TagsViewTags extends JViewLegacy
 		}
 
 		// Levels filter.
-		$options	= array();
-		$options[]	= JHtml::_('select.option', '1', JText::_('J1'));
-		$options[]	= JHtml::_('select.option', '2', JText::_('J2'));
-		$options[]	= JHtml::_('select.option', '3', JText::_('J3'));
-		$options[]	= JHtml::_('select.option', '4', JText::_('J4'));
-		$options[]	= JHtml::_('select.option', '5', JText::_('J5'));
-		$options[]	= JHtml::_('select.option', '6', JText::_('J6'));
-		$options[]	= JHtml::_('select.option', '7', JText::_('J7'));
-		$options[]	= JHtml::_('select.option', '8', JText::_('J8'));
-		$options[]	= JHtml::_('select.option', '9', JText::_('J9'));
-		$options[]	= JHtml::_('select.option', '10', JText::_('J10'));
+		$options   = array();
+		$options[] = JHtml::_('select.option', '1', JText::_('J1'));
+		$options[] = JHtml::_('select.option', '2', JText::_('J2'));
+		$options[] = JHtml::_('select.option', '3', JText::_('J3'));
+		$options[] = JHtml::_('select.option', '4', JText::_('J4'));
+		$options[] = JHtml::_('select.option', '5', JText::_('J5'));
+		$options[] = JHtml::_('select.option', '6', JText::_('J6'));
+		$options[] = JHtml::_('select.option', '7', JText::_('J7'));
+		$options[] = JHtml::_('select.option', '8', JText::_('J8'));
+		$options[] = JHtml::_('select.option', '9', JText::_('J9'));
+		$options[] = JHtml::_('select.option', '10', JText::_('J10'));
 
 		$this->f_levels = $options;
 
@@ -69,17 +72,20 @@ class TagsViewTags extends JViewLegacy
 	/**
 	 * Add the page title and toolbar.
 	 *
+	 * @return void
+	 *
 	 * @since   3.1
 	 */
 	protected function addToolbar()
 	{
-		$state	= $this->get('State');
-		$canDo	= TagsHelper::getActions($state->get('filter.parent_id'));
-		$user	= JFactory::getUser();
+		$state = $this->get('State');
+		$canDo = JHelperContent::getActions('com_tags');
+		$user  = JFactory::getUser();
+
 		// Get the toolbar object instance
 		$bar = JToolBar::getInstance('toolbar');
 
-		JToolbarHelper::title(JText::_('COM_TAGS_MANAGER_TAGS'), 'modules.png');
+		JToolbarHelper::title(JText::_('COM_TAGS_MANAGER_TAGS'), 'tags');
 
 		if ($canDo->get('core.create'))
 		{
@@ -97,10 +103,26 @@ class TagsViewTags extends JViewLegacy
 			JToolbarHelper::unpublish('tags.unpublish', 'JTOOLBAR_UNPUBLISH', true);
 			JToolbarHelper::archiveList('tags.archive');
 		}
+
 		if ($canDo->get('core.admin'))
 		{
 			JToolbarHelper::checkin('tags.checkin');
 		}
+
+		// Add a batch button
+		if ($user->authorise('core.create', 'com_tags')
+			&& $user->authorise('core.edit', 'com_tags')
+			&& $user->authorise('core.edit.state', 'com_tags'))
+		{
+			$title = JText::_('JTOOLBAR_BATCH');
+
+			// Instantiate a new JLayoutFile instance and render the batch button
+			$layout = new JLayoutFile('joomla.toolbar.batch');
+
+			$dhtml = $layout->render(array('title' => $title));
+			$bar->appendButton('Custom', $dhtml, 'batch');
+		}
+
 		if ($state->get('filter.published') == -2 && $canDo->get('core.delete'))
 		{
 			JToolbarHelper::deleteList('', 'tags.delete', 'JTOOLBAR_EMPTY_TRASH');
@@ -109,20 +131,12 @@ class TagsViewTags extends JViewLegacy
 		{
 			JToolbarHelper::trash('tags.trash');
 		}
-		// Add a batch button
-		if ($user->authorise('core.edit'))
-		{
-			JHtml::_('bootstrap.modal', 'collapseModal');
-			$title = JText::_('JTOOLBAR_BATCH');
-			$dhtml = "<button data-toggle=\"modal\" data-target=\"#collapseModal\" class=\"btn btn-small\">
-						<i class=\"icon-checkbox-partial\" title=\"$title\"></i>
-						$title</button>";
-			$bar->appendButton('Custom', $dhtml, 'batch');
-		}
-		if ($canDo->get('core.admin'))
+
+		if ($canDo->get('core.admin') || $canDo->get('core.options'))
 		{
 			JToolbarHelper::preferences('com_tags');
 		}
+
 		JToolbarHelper::help('JHELP_COMPONENTS_TAGS_MANAGER');
 
 		JHtmlSidebar::setAction('index.php?option=com_tags&view=tags');
@@ -156,12 +170,12 @@ class TagsViewTags extends JViewLegacy
 	protected function getSortFields()
 	{
 		return array(
-			'a.lft' => JText::_('JGRID_HEADING_ORDERING'),
-			'a.state' => JText::_('JSTATUS'),
-			'a.title' => JText::_('JGLOBAL_TITLE'),
+			'a.lft'    => JText::_('JGRID_HEADING_ORDERING'),
+			'a.state'  => JText::_('JSTATUS'),
+			'a.title'  => JText::_('JGLOBAL_TITLE'),
 			'a.access' => JText::_('JGRID_HEADING_ACCESS'),
 			'language' => JText::_('JGRID_HEADING_LANGUAGE'),
-			'a.id' => JText::_('JGRID_HEADING_ID')
+			'a.id'     => JText::_('JGRID_HEADING_ID')
 		);
 	}
 }

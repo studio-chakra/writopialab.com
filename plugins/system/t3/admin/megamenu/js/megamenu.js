@@ -15,15 +15,18 @@ var T3AdminMegamenu = window.T3AdminMegamenu || {};
 
 !function ($) {
 	var currentSelected = null,
-	megamenu, nav_items, nav_subs, nav_cols, nav_all;
+		megamenu, nav_items, nav_subs, nav_cols, nav_all;
 
 	$.fn.megamenuAdmin = function (options) {
-		var defaultOptions = {
-		};
+		
+		options = $.extend({}, $.fn.megamenuAdmin.defaults, options);
+		
+		//get the first (top most megamenu)
+		megamenu = $(this).find('.t3-megamenu:first');
 
-		var options = $.extend(defaultOptions, options);
-		megamenu = $(this).find('.t3-megamenu');
-		nav_items = megamenu.find('ul[class*="level"]>li>:first-child');
+		//find all class
+		nav_items = megamenu.find('ul[class*="level"]>li[data-id]>:first-child');
+		console.log(nav_items);
 		nav_subs = megamenu.find('.nav-child');
 		nav_cols = megamenu.find('[class*="span"]');
 		
@@ -100,6 +103,8 @@ var T3AdminMegamenu = window.T3AdminMegamenu || {};
 		return this;
 	};
 
+	$.fn.megamenuAdmin.defaults = {};
+
 	// Actions
 	var actions = {};
 	actions.data = {};
@@ -127,7 +132,7 @@ var T3AdminMegamenu = window.T3AdminMegamenu || {};
 		} else {
 			unbindEvents(sub);
 			// check if have menu-items in sub
-			if (liitem.find('ul.level'+liitem.data('level')).length > 0) {
+			if (liitem.find('ul.mega-nav.level'+liitem.data('level')).length > 0) {
 				sub.css('display','none');
 				liitem.data('hidesub', 1);
 			} else {
@@ -380,8 +385,16 @@ var T3AdminMegamenu = window.T3AdminMegamenu || {};
 	}
 
 	actions.saveConfig = function (e) {
+		
+		//blocking
+		var savebtn = $(this);
+		if(savebtn.hasClass('loading')){
+			return false;
+		}
+		savebtn.addClass('loading');
+
 		var config = {},
-		items = megamenu.find('ul[class*="level"] > li');
+		items = megamenu.find('ul[class*="level"] > li[data-id]');
 		items.each (function(){
 			var $this = $(this),
 			id = 'item-'+$this.data('id'),
@@ -404,7 +417,7 @@ var T3AdminMegamenu = window.T3AdminMegamenu || {};
 					$cols = $(this).children('[class*="span"]'),
 					j = 0;
 					$cols.each (function(){
-						var li = $(this).find('ul[class*="level"] > li:first'),
+						var li = $(this).find('ul[class*="level"] > li[data-id]:first'),
 						col = {};
 						if (li.length) {
 							col['item'] = li.data('id');
@@ -435,28 +448,61 @@ var T3AdminMegamenu = window.T3AdminMegamenu || {};
 				}
 			}
 
-			if (Object.keys(item).length) config[id] = item;
+			if (!$.isEmptyObject(item)){
+				config[id] = item;
+			}
 		});
 
 		var menutype = $('#jform_params_mm_type').val(),
-			jmmconfig = $('#jform_params_mm_config'),
-			curconfig = null;
-
-		try {
-			curconfig = jmmconfig.val() ? $.parseJSON(jmmconfig.val()) : {};
-		} catch(e){
-			curconfig = {};
-		}
+			curconfig = T3AdminMegamenu.config;
 
 		if($.isArray(curconfig) && curconfig.length == 0){
 			curconfig = {};
 		}
+
 		curconfig[menutype] = config;
-		jmmconfig.val(JSON.stringify(curconfig));
+
+		$.ajax({
+			url: T3AdminMegamenu.referer,
+			type: 'post',
+			data: {
+				t3action: 'megamenu',
+				t3task: 'save',
+				styleid: T3AdminMegamenu.styleid,
+				template: T3AdminMegamenu.template,
+
+				mmkey: $('#megamenu-key').val(),
+				config: JSON.stringify(config),
+				rand: Math.random()
+			}
+		}).done(function(rsp){
+
+			try {
+				rsp = $.parseJSON(rsp);
+			} catch(e){
+				rsp = false;
+			}
+
+			if(rsp){
+				clearTimeout($('#ajax-message').data('sid'));
+				$('#ajax-message')
+					.removeClass('alert-error alert-success')
+					.addClass(rsp.status ? 'alert-success' : 'alert-error')
+					.addClass('in')
+					.data('sid', setTimeout(function(){
+							$('#ajax-message').removeClass('in')
+						}, 5000))
+					.find('strong')
+						.html(rsp.message);
+			}
+			
+		}).always(function(){
+			savebtn.removeClass('loading')
+		});
 	}
 
 	toolbox_type = function () {
-		return currentSelected.hasClass ('nav-child') ? 'sub' : (currentSelected[0].tagName == 'DIV' ? 'col':'item');
+		return currentSelected.hasClass ('nav-child') ? 'sub' : (!currentSelected.hasClass('mega-group-title') && currentSelected[0].tagName == 'DIV' ? 'col':'item');
 	}
 
 	hide_toolbox = function (show_intro) {
@@ -475,7 +521,7 @@ var T3AdminMegamenu = window.T3AdminMegamenu || {};
 		hide_toolbox (false);
 		if (selected) currentSelected = selected;
 		// remove class open for other
-		megamenu.find ('ul[class*="level"] > li').each (function(){
+		megamenu.find ('ul[class*="level"] > li[data-id]').each (function(){
 			if (!$(this).has (currentSelected).length > 0) $(this).removeClass ('open');
 			else $(this).addClass ('open');
 		});            
@@ -494,7 +540,7 @@ var T3AdminMegamenu = window.T3AdminMegamenu || {};
 		if (!type) type = toolbox_type ();
 		// remove all disabled status
 		$('#t3-admin-mm-tb .disabled').removeClass('disabled');
-		$('#t3-admin-mm-tb .active').removeClass('active');
+		//$('#t3-admin-mm-tb .active').removeClass('active');
 		switch (type) {
 			case 'item':
 				// value for toggle
@@ -507,7 +553,7 @@ var T3AdminMegamenu = window.T3AdminMegamenu || {};
 				$('.toolitem-caption').attr('value', liitem.data ('caption') || '');
 				// toggle Submenu
 				var toggle = $('.toolitem-sub');
-				toggle.find('label').removeClass('active btn-success btn-danger btn-primary');
+				//toggle.find('label').removeClass('active');
 				if (liitem.data('group')) {
 					// disable the toggle
 					$('.toolitem-sub').addClass ('disabled');
@@ -521,7 +567,7 @@ var T3AdminMegamenu = window.T3AdminMegamenu || {};
 
 				// toggle Group
 				var toggle = $('.toolitem-group');
-				toggle.find('label').removeClass('active btn-success btn-danger btn-primary');
+				//toggle.find('label').removeClass('active');
 				if (liitem.data('level') == 1 || sub.length == 0 || liitem.data('hidesub') == 1) {
 					// disable the toggle
 					$('.toolitem-group').addClass ('disabled');
@@ -543,11 +589,12 @@ var T3AdminMegamenu = window.T3AdminMegamenu || {};
 			case 'sub':
 				var liitem = currentSelected.closest('li');
 				$('.toolsub-exclass').attr('value', currentSelected.data ('class') || '');
-
+				$('.toolsub-alignment .toolbox-action').removeClass('active');
+				
 				if (liitem.data('group')) {
 					$('.toolsub-width').attr('value', '').addClass ('disabled');
 					// disable alignment
-					$('.toolitem-alignment').addClass ('disabled');
+					$('.toolsub-alignment').addClass ('disabled');
 				} else {
 					$('.toolsub-width').attr('value', currentSelected.data ('width') || '');
 					// if not top level, allow align-left & right only
@@ -558,7 +605,7 @@ var T3AdminMegamenu = window.T3AdminMegamenu || {};
 
 					// active align button
 					if (liitem.data('alignsub')) {
-						$('.toolsub-align-'+liitem.data('alignsub')).addClass ('active');
+						$('.toolsub-align-'+liitem.data('alignsub')).addClass ('active').siblings().removeClass('active');
 						if (liitem.data('alignsub') == 'justify') {
 							$('.toolsub-width').addClass ('disabled');
 						}
@@ -567,7 +614,7 @@ var T3AdminMegamenu = window.T3AdminMegamenu || {};
 
 				// toggle hidewhencollapse
 				var toggle = $('.toolsub-hidewhencollapse');
-				toggle.find('label').removeClass('active btn-success btn-danger btn-primary');
+				//toggle.find('label').removeClass('active');
 				if (liitem.data('hidewcol')) {
 					// toggle enable
 					update_toggle (toggle, 1);
@@ -587,6 +634,8 @@ var T3AdminMegamenu = window.T3AdminMegamenu || {};
 				/* enable/disable module chosen */
 				if (currentSelected.find ('.mega-nav').length > 0) {
 					$('.toolcol-position').parent().addClass('disabled');
+				} else {
+					$('.toolcol-groupstyle').parent().addClass('disabled');	
 				}
 				// disable choose width if signle column
 				if (currentSelected.parent().children().length == 1) {
@@ -595,15 +644,17 @@ var T3AdminMegamenu = window.T3AdminMegamenu || {};
 
 				// toggle hidewhencollapse
 				var toggle = $('.toolcol-hidewhencollapse');
-				toggle.find('label').removeClass('active btn-success btn-danger btn-primary');
+				//toggle.find('label').removeClass('active');
 				if (currentSelected.data('hidewcol')) {
 					// toggle enable
 					update_toggle (toggle, 1);
 				} else {
 					// toggle disable
 					update_toggle (toggle, 0);
-				}	
-					
+				}
+				
+				// toggle group style
+				update_toggle ($('.toolcol-groupstyle'), currentSelected.data('groupstyle') == 'mega-tab' ? 1 : 0);
 				break;
 		}
 	}
@@ -657,19 +708,65 @@ var T3AdminMegamenu = window.T3AdminMegamenu || {};
 
 			case 'position':
 				// replace content if this is not menu-items type
-				if (currentSelected.find ('ul[class*="level"]').length == 0) {
+				if (currentSelected.find ('ul.mega-nav[class*="level"]').length == 0) {
 					// get module content
 					if (value) {
 						$.ajax({
-							url: T3Admin.rooturl,
-							data:{'t3action':'module', 'mid': value}
+							url: T3AdminMegamenu.site,
+							data: {
+								t3action: 'module',
+								mid: value,
+								styleid: T3AdminMegamenu.styleid,
+								template: T3AdminMegamenu.template,
+
+								t3menu: $('#menu-type').val(),
+								t3acl: $('#access-level').val(),
+								t3lang: $('#menu-type :selected').attr('data-language') || '*',
+								rand: Math.random()
+							}
 						}).done(function ( data ) {
-							currentSelected.find('.mega-inner').html(data).find(':input').removeAttr('name');
+							if(data){
+								if(data.charAt(0) == '{' || data.charAt(0) == '['){
+									try {
+										data = $.parseJSON(data);
+									} catch(e){
+										data = false;
+									}
+
+									if(data && data.message){
+										clearTimeout($('#ajax-message').data('sid'));
+										$('#ajax-message')
+											.removeClass('alert-error alert-success')
+											.addClass('alert-error')
+											.addClass('in')
+											.data('sid', setTimeout(function(){
+													$('#ajax-message').removeClass('in')
+												}, 5000))
+											.find('strong')
+												.html(data.message);
+									}
+
+									//not valid value => we set to empty
+									$(input).val('').trigger('liszt:updated');
+									currentSelected.data (name, '');
+
+								} else {
+									currentSelected.find('.mega-inner').html(data).find(':input').removeAttr('name');
+								}
+							}
 						});
 					} else {
 						currentSelected.find('.mega-inner').html('');
 					}
 					currentSelected.data (name, value);
+				}
+				break;
+			case 'groupstyle':
+				console.log(name + ':' + value);
+				if (value == 1) {
+					currentSelected.data (name, 'mega-tab').addClass('mega-tab');					
+				} else {
+					currentSelected.data (name, '').removeClass('mega-tab');
 				}
 				break;
 		}
@@ -726,53 +823,12 @@ var T3AdminMegamenu = window.T3AdminMegamenu || {};
 !function($){
 	$.extend(T3AdminMegamenu, {
 		// put megamenu admin panel into right place
-		prepare: function(){
-			// var panel = $('#jform_params_mm_panel-lbl').closest ('.control-group').find('.controls');
-			var panel = $('#jform_params_mm_type').closest ('.controls');
-			panel.append ($('#t3-admin-megamenu').removeClass('hidden'));
-
-			// first load
-			if ($('#jform_params_navigation_type').val() == 'megamenu') {
-				setTimeout(function(){ //wait for page ready
-					$('#jform_params_mm_type').trigger('change.less');
-				}, 500);
-			} else {
-
-				// handle event for enable megamenu
-				$('#jform_params_navigation_type').on('change', function(e) {
-					if ($(this).val() == 'megamenu'){
-						$('#jform_params_mm_type').trigger('change.less');
-					}
-				});
-			}
-		},
-
-		t3megamenu: function(form, ctrlelm, ctrl, rsp){
+		
+		t3megamenu: function(rsp){
 			$('#t3-admin-mm-container').html(rsp).megamenuAdmin().find(':input').removeAttr('name');
 		},
 
-		initPanel: function(){
-			$('#jform_params_mm_panel').hide();
-		},
-
-		initPreSubmit: function(){
-
-			var form = document.adminForm;
-			if(!form){
-				return false;
-			}
-
-			var onsubmit = form.onsubmit;
-
-			form.onsubmit = function(e){
-				$('.toolbox-saveConfig').trigger('click');
-				if($.isFunction(onsubmit)){
-					onsubmit();
-				}
-			};
-		},
-
-		initRadioGroup: function(){
+		initCustomForm: function(){
 			//copy from J3.0
 			// Turn radios into btn-group
 			if(typeof T3Admin != 'undefined'){
@@ -781,52 +837,275 @@ var T3AdminMegamenu = window.T3AdminMegamenu || {};
 
 			var jt3menu = $('.t3-admin-megamenu');
 
-			jt3menu.find('.radio.btn-group label').addClass('btn');
-			jt3menu.find('.btn-group label').unbind('click').click(function() {
+			//convert to on/off
+			jt3menu.find('.radio').filter(function(){
+			
+				return $(this).find('input').length == 2 && $(this).find('input').filter(function(){
+						return $.inArray(this.value + '', ['0', '1']) !== -1;
+					}).length == 2;
+
+			}).addClass('t3onoff').removeClass('btn-group')
+				.find('label').addClass(function(){
+					return $(this).prev('input').val() == '0' ? 'off' : 'on'
+				});
+
+			//action
+			jt3menu.find('.radio label').unbind('click').click(function() {
 				var label = $(this),
 					input = $('#' + label.attr('for'));
 
 				if (!input.prop('checked')){
-					label.closest('.btn-group')
-						.find('label')
-						.removeClass('active btn-success btn-danger btn-primary');
+					label.addClass('active').siblings().removeClass('active');
 
-					label.addClass('active ' + (input.val() == '' ? 'btn-primary' : (input.val() == 0 ? 'btn-danger' : 'btn-success')));
-					
 					input.prop('checked', true).trigger('change');
 				}
+			});
+
+			jt3menu.find('.radio input:checked').each(function(){
+				$('label[for=' + $(this).attr('id') + ']').addClass('active');
 			});
 
 			jt3menu.on('update', 'input[type=radio]', function(){
 				if(this.checked){
 					$(this)
-						.closest('.btn-group')
-						.find('label').removeClass('active btn-success btn-danger btn-primary')
+						.closest('.radio')
+						.find('label').removeClass('active')
 						.filter('[for="' + this.id + '"]')
-							.addClass('active ' + ($(this).val() == '' ? 'btn-primary' : ($(this).val() == 0 ? 'btn-danger' : 'btn-success')));
+							.addClass('active');
 				}
 			});
 
-			jt3menu.find('.btn-group input[checked=checked]').each(function(){
-				if($(this).val() == ''){
-					$('label[for=' + $(this).attr('id') + ']').addClass('active btn-primary');
-				} else if($(this).val() == 0){
-					$('label[for=' + $(this).attr('id') + ']').addClass('active btn-danger');
-				} else {
-					$('label[for=' + $(this).attr('id') + ']').addClass('active btn-success');
-				}
+			//init chosen
+			$('select').chosen({
+				allow_single_deselect: true,
+				disable_search_threshold : 10
 			});
+
+			$('#access-level').val(1).trigger('liszt:updated');
+		},
+
+		initAjaxmenu: function(){
+
+			var	lid = null,
+				ajax = null,
+				ajaxing = false,
+				doajax = function(){
+
+					if(ajaxing && ajax){
+						ajax.abort();
+					}
+
+					ajax = $.ajax({
+						url: T3AdminMegamenu.site,
+						data: {
+							t3action: 'megamenu',
+							t3task: 'display',
+							styleid: T3AdminMegamenu.styleid,
+							template: T3AdminMegamenu.template,
+
+							t3menu: $('#menu-type').val(),
+							t3acl: $('#access-level').val(),
+							t3lang: $('#menu-type :selected').attr('data-language') || '*',
+							rand: Math.random()
+						},
+
+						beforeSend: function(){
+							clearTimeout(lid);
+
+							//progress bar
+							$('#t3-admin-megamenu').addClass('loading');
+							if($.support.transition){
+								T3AdminMegamenu.progElm
+									.removeClass('t3-anim-slow t3-anim-finish')
+									.css('width', '');
+
+								setTimeout(function(){
+									T3AdminMegamenu.progElm
+										.addClass('t3-anim-slow')
+										.css('width', 50 + Math.floor(Math.random() * 20) + '%');
+								});
+							} else {
+								T3AdminMegamenu.progElm.stop(true).css({
+									width: '0%',
+									display: 'block'
+								}).animate({
+									width: 50 + Math.floor(Math.random() * 20) + '%'
+								});
+							}
+
+						}
+					}).done(function(rsp){
+						T3AdminMegamenu.t3megamenu(rsp);
+					}).fail(function(){
+
+					}).always(function(){
+						clearTimeout(lid);
+						lid = setTimeout(function(){
+							$('#t3-admin-megamenu').removeClass('loading');
+
+							//progress bar
+							if($.support.transition){
+								
+								T3AdminMegamenu.progElm
+									.removeClass('t3-anim-slow')
+									.addClass('t3-anim-finish')
+									.one($.support.transition.end, function () {
+										setTimeout(function(){
+											if(T3AdminMegamenu.progElm.hasClass('t3-anim-finish')){
+												$(T3AdminMegamenu.progElm).removeClass('t3-anim-finish');
+											}
+
+										}, 1000);
+									});
+
+							} else {
+								$(T3AdminMegamenu.progElm).stop(true).animate({
+									width: '100%'
+								}, function(){
+									$(T3AdminMegamenu.progElm).hide();
+								});
+							}
+
+						}, 500);
+					})
+				};
+
+			$('#menu-type, #access-level').on('change.mm', doajax);
+
+			//init once
+			doajax();
+
+			T3AdminMegamenu.doajax = doajax;
+		},
+
+		initToolbar: function(){
+			$('#t3-admin-mm-save').off('click.mm').on('click.mm', function(){
+				$('.toolbox-saveConfig').trigger('click');
+
+				return false;
+			});
+
+			$('#t3-admin-mm-delete').off('click.mm').on('click.mm', function(){
+
+				var delbtn = $(this);
+
+				if(delbtn.hasClass('loading')){
+					return false;
+				}
+
+				delbtn.addClass('loading');
+
+				T3AdminMegamenu.confirm(function(ok){
+					if(ok != undefined && !ok){
+						delbtn.removeClass('loading');
+
+						return false;
+					}
+
+					$.ajax({
+						url: T3AdminMegamenu.referer,
+						type: 'post',
+						data: {
+							t3action: 'megamenu',
+							t3task: 'delete',
+							styleid: T3AdminMegamenu.styleid,
+							template: T3AdminMegamenu.template,
+
+							mmkey: $('#megamenu-key').val(),
+							rand: Math.random()
+						}
+					}).done(function(rsp){
+
+						$('#t3-admin-megamenu-dlg').modal('hide');
+
+						try {
+							rsp = $.parseJSON(rsp);
+						} catch(e){
+							rsp = false;
+						}
+
+						if(rsp){
+							clearTimeout($('#ajax-message').data('sid'));
+							$('#ajax-message')
+								.removeClass('alert-error alert-success')
+								.addClass(rsp.status ? 'alert-success' : 'alert-error')
+								.addClass('in')
+								.data('sid', setTimeout(function(){
+										$('#ajax-message').removeClass('in')
+									}, 5000))
+								.find('strong')
+									.html(rsp.message);
+						}
+
+					}).always(function(){
+						delbtn.removeClass('loading');
+
+						T3AdminMegamenu.doajax();
+					});
+				});
+
+				return false;
+			});
+
+			$('#t3-admin-mm-close').off('click.mm').on('click.mm', function(){
+				window.location.href = T3AdminMegamenu.referer;
+
+				return false;
+			});
+		},
+
+		initAjaxMessage: function(){
+			$('#ajax-message').on('click', '.close', function(){
+				clearTimeout($('#ajax-message').removeClass('in').data('sid'));
+			});
+		},
+
+		initModalDialog: function(){
+			$('#t3-admin-megamenu-dlg')
+				.prop('hide', false) //remove mootool hide function
+				.on('click', '.modal-footer button', function(e){
+					if($.isFunction(T3AdminMegamenu.modalCallback)){
+						T3AdminMegamenu.modalCallback($(this).hasClass('yes'));
+					} else if($(this).hasClass('yes')){
+						$('#t3-admin-megamenu-dlg').modal('hide');
+					}
+					return false;
+				}).on('hidden', function(){
+					$('#t3-admin-mm-delete').removeClass('loading');
+				})
+		},
+
+		confirm: function(callback){
+			T3AdminMegamenu.modalCallback = callback;
+
+			$('#t3-admin-megamenu-dlg').addClass('modal-confirm').modal('show');
+		},
+
+		initLoadingBar: function(){
+			if(!T3AdminMegamenu.progElm){
+				T3AdminMegamenu.progElm = $('.t3-progress');
+
+				if(!T3AdminMegamenu.progElm.length){
+					T3AdminMegamenu.progElm = $('<div class="t3-progress"></div>');
+				}
+
+				T3AdminMegamenu.progElm.appendTo(document.body);
+
+				var placed = $('.t3-admin-header');
+				if(placed.length){
+					T3AdminMegamenu.progElm.appendTo(placed);
+				}
+			}
 		}
 	});
 
-	$(window).load(function(){
-		T3AdminMegamenu.prepare();
-	});
-
 	$(document).ready(function(){
-		T3AdminMegamenu.initPanel();
-		T3AdminMegamenu.initPreSubmit();
-		T3AdminMegamenu.initRadioGroup();
+		T3AdminMegamenu.initLoadingBar();
+		T3AdminMegamenu.initCustomForm();
+		T3AdminMegamenu.initToolbar();
+		T3AdminMegamenu.initAjaxmenu();
+		T3AdminMegamenu.initModalDialog();
+		T3AdminMegamenu.initAjaxMessage();
 	});
 
 }(jQuery);

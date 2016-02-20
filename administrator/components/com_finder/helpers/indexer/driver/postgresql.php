@@ -3,7 +3,7 @@
  * @package     Joomla.Administrator
  * @subpackage  com_finder
  *
- * @copyright   Copyright (C) 2005 - 2013 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE
  */
 
@@ -14,9 +14,7 @@ jimport('joomla.filesystem.file');
 /**
  * Indexer class supporting PostgreSQL for the Finder indexer package.
  *
- * @package     Joomla.Administrator
- * @subpackage  com_finder
- * @since       3.0
+ * @since  3.0
  */
 class FinderIndexerDriverPostgresql extends FinderIndexer
 {
@@ -169,7 +167,6 @@ class FinderIndexerDriverPostgresql extends FinderIndexer
 		}
 
 		// Set up the variables we will need during processing.
-		$tokens = array();
 		$count = 0;
 
 		// Mark afterLinking in the profiler.
@@ -203,9 +200,11 @@ class FinderIndexerDriverPostgresql extends FinderIndexer
 					// Tokenize an array of content and add it to the database.
 					foreach ($item->$property as $ip)
 					{
-						// If the group is path, we need to a few extra processing
-						// steps to strip the extension and convert slashes and dashes
-						// to spaces.
+						/*
+						 * If the group is path, we need to a few extra processing
+						 * steps to strip the extension and convert slashes and dashes
+						 * to spaces.
+						 */
 						if ($group === static::PATH_CONTEXT)
 						{
 							$ip = JFile::stripExt($ip);
@@ -214,7 +213,7 @@ class FinderIndexerDriverPostgresql extends FinderIndexer
 						}
 
 						// Tokenize a string of content and add it to the database.
-						$count += $this->tokenizeToDB($ip, $group, $item->language, $format);
+						$count += $this->tokenizeToDb($ip, $group, $item->language, $format);
 
 						// Check if we're approaching the memory limit of the token table.
 						if ($count > static::$state->options->get('memory_table_limit', 30000))
@@ -225,9 +224,11 @@ class FinderIndexerDriverPostgresql extends FinderIndexer
 				}
 				else
 				{
-					// If the group is path, we need to a few extra processing
-					// steps to strip the extension and convert slashes and dashes
-					// to spaces.
+					/*
+					 * If the group is path, we need to a few extra processing
+					 * steps to strip the extension and convert slashes and dashes
+					 * to spaces.
+					 */
 					if ($group === static::PATH_CONTEXT)
 					{
 						$item->$property = JFile::stripExt($item->$property);
@@ -236,7 +237,7 @@ class FinderIndexerDriverPostgresql extends FinderIndexer
 					}
 
 					// Tokenize a string of content and add it to the database.
-					$count += $this->tokenizeToDB($item->$property, $group, $item->language, $format);
+					$count += $this->tokenizeToDb($item->$property, $group, $item->language, $format);
 
 					// Check if we're approaching the memory limit of the token table.
 					if ($count > static::$state->options->get('memory_table_limit', 30000))
@@ -263,7 +264,7 @@ class FinderIndexerDriverPostgresql extends FinderIndexer
 				FinderIndexerTaxonomy::addMap($linkId, $nodeId);
 
 				// Tokenize the node title and add them to the database.
-				$count += $this->tokenizeToDB($node->title, static::META_CONTEXT, $item->language, $format);
+				$count += $this->tokenizeToDb($node->title, static::META_CONTEXT, $item->language, $format);
 			}
 		}
 
@@ -277,7 +278,7 @@ class FinderIndexerDriverPostgresql extends FinderIndexer
 		 * aggregated data will be inserted into #__finder_tokens_aggregate
 		 * table.
 		 */
-		$query	= 'INSERT INTO ' . $db->quoteName('#__finder_tokens_aggregate') .
+		$query = 'INSERT INTO ' . $db->quoteName('#__finder_tokens_aggregate') .
 				' (' . $db->quoteName('term_id') .
 				', ' . $db->quoteName('term') .
 				', ' . $db->quoteName('stem') .
@@ -325,6 +326,7 @@ class FinderIndexerDriverPostgresql extends FinderIndexer
 			' FROM ' . $db->quoteName('#__finder_tokens_aggregate') . ' AS ta' .
 			' WHERE ta.term_id = 0'
 		);
+
 		if ($db->loadRow() == null)
 		{
 			$db->setQuery(
@@ -464,9 +466,6 @@ class FinderIndexerDriverPostgresql extends FinderIndexer
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		// Get the indexer state.
-		$state = static::getState();
-
 		// Update the link counts and remove the mapping records.
 		for ($i = 0; $i <= 15; $i++)
 		{
@@ -570,7 +569,7 @@ class FinderIndexerDriverPostgresql extends FinderIndexer
 	 * @since   2.5
 	 * @throws  Exception on database error.
 	 */
-	protected function addTokensToDB($tokens, $context = '')
+	protected function addTokensToDb($tokens, $context = '')
 	{
 		// Get the database object.
 		$db = JFactory::getDbo();
@@ -610,6 +609,7 @@ class FinderIndexerDriverPostgresql extends FinderIndexer
 			);
 			$values++;
 		}
+
 		$db->setQuery($query);
 		$db->execute();
 

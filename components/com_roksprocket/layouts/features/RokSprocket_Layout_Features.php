@@ -84,11 +84,11 @@ class RokSprocket_Layout_Features extends RokSprocket_AbstractLayout
 		$settings->autoplay  = $this->parameters->get('features_autoplay', 1);
 		$settings->delay     = $this->parameters->get('features_autoplay_delay', 5);
 		$options             = json_encode($settings);
-
 		$js   = array();
 		$js[] = "window.addEvent('domready', function(){";
 		$js[] = "	RokSprocket.instances." . $this->theme . ".attach(" . $id . ", '" . $options . "');";
 		$js[] = "});";
+		if($this->theme != "carousel")
 		RokCommon_Header::addInlineScript(implode("\n", $js) . "\n");
 	}
 
@@ -103,7 +103,7 @@ class RokSprocket_Layout_Features extends RokSprocket_AbstractLayout
 			$instance[] = "window.addEvent('domready', function(){";
 			$instance[] = "		RokSprocket.instances." . $this->theme . " = new RokSprocket." . ucfirst($this->theme) . "();";
 			$instance[] = "});";
-
+			if($this->theme != "carousel")
 			RokCommon_Header::addInlineScript(implode("\n", $instance) . "\n");
 
 			self::$instanceHeadersRenderedTheme[$this->theme] = true;

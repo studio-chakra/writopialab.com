@@ -3,7 +3,7 @@
  * @package     Joomla.Platform
  * @subpackage  Database
  *
- * @copyright   Copyright (C) 2005 - 2013 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE
  */
 
@@ -12,9 +12,7 @@ defined('JPATH_PLATFORM') or die;
 /**
  * Joomla Platform Database Factory class
  *
- * @package     Joomla.Platform
- * @subpackage  Database
- * @since       12.1
+ * @since  12.1
  */
 class JDatabaseFactory
 {
@@ -41,6 +39,7 @@ class JDatabaseFactory
 	 * @return  JDatabaseDriver  A database driver object.
 	 *
 	 * @since   12.1
+	 * @throws  RuntimeException
 	 */
 	public function getDriver($name = 'mysqli', $options = array())
 	{
@@ -152,7 +151,7 @@ class JDatabaseFactory
 	/**
 	 * Get the current query object or a new JDatabaseQuery object.
 	 *
-	 * @param   string           $name  Name of the driver you want an importer for.
+	 * @param   string           $name  Name of the driver you want an query object for.
 	 * @param   JDatabaseDriver  $db    Optional JDatabaseDriver instance
 	 *
 	 * @return  JDatabaseQuery  The current query object or a new object extending the JDatabaseQuery class.

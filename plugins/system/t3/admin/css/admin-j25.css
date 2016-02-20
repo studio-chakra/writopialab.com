@@ -32,6 +32,7 @@ body {
 #toolbar-box {
   padding: 0;
   margin: 0;
+  position: relative;
 }
 
 div#toolbar-box div.m {
@@ -47,6 +48,43 @@ div#toolbar-box div.m {
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffeeeeee', GradientType=0);
   color: #ccc;
+}
+
+#t3-admin-tour-quickhelp {
+  position: absolute;
+  right: 0;
+  left: auto;
+  top: 38px;
+}
+
+#t3-admin-tour-quickhelp::before {
+  display: block;
+  content: " ";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 0px 5px 5px 5px;
+  border-bottom-color: #ccc;
+  top: -5px;
+  right: 27px;
+  margin: 0;
+}
+
+#t3-admin-tour-quickhelp::after {
+  display: block;
+  content: " ";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 0px 4px 4px 4px;
+  border-bottom-color: #FEFFDE;
+  top: -4px;
+  right: 28px;
+  margin: 0;
 }
 
 
@@ -75,6 +113,7 @@ div.pagetitle h2 small {
 ---------------------------------------------------*/
 #t3-admin-toolbar {
   float: right;
+  position: relative;
 }
 
 
@@ -102,7 +141,7 @@ div#element-box div.m {
 ---------------------------------------------------*/
 .t3-admin-assignment h5 {
   color: #333;
-  margin: 0 0 5px -18px;
+  margin: 0 0 5px 0;
 }
 
 .t3-admin-assignment ul.menu-links,
@@ -112,7 +151,9 @@ div#menu-assignment ul.menu-links {
   clear: both;
 }
 
-.t3-admin-assignment li.span3 {margin-bottom: 20px;}
+.t3-admin-assignment li.span3 {
+  margin-bottom: 20px;
+}
 
 .t3-admin-assignment label.checkbox {
   padding: 3px 0;

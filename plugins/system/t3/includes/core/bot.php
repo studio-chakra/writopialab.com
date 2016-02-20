@@ -15,7 +15,7 @@
 // No direct access
 defined('_JEXEC') or die();
 /**
- * T3Less class
+ * T3Bot class
  * Auto trigger
  *
  * @package T3
@@ -28,6 +28,7 @@ class T3Bot extends JObject
 		$input = JFactory::getApplication()->input;
 		if ($input->get('option') == 'com_menus' && 
 			preg_match('#save|apply|trash|remove|delete|publish|order#i', $input->get('task'))) {
+			
 			// get all template styles
 			$db = JFactory::getDBO();
 			$query = $db->getQuery(true);
@@ -56,7 +57,7 @@ class T3Bot extends JObject
 					->where('id =' . (int)$theme->id);
 
 				$db->setQuery($query);
-				$db->query();
+				$db->execute();
 			}
 			// force reload cache template
 			$cache = JFactory::getCache('com_templates', '');
@@ -70,21 +71,66 @@ class T3Bot extends JObject
 
 	// call after call T3::init
 	public static function afterInit () {
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		
+		$app       = JFactory::getApplication();
+		$input     = $app->input;
+		$tplparams = $app->getTemplate(true)->params;
+		
 		if (!$app->isAdmin()) {
 			// check if need update megamenu configuration
-			if ($app->getTemplate(true)->params->get ('mm_config_needupdate')) {
+			if ($tplparams->get ('mm_config_needupdate')) {
 				T3::import('menu/megamenu');
-				$currentconfig = json_decode($app->getTemplate(true)->params->get ('mm_config'), true);
-				if (!is_array($currentconfig)) $currentconfig = array();
-				
-				foreach ($currentconfig as $menutype => $mmconfig) {
-					if (!is_array($mmconfig)) continue;
+				T3::import('admin/megamenu');
+
+				$currentconfig = @json_decode($tplparams->get ('mm_config', ''), true);
+				if (!is_array($currentconfig)){
+					$currentconfig = array();
+				} else {
+					$menuassoc = T3AdminMegamenu::menus();
+					$menulangs = array();
+					$menutypes = array();
+
+					foreach ($menuassoc as $key => $massoc) {
+						$menutypes[] = $massoc->value;
+						$menulangs[$massoc->value] = $massoc->language;
+					}
+				}
+
+				foreach ($currentconfig as $menukey => $mmconfig) {
+					if (!is_array($mmconfig)){
+						continue;
+					}
+
+					$menutype = $menukey;
+					if(!in_array($menutype, $menutypes) && preg_match('@(-(\d))+$@', $menukey, $match)){
+						$menutype = preg_replace('@(-(\d))+$@', '', $menutype);
+
+						$access = explode('-', $match[0]);
+						$access[] = 1;
+
+						$access = array_filter($access);
+						$access = array_unique($access);
+
+						$mmconfig['access'] = $access;
+					}
+
+					if(!in_array($menutype, $menutypes)){
+						continue;
+					}
+
+					$mmconfig['language'] = $menulangs[$menutype];
+					
 					$menu = new T3MenuMegamenu ($menutype, $mmconfig);
+
 					$children = $menu->get ('children');
+
+					//remove additional settings
+					unset($mmconfig['language']);
+					unset($mmconfig['access']);
+
 					foreach ($mmconfig as $item => $setting) {
-						if (isset ($setting['sub'])) {
+
+						if (is_array($setting) && isset($setting['sub'])) {
 							$sub = &$setting['sub'];
 							$id = (int) substr($item, 5); // remove item-
 							$modify = false;
@@ -146,14 +192,12 @@ class T3Bot extends JObject
 
 							// no need update config for this item
 							if ($items == $_items) continue;
-							// update back to setting
 
+							// update back to setting
 							$i = 0;
 							$c = count ($_items);
 							for ($j=0; $j < count($sub['rows']); $j++) {
-							// foreach ($sub['rows'] as $row) {
 								for ($k=0; $k < count($sub['rows'][$j]); $k++) {
-								// foreach ($row as $col) {
 									if (!isset($sub['rows'][$j][$k]['position'])) {
 										$sub['rows'][$j][$k]['item'] = $i < $c ? $_items[$i++] : "";
 									}
@@ -190,19 +234,20 @@ class T3Bot extends JObject
 						}
 					}
 
-					$currentconfig[$menutype] = $mmconfig;
+					$currentconfig[$menukey] = $mmconfig;
 				}
 
 				// update  megamenu back to other template styles parameter
 				$mm_config = json_encode($currentconfig);
 
 				// update megamenu back to current template style parameter
-				$params = $app->getTemplate(true)->params;
+				$template = $app->getTemplate(true);
+				$params = $template->params;
 				$params->set ('mm_config', $mm_config);
-				$app->setTemplate (T3_TEMPLATE, $params);
-				if ($input->get('tplparams')) {
-					$input->set('tplparams', $app->getTemplate(true)->params);
-				}
+				$template->params = $params;
+
+				//update the cache
+				T3::setTemplate(T3_TEMPLATE, $params);
 
 				//get all other styles that have the same template
 				$db = JFactory::getDBO();
@@ -230,13 +275,152 @@ class T3Bot extends JObject
 						->where('id =' . (int)$theme->id);
 
 					$db->setQuery($query);
-					$db->query();
+					$db->execute();
 				}
 				// force reload cache template
 				$cache = JFactory::getCache('com_templates', '');
 				$cache->clean();
 			}
-		}		
+		}
+	}
 
+
+	// call when prepare form for template parameter
+	// looking in less/extras folder to render parameters for extended template style
+	public static function prepareForm (&$form) {
+		jimport('joomla.filesystem.folder');
+		jimport('joomla.filesystem.file');
+
+		// load add-ons setting
+		$path = T3_TEMPLATE_PATH . '/less/extras';
+		if (!is_dir ($path)) return ;
+
+		$files = JFolder::files($path, '.less');
+		if (!$files || !count($files)){
+			return ;
+		}
+
+		$extras = array();
+		foreach ($files as $file) {
+			$extras[] = JFile::stripExt($file);
+		}
+		if (count($extras)) {
+			
+			//load languages
+			if(!defined('T3_TEMPLATE')){
+				JFactory::getLanguage()->load(T3_PLUGIN, JPATH_ADMINISTRATOR);
+			}
+
+			$_xml =
+				'<?xml version="1.0"?>
+				<form>
+					<fields name="params">
+						<fieldset name="addon_params" label="T3_ADDON_LABEL" description="T3_ADDON_DESC">
+					    <field type="t3depend" name="t3_addon_theme_extra" function="@legend" label="T3_ADDON_THEME_EXTRAS_LABEL" description="T3_ADDON_THEME_EXTRAS_DESC" />
+				';
+							foreach ($extras as $extra) {
+								$_xml .= '
+							<field name="theme_extras_'.$extra.'" global="1" type="menuitem" multiple="true" default="" label="'.$extra.'" description="'.$extra.'" published="1" class="t3-extra-setting">
+									<option value="-1">T3_ADDON_THEME_EXTRAS_ALL</option>
+									<option value="0">T3_ADDON_THEME_EXTRAS_NONE</option>
+							</field>';
+							}
+
+							$_xml .= '
+						</fieldset>
+					</fields>
+				</form>
+				';
+			$xml = simplexml_load_string($_xml);
+			$form->load ($xml, false);
+		}
+	}
+
+	public static function extraFields(&$form, $data, $tplpath){
+		
+		if ($form->getName() == 'com_categories.categorycom_content' || $form->getName() == 'com_content.article') {
+			
+			jimport('joomla.filesystem.folder');
+			jimport('joomla.filesystem.file');
+
+			// check for extrafields overwrite
+			$path = $tplpath . '/etc/extrafields';
+			if (!is_dir ($path)) return ;
+
+			$files = JFolder::files($path, '.xml');
+			if (!$files || !count($files)){
+				return ;
+			}
+
+			$extras = array();
+			foreach ($files as $file) {
+				$extras[] = JFile::stripExt($file);
+			}
+			if (count($extras)) {
+
+				if ($form->getName() == 'com_categories.categorycom_content'){
+					
+					//load languages
+					if(!defined('T3_TEMPLATE')){
+						JFactory::getLanguage()->load(T3_PLUGIN, JPATH_ADMINISTRATOR);
+					}
+
+					$_xml =
+						'<?xml version="1.0"?>
+						<form>
+							<fields name="params">
+								<fieldset name="t3_extrafields_params" label="T3_EXTRA_FIELDS_GROUP_LABEL" description="T3_EXTRA_FIELDS_GROUP_DESC">
+									<field name="t3_extrafields" type="list" default="" show_none="true" label="T3_EXTRA_FIELDS_LABEL" description="T3_EXTRA_FIELDS_DESC">
+										<option value="">JNONE</option>';
+									
+									foreach ($extras as $extra) {
+										$_xml .= '<option value="' . $extra . '">' . ucfirst($extra) . '</option>';
+									}
+
+									$_xml .= '
+									</field>
+								</fieldset>
+							</fields>
+						</form>
+						';
+					$xml = simplexml_load_string($_xml);
+					$form->load ($xml, false);
+
+				} else {
+					
+					$app   = JFactory::getApplication();
+					$input = $app->input;
+					$fdata = empty($data) ? $input->post->get('jform', array(), 'array') : (is_object($data) ? $data->getProperties() : $data);
+					$catid = $input->getInt('catid', $app->getUserState('com_content.articles.filter.category_id'));
+
+					if(!$catid && is_array($fdata) && !empty($fdata)){
+						$catid = $fdata['catid'];
+					}
+
+					if($catid){
+
+						if(version_compare(JVERSION, '3.0', 'lt')){
+							jimport('joomla.application.categories');
+						}
+
+						$categories = JCategories::getInstance('Content', array('countItems' => 0 ));
+						$category = $categories->get($catid);
+						$params = $category->params;
+						if(!$params instanceof JRegistry) {
+							$params = new JRegistry;
+							$params->loadString($category->params);
+						}
+
+						if($params instanceof JRegistry){
+							$extrafile = $path . '/' . $params->get('t3_extrafields') . '.xml';
+							if(is_file($extrafile)){
+								JForm::addFormPath($path);
+								$form->loadFile($params->get('t3_extrafields'), false);
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }

@@ -3,7 +3,7 @@
  * @package     Joomla.Libraries
  * @subpackage  Schema
  *
- * @copyright   Copyright (C) 2005 - 2013 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE
  */
 
@@ -17,9 +17,7 @@ jimport('joomla.filesystem.folder');
  * the database when this database was created or updated. This enables the
  * Installation Manager to check that the current database schema is up to date.
  *
- * @package     Joomla.Libraries
- * @subpackage  Schema
- * @since       2.5
+ * @since  2.5
  */
 class JSchemaChangeset
 {
@@ -61,6 +59,7 @@ class JSchemaChangeset
 		$this->folder = $folder;
 		$updateFiles = $this->getUpdateFiles();
 		$updateQueries = $this->getUpdateQueries($updateFiles);
+
 		foreach ($updateQueries as $obj)
 		{
 			$this->changeItems[] = JSchemaChangeitem::getInstance($db, $obj->file, $obj->updateQuery);
@@ -101,6 +100,7 @@ class JSchemaChangeset
 	public function check()
 	{
 		$errors = array();
+
 		foreach ($this->changeItems as $item)
 		{
 			if ($item->check() === -2)
@@ -109,6 +109,7 @@ class JSchemaChangeset
 				$errors[] = $item;
 			}
 		}
+
 		return $errors;
 	}
 
@@ -122,6 +123,7 @@ class JSchemaChangeset
 	public function fix()
 	{
 		$this->check();
+
 		foreach ($this->changeItems as $item)
 		{
 			$item->fix();
@@ -129,15 +131,16 @@ class JSchemaChangeset
 	}
 
 	/**
-	* Returns an array of results for this set
-	*
-	* @return  array  associative array of changeitems grouped by unchecked, ok, error, and skipped
-	*
-	* @since   2.5
-	*/
+	 * Returns an array of results for this set
+	 *
+	 * @return  array  associative array of changeitems grouped by unchecked, ok, error, and skipped
+	 *
+	 * @since   2.5
+	 */
 	public function getStatus()
 	{
 		$result = array('unchecked' => array(), 'ok' => array(), 'error' => array(), 'skipped' => array());
+
 		foreach ($this->changeItems as $item)
 		{
 			switch ($item->checkStatus)
@@ -156,6 +159,7 @@ class JSchemaChangeset
 					break;
 			}
 		}
+
 		return $result;
 	}
 
@@ -173,6 +177,7 @@ class JSchemaChangeset
 	{
 		$updateFiles = $this->getUpdateFiles();
 		$result = new SplFileInfo(array_pop($updateFiles));
+
 		return $result->getBasename('.sql');
 	}
 
@@ -187,7 +192,8 @@ class JSchemaChangeset
 	{
 		// Get the folder from the database name
 		$sqlFolder = $this->db->name;
-		if ($sqlFolder == 'mysqli')
+
+		if ($sqlFolder == 'mysqli' || $sqlFolder == 'pdomysql')
 		{
 			$sqlFolder = 'mysql';
 		}
@@ -201,8 +207,10 @@ class JSchemaChangeset
 		{
 			$this->folder = JPATH_ADMINISTRATOR . '/components/com_admin/sql/updates/';
 		}
-		return JFolder::files($this->folder . '/' . $sqlFolder, '\.sql$', 1, true, array('.svn', 'CVS', '.DS_Store', '__MACOSX'),
-		array('^\..*', '.*~'), true);
+
+		return JFolder::files(
+			$this->folder . '/' . $sqlFolder, '\.sql$', 1, true, array('.svn', 'CVS', '.DS_Store', '__MACOSX'), array('^\..*', '.*~'), true
+		);
 	}
 
 	/**
@@ -220,23 +228,57 @@ class JSchemaChangeset
 	{
 		// Hold results as array of objects
 		$result = array();
+
 		foreach ($sqlfiles as $file)
 		{
 			$buffer = file_get_contents($file);
 
 			// Create an array of queries from the sql file
 			$queries = JDatabaseDriver::splitSql($buffer);
+
 			foreach ($queries as $query)
 			{
-				if (trim($query))
+				if ($trimmedQuery = $this->trimQuery($query))
 				{
 					$fileQueries = new stdClass;
 					$fileQueries->file = $file;
-					$fileQueries->updateQuery = $query;
+					$fileQueries->updateQuery = $trimmedQuery;
 					$result[] = $fileQueries;
 				}
 			}
 		}
+
 		return $result;
+	}
+
+	/**
+	 * Trim comment and blank lines out of a query string
+	 *
+	 * @param   string  $query  query string to be trimmed
+	 *
+	 * @return  string  String with leading comment lines removed
+	 *
+	 * @since   3.1
+	 */
+	private function trimQuery($query)
+	{
+		$query = trim($query);
+
+		while (substr($query, 0, 1) == '#' || substr($query, 0, 2) == '--' || substr($query, 0, 2) == '/*')
+		{
+			$endChars = (substr($query, 0, 1) == '#' || substr($query, 0, 2) == '--') ? "\n" : "*/";
+
+			if ($position = strpos($query, $endChars))
+			{
+				$query = trim(substr($query, $position + strlen($endChars)));
+			}
+			else
+			{
+				// If no newline, the rest of the file is a comment, so return an empty string.
+				return '';
+			}
+		}
+
+		return trim($query);
 	}
 }

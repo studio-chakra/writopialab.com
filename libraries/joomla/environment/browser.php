@@ -3,7 +3,7 @@
  * @package     Joomla.Platform
  * @subpackage  Environment
  *
- * @copyright   Copyright (C) 2005 - 2013 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE
  */
 
@@ -18,9 +18,7 @@ defined('JPATH_PLATFORM') or die;
  * This class has many influences from the lib/Browser.php code in
  * version 3 of Horde by Chuck Hagenbuch and Jon Parise.
  *
- * @package     Joomla.Platform
- * @subpackage  Environment
- * @since       11.1
+ * @since  11.1
  */
 class JBrowser
 {
@@ -166,11 +164,11 @@ class JBrowser
 	 * @param   string  $userAgent  The browser string to parse.
 	 * @param   string  $accept     The HTTP_ACCEPT settings to use.
 	 *
-	 * @return JBrowser  The Browser object.
+	 * @return  JBrowser  The Browser object.
 	 *
-	 * @since  11.1
+	 * @since   11.1
 	 */
-	static public function getInstance($userAgent = null, $accept = null)
+	public static function getInstance($userAgent = null, $accept = null)
 	{
 		$signature = serialize(array($userAgent, $accept));
 
@@ -207,6 +205,7 @@ class JBrowser
 		{
 			$this->agent = $userAgent;
 		}
+
 		$this->lowerAgent = strtolower($this->agent);
 
 		// Set our accept string.
@@ -256,6 +255,12 @@ class JBrowser
 				$this->setBrowser('chrome');
 				list ($this->majorVersion, $this->minorVersion) = explode('.', $version[1]);
 			}
+			elseif (preg_match('|CriOS[/ ]([0-9.]+)|', $this->agent, $version))
+			{
+				$this->setBrowser('chrome');
+				list ($this->majorVersion, $this->minorVersion) = explode('.', $version[1]);
+				$this->mobile = true;
+			}
 			elseif (strpos($this->lowerAgent, 'elaine/') !== false
 				|| strpos($this->lowerAgent, 'palmsource') !== false
 				|| strpos($this->lowerAgent, 'digital paths') !== false)
@@ -290,6 +295,7 @@ class JBrowser
 			{
 				$this->setBrowser('amaya');
 				$this->majorVersion = $version[1];
+
 				if (isset($version[2]))
 				{
 					$this->minorVersion = $version[2];
@@ -304,12 +310,13 @@ class JBrowser
 				$this->setBrowser('avantgo');
 				$this->mobile = true;
 			}
-			elseif (preg_match('|Konqueror/([0-9]+)|', $this->agent, $version) || preg_match('|Safari/([0-9]+)\.?([0-9]+)?|', $this->agent, $version))
+			elseif (preg_match('|[Kk]onqueror/([0-9]+)|', $this->agent, $version) || preg_match('|Safari/([0-9]+)\.?([0-9]+)?|', $this->agent, $version))
 			{
 				// Konqueror and Apple's Safari both use the KHTML
 				// rendering engine.
 				$this->setBrowser('konqueror');
 				$this->majorVersion = $version[1];
+
 				if (isset($version[2]))
 				{
 					$this->minorVersion = $version[2];
@@ -436,19 +443,22 @@ class JBrowser
 	 * Set browser version, not by engine version
 	 * Fallback to use when no other method identify the engine version
 	 *
-	 * @return void
+	 * @return  void
+	 *
+	 * @since   11.1
 	 */
 	protected function identifyBrowserVersion()
 	{
 		if (preg_match('|Version[/ ]([0-9.]+)|', $this->agent, $version))
 		{
 			list ($this->majorVersion, $this->minorVersion) = explode('.', $version[1]);
+
 			return;
 		}
+
 		// Can't identify browser version
 		$this->majorVersion = 0;
 		$this->minorVersion = 0;
-		JLog::add("Can't identify browser version. Agent: " . $this->agent, JLog::NOTICE);
 	}
 
 	/**
@@ -482,7 +492,7 @@ class JBrowser
 	 *
 	 * @return  integer  The current browser's major version
 	 *
-	 * @since   11.1.
+	 * @since   11.1
 	 */
 	public function getMajor()
 	{
@@ -541,6 +551,7 @@ class JBrowser
 				return substr($_SERVER['SERVER_PROTOCOL'], $pos + 1);
 			}
 		}
+
 		return null;
 	}
 
@@ -574,6 +585,7 @@ class JBrowser
 			if (strpos($this->accept, '*/*') !== false)
 			{
 				$wildcard_match = true;
+
 				if ($type != 'image')
 				{
 					return true;
@@ -592,7 +604,7 @@ class JBrowser
 			}
 		}
 
-		if (!$this->hasFeature('images') || ($type != 'image'))
+		if ($type != 'image')
 		{
 			return false;
 		}
@@ -630,6 +642,7 @@ class JBrowser
 				return true;
 			}
 		}
+
 		return false;
 	}
 
@@ -651,7 +664,7 @@ class JBrowser
 	 * @return  boolean  True if using SSL, false if not.
 	 *
 	 * @since   11.1
-	 * @deprecated  13.3  Use the isSSLConnection method on the application object.
+	 * @deprecated  13.3 (Platform) & 4.0 (CMS) - Use the isSSLConnection method on the application object.
 	 */
 	public function isSSLConnection()
 	{

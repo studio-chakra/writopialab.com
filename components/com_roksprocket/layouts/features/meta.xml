@@ -24,6 +24,10 @@
 					<parameter key="displayname">Showcase</parameter>
 					<parameter key="basefile">index.php</parameter>
 				</parameter>
+				<parameter key="carousel" type="collection">
+					<parameter key="displayname">Carousel</parameter>
+					<parameter key="basefile">index.php</parameter>
+				</parameter>
 			</parameter>
 		</parameter>
 	</parameters>

@@ -25,8 +25,8 @@
 	</ul>
 	<?php if ($parameters->get('features_show_arrows')!='hide') : ?>
 	<div class="sprocket-features-arrows">
-		<span class="arrow next" data-showcase-next><span>&rsaquo;</span></span>
 		<span class="arrow prev" data-showcase-previous><span>&lsaquo;</span></span>
+		<span class="arrow next" data-showcase-next><span>&rsaquo;</span></span>		
 	</div>
 	<?php endif; ?>
 	<div class="sprocket-features-pagination<?php echo $parameters->get('features_show_pagination') ? '' : '-hidden'; ?>">

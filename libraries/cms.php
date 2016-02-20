@@ -2,7 +2,7 @@
 /**
  * @package    Joomla.Libraries
  *
- * @copyright  Copyright (C) 2005 - 2013 Open Source Matters, Inc. All rights reserved.
+ * @copyright  Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE
  */
 
@@ -20,10 +20,30 @@ if (!class_exists('JLoader'))
 	require_once JPATH_PLATFORM . '/loader.php';
 }
 
-class_exists('JLoader') or die;
+// Make sure that the Joomla Platform has been successfully loaded.
+if (!class_exists('JLoader'))
+{
+	throw new RuntimeException('Joomla Platform not loaded.');
+}
 
 // Register the library base path for CMS libraries.
-JLoader::registerPrefix('J', JPATH_PLATFORM . '/cms');
+JLoader::registerPrefix('J', JPATH_PLATFORM . '/cms', false, true);
+
+// Create the Composer autoloader
+$loader = require JPATH_LIBRARIES . '/vendor/autoload.php';
+$loader->unregister();
+
+// Decorate Composer autoloader
+spl_autoload_register(array(new JClassLoader($loader), 'loadClass'), true, true);
+
+// Register the class aliases for Framework classes that have replaced their Platform equivilents
+require_once JPATH_LIBRARIES . '/classmap.php';
+
+// Ensure FOF autoloader included - needed for things like content versioning where we need to get an FOFTable Instance
+if (!class_exists('FOFAutoloaderFof'))
+{
+	include_once JPATH_LIBRARIES . '/fof/include.php';
+}
 
 // Register a handler for uncaught exceptions that shows a pretty error page when possible
 set_exception_handler(array('JErrorPage', 'render'));
@@ -41,6 +61,9 @@ if (array_key_exists('REQUEST_METHOD', $_SERVER))
 	JLog::addLogger(array('logger' => 'messagequeue'), JLog::ALL, array('jerror'));
 }
 
+// Register JArrayHelper due to JRegistry moved to composer's vendor folder
+JLoader::register('JArrayHelper', JPATH_PLATFORM . '/joomla/utilities/arrayhelper.php');
+
 // Register classes where the names have been changed to fit the autoloader rules
 // @deprecated  4.0
 JLoader::register('JToolBar', JPATH_PLATFORM . '/cms/toolbar/toolbar.php');
@@ -54,3 +77,5 @@ JLoader::register('JInstallerPackage',  JPATH_PLATFORM . '/cms/installer/adapter
 JLoader::register('JInstallerPlugin',  JPATH_PLATFORM . '/cms/installer/adapter/plugin.php');
 JLoader::register('JInstallerTemplate',  JPATH_PLATFORM . '/cms/installer/adapter/template.php');
 JLoader::register('JExtension',  JPATH_PLATFORM . '/cms/installer/extension.php');
+JLoader::registerAlias('JAdministrator',  'JApplicationAdministrator');
+JLoader::registerAlias('JSite',  'JApplicationSite');

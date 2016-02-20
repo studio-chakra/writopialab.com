@@ -3,7 +3,7 @@
  * @package     Joomla.Plugin
  * @subpackage  Editors-xtd.article
  *
- * @copyright   Copyright (C) 2005 - 2013 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -12,9 +12,7 @@ defined('_JEXEC') or die;
 /**
  * Editor Article buton
  *
- * @package     Joomla.Plugin
- * @subpackage  Editors-xtd.article
- * @since       1.5
+ * @since  1.5
  */
 class PlgButtonArticle extends JPlugin
 {
@@ -28,6 +26,8 @@ class PlgButtonArticle extends JPlugin
 
 	/**
 	 * Display the button
+	 *
+	 * @param   string  $name  The name of the button to add
 	 *
 	 * @return array A four element array of (article_id, article_title, category_id, object)
 	 */
@@ -48,23 +48,22 @@ class PlgButtonArticle extends JPlugin
 				var hreflang = ' hreflang = \"' + lang + '\"';
 			}
 			var tag = '<a' + hreflang + ' href=\"' + link + '\">' + title + '</a>';
-			jInsertEditorText(tag, '".$name."');
-			SqueezeBox.close();
+			jInsertEditorText(tag, '" . $name . "');
+			jModalClose();
 		}";
 
 		$doc = JFactory::getDocument();
 		$doc->addScriptDeclaration($js);
 
-		JHtml::_('behavior.modal');
-
 		/*
 		 * Use the built-in element view to select the article.
 		 * Currently uses blank class.
 		 */
-		$link = 'index.php?option=com_content&amp;view=articles&amp;layout=modal&amp;tmpl=component&amp;'.JSession::getFormToken().'=1';
+		$link = 'index.php?option=com_content&amp;view=articles&amp;layout=modal&amp;tmpl=component&amp;' . JSession::getFormToken() . '=1';
 
 		$button = new JObject;
 		$button->modal = true;
+		$button->class = 'btn';
 		$button->link = $link;
 		$button->text = JText::_('PLG_ARTICLE_BUTTON_ARTICLE');
 		$button->name = 'file-add';
