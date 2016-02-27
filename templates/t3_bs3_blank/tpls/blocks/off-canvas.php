@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 ?>
 
 <button class="btn btn-primary off-canvas-toggle <?php $this->_c('off-canvas') ?>" type="button" data-pos="left" data-nav="#t3-off-canvas" data-effect="<?php echo $this->getParam('addon_offcanvas_effect', 'off-canvas-effect-4') ?>">
-  Menu <i class="fa fa-bars"></i>
+ <i class="fa fa-bars"></i><span>Menu</span> 
 </button>
 
 <!-- OFF-CANVAS SIDEBAR -->

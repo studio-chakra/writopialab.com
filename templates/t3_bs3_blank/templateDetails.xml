@@ -55,6 +55,7 @@
 
 	<positions>
 		<position>head-actions</position>
+		<position>head-mobile</position>
 		<position>head-globalnav</position>
 		<position>head-slideshow</position>
 		<position>mainnav</position>
