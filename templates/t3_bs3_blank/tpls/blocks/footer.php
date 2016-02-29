@@ -50,4 +50,18 @@ defined('_JEXEC') or die;
 	</div>
 
 </footer>
-<!-- //FOOTER -->
+
+<!-- // FOOTER -->
+<script type="text/javascript">
+(function($){
+	jQuery( document ).ready(function() {
+		jQuery('ul.menu-main-mobile > li.parent > a, ul.menu-main-mobile li.dropdown-submenu > a').click(function(){
+			var p = jQuery(this).parent();
+			if (! p.hasClass('toggle-open')) {
+			  
+			  p.addClass('toggle-open');
+			  return false;
+			}
+		});
+	});
+})(jQuery);</script>

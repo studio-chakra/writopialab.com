@@ -1479,6 +1479,11 @@ input.invalid {
   margin-top: 5px;
   margin-right: -10px;
 }
+.t3-megamenu .mega-nav .dropdown-submenu > a:after{ background: url(../images/level2.png) no-repeat 0 0; border: 0; width: 8px; height: 12px; margin-top: 8px;}
+.t3-megamenu .mega-nav .dropdown-submenu:hover > a:after{ background: url(../images/level2-h.png) no-repeat 0 0;}
+.t3-megamenu .mega-nav .dropdown-submenu.active > a:after, .t3-megamenu .mega-nav .dropdown-submenu.current > a:after{ background: url(../images/level2-a.png) no-repeat 0 0;}
+
+
 .dropdown-submenu:hover > a:after {
   border-left-color: #a8d04c;
 }
@@ -1716,7 +1721,7 @@ input.invalid {
 }
 .t3-mainnav .dropdown-menu .active > a,
 .t3-mainnav .dropdown-menu .active > a:hover {
-  color: #1a1a1a;
+  color: #1a1a1a !important;
   background: transparent;
 }
 .t3-mainnav .dropdown-menu .disabled > a,
@@ -1736,6 +1741,29 @@ input.invalid {
   background-color: transparent;
   color: #ab0569;
 }
+.t3-mainnav .dropdown-menu .mega-nav li.open .level2  li  a{ font-size: 18px; color: #fff;}
+.t3-megamenu .mega-nav > li .dropdown-submenu a, .t3-megamenu .dropdown-menu .mega-nav > li.dropdown-submenu a{ /* padding-right: 12px; */}
+.t3-mainnav .dropdown-menu .mega-nav li.open .level2 li:hover > a, .t3-mainnav .dropdown-menu .mega-nav li.open .level2 li > a:hover{ color: #759035;}
+.t3-mainnav .dropdown-menu .mega-nav li.open .level2  li.active > a, .t3-mainnav .dropdown-menu .mega-nav li.open .level2 li.current > a:hover{ color: #759035;}
+
+.t3-mainnav .dropdown-menu .mega-nav li.open .level2 li:hover > a:after{ background: url(../images/level2-h.png) no-repeat 0 0;}
+.t3-mainnav .dropdown-menu .mega-nav li.open .level2  li.active > a:after{ background: url(../images/level2-a.png) no-repeat 0 0;}
+
+.t3-off-canvas .t3-off-canvas-body .btn-top .btn {font-size: 14px; font-weight: 900; color: #fff; text-transform: uppercase; padding: 0 20px; line-height: 32px;}
+.t3-off-canvas .t3-off-canvas-body .btn-top .btn.btn-donate{ margin-left: 8px;}
+.nav.menu-bottom{ background: url(../images/copyright-line.png) no-repeat center top; margin: 0; padding: 30px 0 0;}
+
+.t3-off-canvas .t3-off-canvas-body .menu-bottom  li{ width: 50%; float: left;}
+.t3-off-canvas .t3-off-canvas-body .menu-bottom a{ color: #868686; font-size: 13px; text-transform: none; font-weight: normal; padding: 0; }
+.t3-module.module.btn-top {
+    position: absolute;
+    top: 10px; margin: 0;
+}
+
+
+
+
+
 /** 
  *------------------------------------------------------------------------------
  * @package       T3 Framework for Joomla!
@@ -4149,11 +4177,12 @@ body .t3-wrapper{ background: none;}
 .module-testi .layout-showcase{ margin: 0;}
 .t3-module.module.no-margin{ margin: 0;}
 .t3-module.module.no-margin .module-ct{ padding: 0; background: none;} 
-div .off-canvas-toggle{ padding-right: 46px; position: relative;}
+div .off-canvas-toggle{ padding: 0 8px; text-align: center; position: relative;}
+div .off-canvas-toggle span{ display: block; font-size: 12px; font-weight: 900; line-height: normal; padding: 40px 0 7px; background: url(../images/bars.png) no-repeat center 10px; }
 .fa-bars::before {
     display: none;
 }
-.fa.fa-bars{ background: url(../images/bars.png) no-repeat center center; width: 26px; height: 24px;content: "";position: absolute; top: 8px; right: 11px;}
+.fa.fa-bars{ background: url(../images/bars.png) no-repeat center center; width: 26px; height: 24px;content: ""; display: block; margin: 8px 0 0 0; display: none;}
 a:focus,.btn:focus, .btn:active:focus, .btn.active:focus, .btn.focus, .btn.focus:active, .btn.active.focus,
 .t3-off-canvas .t3-off-canvas-body a:focus{ outline: none !important;}
 body .t3-off-canvas .close{ background: url(../images/close.png) no-repeat center center !important; text-indent: -2000px; overflow: hidden; display: block; top: 7px;}
@@ -4166,6 +4195,26 @@ body .t3-off-canvas .close{ background: url(../images/close.png) no-repeat cente
     overflow: hidden;
 }
 body .t3-wrapper{ overflow: hidden;}
+.navbar-header .btn-top-mobile .btn{ padding: 0 15px; line-height: 28px; font-size: 14px; font-weight: 900;}
+.navbar-header .btn-top-mobile .btn.btn-register{ margin: 0 0 3px;}
+.navbar-header .btn-top-mobile {
+    float: right;
+}
+div .off-canvas-toggle{ float: right;}
+.custom.btn-top-mobile > p { margin: 0 9px 0 0; text-align: right; width: 85px;}
+
+.t3-off-canvas-body .nav-pills.menu-main-mobile > li.parent > a{ background: url(../images/m-menu.png) no-repeat 0 center; padding-left: 28px;}
+.t3-off-canvas-body .nav-pills.menu-main-mobile > li.parent.active > a, .t3-off-canvas-body .nav-pills.menu-main-mobile > li.parent.toggle-open > a{ background: url(../images/m-menu-a.png) no-repeat 0 center;}
+.t3-off-canvas .t3-off-canvas-body .toggle-open > .dropdown-menu, .t3-off-canvas .t3-off-canvas-body .active > .dropdown-menu{ display: block;}
+.menu-main-mobile .dropdown-submenu > a::after{ display: none;}
+.t3-module .menu-main-mobile .dropdown-menu{ margin-left: 28px;}
+.t3-off-canvas-body .menu-main-mobile .dropdown-menu li > a{ padding-right: 0; padding-left: 20px;}
+.t3-off-canvas-body .menu-main-mobile .dropdown-menu li.parent > a{ background: url(../images/m-submenu.png) no-repeat left center;}
+.t3-off-canvas-body .menu-main-mobile .dropdown-menu li.parent > a:hover, .t3-off-canvas-body .menu-main-mobile .dropdown-menu li.toggle-open.parent > a, .t3-off-canvas-body .menu-main-mobile .dropdown-menu li.active.parent > a{ background: url(../images/m-submenu-a.png) no-repeat left center;}
+.t3-off-canvas-body .menu-main-mobile .dropdown-menu li.toggle-open > a{ color: #a8d04c;}
+.t3-off-canvas-body .menu-main-mobile .dropdown-menu .dropdown-menu .dropdown-menu li > a{padding-left: 0; white-space: normal;}
+
+
 @media screen and (max-width: 1069px){
 	.module-slideshow .layout-showcase .sprocket-features-arrows .arrow{/*  width: 38px; height: 38px; background-size: 76px auto; */}
 	
@@ -4241,7 +4290,7 @@ body .t3-wrapper{ overflow: hidden;}
 	.navbar-header, .sprocket-features-img-container{ display: block;}
 	.logo-image{ float: left; margin: 0;}
 	.logo{ padding-top: 15px; padding-bottom: 15px;}
-	div .off-canvas-toggle{ margin: 13px 0 0 0; text-transform: uppercase;}
+	div .off-canvas-toggle{ margin: 1px 0 0 0; text-transform: uppercase;}
 	#header .container{ padding-bottom: 0;}
 	.module-slideshow .layout-showcase .sprocket-features-arrows .arrow{ top: 21%;}
 	.module-strips .sprocket-features-content{ padding: 10px;}

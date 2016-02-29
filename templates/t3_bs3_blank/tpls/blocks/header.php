@@ -47,11 +47,11 @@ if ($headright = $this->countModules('head-search or languageswitcherload')) {
 		    </div>
 			<!-- Brand and toggle get grouped for better mobile display -->
 			<div class="navbar-header">
-			
+				
 				<?php if ($this->getParam('navigation_collapse_enable', 1) && $this->getParam('responsive', 1)) : ?>
 					<?php $this->addScript(T3_URL.'/js/nav-collapse.js'); ?>
 					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".t3-navbar-collapse">
-						Menu <i class="fa fa-bars"></i>
+						<i class="fa fa-bars"></i> Menu 
 					</button>
 					
 				<?php endif ?>
@@ -59,7 +59,7 @@ if ($headright = $this->countModules('head-search or languageswitcherload')) {
 				<?php if ($this->getParam('addon_offcanvas_enable')) : ?>
 					<?php $this->loadBlock ('off-canvas') ?>
 				<?php endif ?>
-
+				<jdoc:include type="modules" name="head-mobile" />
 			</div>
 
 			<?php if ($this->getParam('navigation_collapse_enable')) : ?>
