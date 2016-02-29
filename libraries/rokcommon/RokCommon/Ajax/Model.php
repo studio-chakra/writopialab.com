@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: Model.php 54417 2012-07-18 22:22:53Z build $
+ * @version   $Id: Model.php 10831 2013-05-29 19:32:17Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - ${copyright_year} RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 defined('ROKCOMMON') or die;

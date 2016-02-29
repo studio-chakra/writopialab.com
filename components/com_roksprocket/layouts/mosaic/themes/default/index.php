@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: index.php 54236 2012-07-10 22:04:13Z djamil $
+ * @version   $Id: index.php 10885 2013-05-30 06:31:41Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 

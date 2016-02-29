@@ -1,8 +1,8 @@
 <?php
 /**
- * @version	$Id$
+ * @version	$Id: Filter_Type_Article.php 22593 2014-08-08 14:46:31Z jakub $
  * @author	 RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license	http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -44,7 +44,7 @@ class RokSprocket_Provider_Posttype_Filter_Type_Article extends RokSprocket_Prov
 		// Setup variables for display.
 		$html = array();
         $nonce = wp_create_nonce('roksprocket-ajax-nonce');
-        $link = get_bloginfo('wpurl').'/wp-admin/admin-ajax.php?action=roksprocket_postlist&nonce='.$nonce.'&provider=posttype&TB_iframe=true&height=425&width=555&modal=false';
+        $link = site_url().'/wp-admin/admin-ajax.php?action=roksprocket_postlist&nonce='.$nonce.'&provider=posttype&TB_iframe=true&height=425&width=555&modal=false';
 
         $title = $wpdb->get_var('SELECT post_title FROM '.$wpdb->posts . ' WHERE ID = ' . (int)$value);
 

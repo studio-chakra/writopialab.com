@@ -1,6 +1,6 @@
 <?php
 /**
- * @version   $Id: imagepicker.php 57189 2012-10-05 22:57:41Z btowles $
+ * @version   $Id: imagepicker.php 19227 2014-02-27 00:37:34Z djamil $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2012 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -20,6 +20,10 @@ class RokCommon_Form_Field_ImagePicker extends RokCommon_Form_AbstractField
 		//JHTML::_('behavior.modal');
 		//$this->_loadAssets();
 		$this->_setOptions();
+		$container = RokCommon_Service::getContainer();
+		/** @var RokSprocket_IProvider $provider */
+		$provider = $container->getParameter('roksprocket.current_provider');
+		$provider->filterPerItemTypes($this->type, $this->fieldname, $this->options);
 
 		$this->value = str_replace("'", '"', str_replace('\\', '', $this->value));
 		$link = $this->options['mediamanager']['attributes']['value'];
@@ -65,7 +69,7 @@ class RokCommon_Form_Field_ImagePicker extends RokCommon_Form_AbstractField
 		$html[] = '		<input data-imagepicker-display="true" data-original-title="'.rc__($tipTitle).'" type="text" value="'.$path.'" '.$class.$placeholder.' />';
 		$html[] = '		<input type="hidden" id="'.$this->id.'" name="'.$this->name.'" value="'.htmlspecialchars($this->value).'" />';
 		$html[] = $this->_getDropdown();
-		$html[] = '		<a href="'.$link.'" class="modal imagepicker" title="Select Image" rel="{handler: \'iframe\', size: {x: 695, y: 450}}"><i class="icon tool picker"></i></a>';
+		$html[] = '		<a href="'.$link.'" class="modal imagepicker" title="Select Image" rel="{handler: \'iframe\', size: {x: 790, y: 450}}"><i class="icon tool picker"></i></a>';
 		$html[] = '</div>';
 
 		return implode("\n", $html);
@@ -157,6 +161,9 @@ class RokCommon_Form_Field_ImagePicker extends RokCommon_Form_AbstractField
 		$list = "";
 		$displayValue = "mediamanager";
 		$options = $this->options;
+
+		if (isset($this->value) && !array_key_exists($this->value, $options)) $this->value = '-title-';
+		if (isset($this->value) && !array_key_exists($this->value, $options)) $this->value = '-none-';
 
 		foreach($options as $option){
 			$attributes = $option['attributes'];

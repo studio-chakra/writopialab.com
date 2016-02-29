@@ -1,9 +1,11 @@
 /*
+ * @version   $Id: peritempicker.js 10889 2013-05-30 07:48:35Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
-((function(){if(typeof this.RokSprocket=="undefined"){this.RokSprocket={};}var a=(Browser.name=="ie"&&Browser.version<=9)?"keypress":"input";this.PerItemPicker=new Class({Implements:[Options,Events],options:{},initialize:function(c){this.setOptions(c);
+((function(){if(typeof this.RokSprocket=="undefined"){this.RokSprocket={};
+}var a=(Browser.name=="ie"&&Browser.version<=9)?"keypress":"input";this.PerItemPicker=new Class({Implements:[Options,Events],options:{},initialize:function(c){this.setOptions(c);
 this.attach();},getPickers:function(){this.pickers=document.getElements("[data-peritempicker]");return this.pickers;},attach:function(c){var d=(c?new Elements([c]).flatten():this.getPickers());
 this.fireEvent("beforeAttach",d);d.each(function(i){var e=i.getElement("select"),j=i.getElement("[data-peritempicker-display]"),h=i.getElement("#"+i.get("data-peritempicker-id"));
 var l=e.retrieve("roksprocket:pickers:change",function(m){this.change.call(this,m,e);}.bind(this)),g=j.retrieve("roksprocket:pickers:input",function(m){this.keypress.call(this,m,j,h,e);

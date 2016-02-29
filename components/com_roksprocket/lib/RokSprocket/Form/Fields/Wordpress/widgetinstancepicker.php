@@ -1,6 +1,6 @@
 <?php
 /**
- * @version   $Id: dynamicfields.php 57157 2012-10-05 05:41:29Z btowles $
+ * @version   $Id: widgetinstancepicker.php 18126 2014-01-24 17:40:37Z jakub $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2012 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -16,10 +16,8 @@ class RokCommon_Form_Field_WidgetInstancePicker extends RokCommon_Form_Field_Lis
 	{
 		$html = parent::getInput();
 		ob_start();?>
-    <a id="rs-post-url" href="<?php echo get_bloginfo('url');?>/wp-admin/admin.php?page=roksprocket-edit&id=_WIDGET_ID_" style="">Configure
-        Widget</a>
-    <a id="rs-new-post-url" href="<?php echo get_bloginfo('url');?>/wp-admin/admin.php?page=roksprocket-edit" style="">Add
-        a New Widget</a>
+    <a id="rs-post-url" class="button" href="<?php echo get_bloginfo('url');?>/wp-admin/admin.php?page=roksprocket-edit&id=_WIDGET_ID_" style="margin-top:15px; margin-right: 5px;">Configure Widget</a>
+    <a id="rs-new-post-url" class="button" href="<?php echo get_bloginfo('url');?>/wp-admin/admin.php?page=roksprocket-edit" style="margin-top:15px;">Add a New Widget</a>
 	<?php
 		$html .= ob_get_clean();
 		return $html;
@@ -41,7 +39,7 @@ class RokCommon_Form_Field_WidgetInstancePicker extends RokCommon_Form_Field_Lis
 
 		$fieldname = $this->element['name'];
 		$options   = array();
-		$options[] = RokCommon_HTML_SelectList::option('', rc__('- Select RockSprocket Widget -'));
+		$options[] = RokCommon_HTML_SelectList::option('', rc__('- Select RokSprocket Widget -'));
 		foreach ($widgets as $info) {
 			if ($this->value == $info['id']) $selected = ' selected="selected"'; else $selected = "";
 			$tmp       = RokCommon_HTML_SelectList::option($info['id'], $info['title']);

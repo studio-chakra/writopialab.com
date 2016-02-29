@@ -15,5 +15,6 @@
     <services>
         <service id="roksprocket.provider.joomla" class="%roksprocket.providers.registered.joomla.class%" shared="false"/>
         <service id="roksprocket.filter.processor.joomla" class="RokSprocket_Provider_Joomla_Filter" shared="false"/>
+        <service id="roksprocket.filter.processor.joomla_tagmerge" class="RokSprocket_Provider_Joomla_NoTagsMerge" shared="false"/>
     </services>
 </container>

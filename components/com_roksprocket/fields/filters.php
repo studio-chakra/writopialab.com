@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id$
+ * @version   $Id: filters.php 14427 2013-10-10 21:29:18Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -27,7 +27,13 @@ class JFormFieldFilters extends JFormField
         $container = RokCommon_Service::getContainer();
         $empty_button_text = rc__('Create New Filter');
 
-        $filter_file = $container[(string)$this->element['filterlocationparam']] . '/' . (string)$this->element['filterfile'];
+	    if (isset($this->element['filterfileparam'])){
+	        $filter_filename = $container->getParameter(($this->element['filterfileparam']));
+	    }
+	    else if ($this->element['filterfile']) {
+		    $filter_filename = (string)$this->element['filterfile'];
+	    }
+        $filter_file = $container[(string)$this->element['filterlocationparam']] . '/' . $filter_filename;
         if (!file_exists($filter_file)) {
             throw new RokSprocket_Exception(rc__('Unable to find filter file %s', $filter_file));
         }
@@ -89,7 +95,7 @@ class JFormFieldFilters extends JFormField
 	    RokCommon_Header::addInlineScript("
 	 			            RokSprocketFilters.filters['".$this->id."'] = {
 	 			                pathsref: '". (string)$this->element['filterlocationparam'] . "',
-	 			                file: '" . (string)$this->element['filterfile'] ."'
+	 			                file: '" . $filter_filename ."'
 	 			            }");
 
 

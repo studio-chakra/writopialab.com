@@ -20,6 +20,10 @@
 					<parameter key="displayname">Slideshow</parameter>
 					<parameter key="basefile">index.php</parameter>
 				</parameter>
+				<parameter key="slideshow2" type="collection">
+					<parameter key="displayname">Slideshow Style 2</parameter>
+					<parameter key="basefile">index.php</parameter>
+				</parameter>
 				<parameter key="showcase" type="collection">
 					<parameter key="displayname">Showcase</parameter>
 					<parameter key="basefile">index.php</parameter>

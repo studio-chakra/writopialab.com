@@ -1,42 +1,50 @@
 <?php
 /**
- * @version   $Id: FieldsAttach.php 59116 2013-02-20 05:32:27Z steph $
+ * @version   $Id: FieldsAttach.php 19225 2014-02-27 00:15:10Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
 class RokSprocket_Provider_FieldsAttach extends RokSprocket_Provider_AbstarctJoomlaBasedProvider
 {
+	protected static $available;
     protected static $extra_fields;
 
     /**
      * @static
      * @return bool
      */
-    public static function isAvailable()
-    {
-        if (!class_exists('JFactory')) {
-            return false;
-        }
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+	public static function isAvailable()
+	{
+		if (isset(self::$available)) {
+			return self::$available;
+		}
 
-        $query->select('a.extension_id');
-        $query->from('#__extensions AS a');
-        $query->where('a.type = "component"');
-        $query->where('a.element = "com_fieldsattach"');
-        $query->where('a.enabled = 1');
+		if (!class_exists('JFactory')) {
+			self::$available = false;
 
-        $db->setQuery($query);
+		} else {
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
 
-        if ($db->loadResult()) {
-            return true;
-        } else {
-            return false;
-        }
+			$query->select('a.extension_id');
+			$query->from('#__extensions AS a');
+			$query->where('a.type = "component"');
+			$query->where('a.element = "com_fieldsattach"');
+			$query->where('a.enabled = 1');
 
-    }
+			$db->setQuery($query);
+
+			if ($db->loadResult()) {
+				self::$available = true;
+
+			} else {
+				self::$available = false;
+			}
+		}
+		return self::$available;
+	}
 
     /**
      * @param array $filters
@@ -91,6 +99,7 @@ class RokSprocket_Provider_FieldsAttach extends RokSprocket_Provider_AbstarctJoo
 
         $texts['text_introtext'] = $raw_item->introtext;
         $texts['text_fulltext'] = $raw_item->fulltext;
+        $texts['text_title'] = $raw_item->title;
         $texts['text_metadesc'] = $raw_item->metadesc;
         $texts = $this->processPlugins($texts);
         $item->setTextFields($texts);
@@ -299,6 +308,7 @@ class RokSprocket_Provider_FieldsAttach extends RokSprocket_Provider_AbstarctJoo
             'text_fulltext' => array('group' => null, 'display' => 'Full Text'),
             'text_introtext' => array('group' => null, 'display' => 'Intro Text'),
             'text_metadesc' => array('group' => null, 'display' => 'Meta Description'),
+            'text_title' => array('group' => null, 'display' => 'Article Title'),
         );
         $list = array_merge($static, $list);
         return $list;

@@ -1,8 +1,8 @@
 <?php
 /**
- * @version	$Id$
+ * @version	$Id: Filter_Type_User.php 22593 2014-08-08 14:46:31Z jakub $
  * @author	 RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license	http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -45,7 +45,7 @@ class RokSprocket_Provider_Posttype_Filter_Type_User extends RokCommon_Filter_Ty
 		$groups	= $this->getGroups();
 		$excluded = $this->getExcluded();
         $nonce = wp_create_nonce('roksprocket-ajax-nonce');
-        $link = get_bloginfo('wpurl').'/wp-admin/admin-ajax.php?action=roksprocket_userlist&nonce='.$nonce.'&TB_iframe=true&height=555&width=425';
+        $link = site_url().'/wp-admin/admin-ajax.php?action=roksprocket_userlist&nonce='.$nonce.'&TB_iframe=true&height=555&width=425';
 
 		// Initialize some field attributes.
 		$attr = $this->xmlnode['class'] ? ' class="' . (string)$this->xmlnode['class'] . '"' : '';

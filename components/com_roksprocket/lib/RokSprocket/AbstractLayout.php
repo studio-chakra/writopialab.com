@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id$
+ * @version   $Id: AbstractLayout.php 13721 2013-09-24 16:46:17Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -180,7 +180,8 @@ abstract class RokSprocket_AbstractLayout implements RokSprocket_Layout
 		if (!$default_field) {
 			$deflink = false;
 		} else {
-			switch ($this->parameters->get($default_field, 'primary')) {
+			$default_field_value = str_replace($item->getProvider().'_','',$this->parameters->get($default_field, 'primary'));
+			switch ($default_field_value) {
 				case 'none':
 					$deflink = false;
 					break;
@@ -193,7 +194,7 @@ abstract class RokSprocket_AbstractLayout implements RokSprocket_Layout
 						break;
 					}
 				default:
-					$deflink = $item->getLink($this->parameters->get($default_field));
+					$deflink = $item->getLink($default_field_value);
 			}
 		}
 		if (!$per_item_field) {
@@ -238,7 +239,8 @@ abstract class RokSprocket_AbstractLayout implements RokSprocket_Layout
 		if (!$default_field) {
 			$defimage = false;
 		} else {
-			switch ($this->parameters->get($default_field, 'primary')) {
+			$default_field_value = str_replace($item->getProvider().'_','',$this->parameters->get($default_field, 'primary'));
+			switch ($default_field_value) {
 				case 'none':
 					$defimage = false;
 					break;
@@ -251,7 +253,7 @@ abstract class RokSprocket_AbstractLayout implements RokSprocket_Layout
 						break;
 					}
 				default:
-					$defimage = $item->getImage($this->parameters->get($default_field));
+					$defimage = $item->getImage($default_field_value);
 			}
 		}
 		if (!$per_item_field) {
@@ -297,7 +299,8 @@ abstract class RokSprocket_AbstractLayout implements RokSprocket_Layout
 		if (!$default_field) {
 			$deftext = false;
 		} else {
-			switch ($this->parameters->get($default_field, 'primary')) {
+			$default_field_value = str_replace($item->getProvider().'_','',$this->parameters->get($default_field, 'primary'));
+			switch ($default_field_value) {
 				case 'none':
 					$deftext = false;
 					break;
@@ -313,7 +316,7 @@ abstract class RokSprocket_AbstractLayout implements RokSprocket_Layout
 						break;
 					}
 				default:
-					$deftext = $item->getTextField($this->parameters->get($default_field));
+					$deftext = $item->getTextField($default_field_value);
 			}
 		}
 		if (!$per_item_field) {

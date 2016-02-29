@@ -1,7 +1,7 @@
 <config>
 	<fields name="params">
 		<fieldset name="roksprocket" overwrite="true">
-			<field name="wordpress_provider_title" type="label" label="Wordpress Content Filter Rules" default="" description=""
+			<field name="wordpress_provider_title" type="label" label="WordPress Content Filter Rules" default="" description=""
 				   optionorder="11" class="provider provider_wordpress"/>
 			<field name="wordpress_articles" type="filters" default="" multiple="false" label="" description=""
 				   class="provider provider_wordpress filter_articles" optionorder="12"

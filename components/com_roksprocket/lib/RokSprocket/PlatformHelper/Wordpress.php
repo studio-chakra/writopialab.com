@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: Wordpress.php 57545 2012-10-14 22:51:08Z btowles $
+ * @version   $Id: Wordpress.php 19249 2014-02-27 19:21:50Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -57,6 +57,20 @@ class RokSprocket_PlatformHelper_Wordpress implements RokSprocket_PlatformHelper
 	{
 		return $items;
 	}
+
+	/**
+	 *
+	 * @param string              $output
+	 *
+	 * @param \RokCommon_Registry $parameters
+	 *
+	 * @return RokSprocket_ItemCollection
+	 */
+	public function processOutputForEvents($output, RokCommon_Registry $parameters)
+	{
+		return $output;
+	}
+
 
 	/**
 	 * Gets the cache directory for the platform

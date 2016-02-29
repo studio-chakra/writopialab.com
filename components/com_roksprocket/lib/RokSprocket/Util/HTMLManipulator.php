@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: HTMLManipulator.php 58912 2013-01-18 23:33:09Z steph $
+ * @version   $Id: HTMLManipulator.php 10887 2013-05-30 06:31:57Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 

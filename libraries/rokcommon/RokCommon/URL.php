@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: URL.php 53534 2012-06-06 18:21:34Z btowles $
+ * @version   $Id: URL.php 10831 2013-05-29 19:32:17Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - ${copyright_year} RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  *
@@ -77,12 +77,23 @@ class RokCommon_URL
             $aPairs = array();
             foreach ($aUrl['query_params'] as $sKey => $sValue)
             {
-                $kvp = $sKey;
                 if (!empty($sValue))
                 {
-                    $kvp .= '=' . urlencode($sValue);
+	                if(is_array($sValue))
+	                {
+		                $kvparray = array();
+		                foreach($sValue as $subValue)
+		                {
+			                $aPairs[] = $sKey . '[]=' . urlencode($subValue);
+		                }
+	                }
+	                else{
+		                $aPairs[] = $sKey . '=' . urlencode($sValue);
+	                }
                 }
-                $aPairs[] = $kvp;
+	            else{
+		            $aPairs[] = $sKey;
+	            }
             }
             $sQuery = implode('&amp;', $aPairs);
         } else

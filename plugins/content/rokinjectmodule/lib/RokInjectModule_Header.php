@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: RokInjectModule_Header.php 8051 2013-03-01 20:08:54Z btowles $
+ * @version   $Id: RokInjectModule_Header.php 19267 2014-02-28 00:18:56Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 defined('ROKCOMMON') or die;
@@ -71,5 +71,10 @@ class RokInjectModule_Header extends RokCommon_Header_AbstractHeader
 		if (!empty($js)) {
 			$this->document->addScriptDeclaration($js);
 		}
+	}
+	
+	public function populate()
+	{
+		return true;
 	}
 }

@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id$
+ * @version   $Id: RokSprocket_Layout_Headlines.php 28636 2015-07-09 15:40:49Z james $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -31,19 +31,34 @@ class RokSprocket_Layout_Headlines extends RokSprocket_AbstractLayout
 
 			// clean from tags and limit words amount
 			$words_amount = $this->parameters->get('headlines_previews_length', 20);
-			if ($words_amount === '∞' || $words_amount == '0'){
+			if ($words_amount === '∞' || $words_amount == '0') {
 				$words_amount = false;
 			}
-			$stripped     = strip_tags($item->getText());
-			$preview      = $this->_getWords($stripped, $words_amount);
-			$append       = strlen($stripped) != strlen($preview) ? '<span class="roksprocket-ellipsis">…</span>' : "";
+
+			$item_text = $item->getText();
+			if ($this->parameters->get('headlines_strip_html_tags', true)) {
+				$item_text = strip_tags($item_text);
+			}
+			$preview  = $this->_getWords($item_text, $words_amount);
+			$append   = strlen($item_text) != strlen($preview) ? '<span class="roksprocket-ellipsis">…</span>' : "";
 			$item->setText($preview . $append);
 
 			// resizing images if needed
-			if ($item->getPrimaryImage() && $this->parameters->get('headlines_resize_enable', false)) {
-				$width  = $this->parameters->get('headlines_resize_width', 0);
-				$height = $this->parameters->get('headlines_resize_height', 0);
-				$item->getPrimaryImage()->resize($width, $height);
+			if ($item->getPrimaryImage()) {
+				if ($this->parameters->get('headlines_resize_enable', false)) {
+					$width  = $this->parameters->get('headlines_resize_width', 0);
+					$height = $this->parameters->get('headlines_resize_height', 0);
+					$item->getPrimaryImage()->resize($width, $height);
+				}
+				/** @var RokCommon_PlatformInfo $platforminfo */
+				$platforminfo = $this->container->platforminfo;
+				$urlbase = ($platforminfo->getUrlBase()) ? $platforminfo->getUrlBase() : '/';
+				if (!$platforminfo->isLinkexternal($item->getPrimaryImage()->getSource())
+					&& strpos($item->getPrimaryImage()->getSource(), '/') !== 0
+					&& strpos($item->getPrimaryImage()->getSource(), $urlbase) !== 0) {
+					$source = rtrim($urlbase, '/') . '/' . $item->getPrimaryImage()->getSource();
+					$item->getPrimaryImage()->setSource($source);
+				}
 			}
 		}
 	}
@@ -56,9 +71,9 @@ class RokSprocket_Layout_Headlines extends RokSprocket_AbstractLayout
 
 		$theme_basefile = $this->container[sprintf('roksprocket.layouts.%s.themes.%s.basefile', $this->name, $this->theme)];
 		return $this->theme_context->load($theme_basefile, array(
-		                                                        'layout'    => $this,
-		                                                        'items'     => $this->items,
-		                                                        'parameters'=> $this->parameters
+		                                                        'layout'     => $this,
+		                                                        'items'      => $this->items,
+		                                                        'parameters' => $this->parameters
 		                                                   ));
 	}
 
@@ -81,6 +96,17 @@ class RokSprocket_Layout_Headlines extends RokSprocket_AbstractLayout
 		$js[] = "window.addEvent('domready', function(){";
 		$js[] = "	RokSprocket.instances.headlines.attach(" . $id . ", '" . $options . "');";
 		$js[] = "});";
+        $js[] = "window.addEvent('load', function(){";
+        $js[] = "   var overridden = false;";
+        $js[] = "   if (!overridden && window.G5 && window.G5.offcanvas){";
+        $js[] = "       var mod = document.getElement('[data-".$this->name."=\"" . $id . "\"]');";
+        $js[] = "       mod.addEvents({";
+        $js[] = "           touchstart: function(){ window.G5.offcanvas.detach(); },";
+        $js[] = "           touchend: function(){ window.G5.offcanvas.attach(); }";
+        $js[] = "       });";
+        $js[] = "       overridden = true;";
+        $js[] = "   };";
+        $js[] = "});";
 		RokCommon_Header::addInlineScript(implode("\n", $js) . "\n");
 	}
 

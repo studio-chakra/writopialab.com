@@ -10,7 +10,18 @@
 defined('_JEXEC') or die;
 $fieldSet      = $that->form->getFieldset('roksprocket');
 $hidden_fields = '';
+$container = $that->container['roksprocket.layouts.' . $that->layout];
+$composite = 'roksprocket_layout_' . $that->layout;
+foreach ($container->paths as $path) {
+	RokCommon_Composite::addPackagePath($composite, $path, 0);
+}
+
+$iconURL = RokCommon_Composite::get($composite)->getUrl($container->icon);
+if (empty($iconURL)) $iconURL = "components/com_roksprocket/assets/images/default_layout_icon.png";
+$css[] = sprintf('#module-form i.layout.%s {background-image: url(%s);background-position: 0 0;}', $that->layout, $iconURL);
 ?>
+
+<style><?php echo implode("\n", $css); ?></style>
 
 <div class="panel-left">
 	<div class="panel-left-wrapper">
@@ -21,7 +32,6 @@ $hidden_fields = '';
 	<ul>
 	    <?php
 	    	foreach ($fieldSet as $field) :
-
             foreach(array('group_open','group_bit', 'group_close','group_class') as $group){
                 ${$group} = $that->form->getFieldAttribute($field->fieldname, $group, false, 'params');
             }

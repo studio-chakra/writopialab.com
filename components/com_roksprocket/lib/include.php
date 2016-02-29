@@ -1,8 +1,8 @@
 <?php
  /**
- * @version   $Id$
+ * @version   $Id: include.php 18123 2014-01-24 16:15:19Z jakub $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -29,7 +29,7 @@ if (!defined('ROKSPROCKET_LIB')) {
 
     if (($loaderrors = require_once(dirname(__FILE__) . '/requirements.php')) !== true) {
         if (!defined('ROKSPROCKET_ERROR_MISSING_LIBS')) define('ROKSPROCKET_ERROR_MISSING_LIBS', true);
-        return $loaderrors;
+		roksprocket_set_admin_message('error', __('<strong>Your server doesn\'t meet RokSprocket requirements :</strong><br/><br/>') . implode("<br/>", $loaderrors));
     }
 
     //Do base initialization

@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: compatability.php 4051 2012-10-01 22:40:44Z btowles $
+ * @version   $Id: legacy_class.php 10885 2013-05-30 06:31:41Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 defined('_JEXEC') or die('Restricted access');

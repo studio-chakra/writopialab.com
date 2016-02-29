@@ -1,8 +1,8 @@
  <?php
 /**
- * @version   $Id$
+ * @version   $Id: Filter.php 11320 2013-06-07 22:30:23Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -144,6 +144,7 @@ class RokSprocket_Provider_Joomla_Filter extends RokSprocket_Provider_AbstractJo
 			$this->filter_where[] = 'a.catid IN (' . implode(',', $category_ids) . ')';
 		}
 	}
+
 
 	/**
 	 * @param $data
@@ -329,7 +330,6 @@ class RokSprocket_Provider_Joomla_Filter extends RokSprocket_Provider_AbstractJo
 	{
 		$this->normalSortBy('a.created', $data);
 	}
-
 	/**
 	 * @param $data
 	 *
@@ -378,5 +378,13 @@ class RokSprocket_Provider_Joomla_Filter extends RokSprocket_Provider_AbstractJo
 	protected function sort_hits($data)
 	{
 		$this->normalSortBy('a.hits', $data);
+	}
+
+	/**
+	 * @param $data
+	 */
+	protected function sort_ordering($data)
+	{
+		$this->normalSortBy('a.ordering', $data);
 	}
 }

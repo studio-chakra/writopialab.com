@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: item.php 54380 2012-07-17 00:06:22Z djamil $
+ * @version   $Id: item.php 23394 2014-10-09 15:22:10Z james $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -17,7 +17,7 @@
 			<?php if ($item->getPrimaryImage()) :?>
 			<div class="sprocket-mosaic-image-container">
 				<?php if ($item->getPrimaryLink()) : ?><a href="<?php echo $item->getPrimaryLink()->getUrl(); ?>"><?php endif; ?>
-				<img src="<?php echo $item->getPrimaryImage()->getSource(); ?>" alt="" class="sprocket-mosaic-image" />
+				<img src="<?php echo $item->getPrimaryImage()->getSource(); ?>" alt="<?php echo $item->getPrimaryImage()->getAlttext(); ?>" class="sprocket-mosaic-image" />
 				<?php if ($item->getPrimaryLink()) : ?>
 					<span class="sprocket-mosaic-hover"></span>
 					<span class="sprocket-mosaic-hovercontent"><span>+</span><?php rc_e('READ_MORE'); ?></span>
@@ -35,13 +35,13 @@
 				</h2>
 				<?php endif; ?>
 
-				<?php if ($parameters->get('mosaic_article_details') != 0): ?>
+				<?php if ($parameters->get('mosaic_article_details')): ?>
 				<div class="sprocket-mosaic-infos">
-					<?php if ($parameters->get('mosaic_article_details') !== 'date'): ?>
+					<?php if (($parameters->get('mosaic_article_details')=='1') or ($parameters->get('mosaic_article_details') == 'author')): ?>
 					By 	<span class="author"><?php echo $item->getAuthor(); ?></span>
 					<?php endif; ?>
-					<?php if ($parameters->get('mosaic_article_details') == 1): ?> / <?php endif; ?>
-					<?php if ($parameters->get('mosaic_article_details') !== 'author'): ?>
+					<?php if ($parameters->get('mosaic_article_details')=="1"): ?> / <?php endif; ?>
+					<?php if (($parameters->get('mosaic_article_details')=="1") or ($parameters->get('mosaic_article_details') == 'date')): ?>
 					<span class="date"><?php echo $item->getDate();?></span>
 					<?php endif; ?>
 				</div>

@@ -1,11 +1,13 @@
 /*
+ * @version   $Id: imagepicker.js 10889 2013-05-30 07:48:35Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
-if(typeof this.RokSprocket=="undefined"){this.RokSprocket={};}((function(){if(typeof this.RokSprocket=="undefined"){this.RokSprocket={};}var a=(Browser.name=="ie"&&Browser.version<=9)?"keypress":"input";
-this.ImagePicker=new Class({Implements:[Options,Events],options:{},initialize:function(b){this.setOptions(b);this.attach();},getPickers:function(){this.pickers=document.getElements("[data-imagepicker]");
-return this.pickers;},attach:function(b){var c=(b?new Elements([b]).flatten():this.getPickers());this.fireEvent("beforeAttach",c);c.each(function(h){var e=h.getElement("select"),i=h.getElement("[data-imagepicker-display]"),d=h.getElement("a.modal"),g=h.getElement("#"+h.get("data-imagepicker-id"));
+if(typeof this.RokSprocket=="undefined"){this.RokSprocket={};
+}((function(){if(typeof this.RokSprocket=="undefined"){this.RokSprocket={};}var a=(Browser.name=="ie"&&Browser.version<=9)?"keypress":"input";this.ImagePicker=new Class({Implements:[Options,Events],options:{},initialize:function(b){this.setOptions(b);
+this.attach();},getPickers:function(){this.pickers=document.getElements("[data-imagepicker]");return this.pickers;},attach:function(b){var c=(b?new Elements([b]).flatten():this.getPickers());
+this.fireEvent("beforeAttach",c);c.each(function(h){var e=h.getElement("select"),i=h.getElement("[data-imagepicker-display]"),d=h.getElement("a.modal"),g=h.getElement("#"+h.get("data-imagepicker-id"));
 var k=e.retrieve("roksprocket:pickers:change",function(l){this.change.call(this,l,e,d);}.bind(this)),f=i.retrieve("roksprocket:pickers:input",function(l){this.keypress.call(this,l,i,g,e,d);
 }.bind(this)),j=i.retrieve("roksprocket:pickers:blur",function(l){this.blur.call(this,l,i,g,e,d);}.bind(this));if(!g.get("value").test(/^-([a-z]{1,})-$/)){i.store("display_value",i.get("value")||"");
 i.store("display_datatitle",i.get("data-original-title")||"");g.store("json_value",g.get("value")||"");}e.addEvent("change",k);i.addEvent(a,f);i.twipsy({placement:"above",offset:5,html:true});

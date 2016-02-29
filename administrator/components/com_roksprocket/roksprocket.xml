@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <extension method="upgrade" type="component" version="1.6.0">
     <name>RokSprocket</name>
-    <creationDate>April 30, 2013</creationDate>
+    <creationDate>September 3, 2015</creationDate>
     <author>RocketTheme, LLC</author>
     <authorEmail>support@rockettheme.com</authorEmail>
     <authorUrl>http://www.rockettheme.com</authorUrl>
-    <copyright>(C) 2005 - 2013 RocketTheme, LLC. All rights reserved.</copyright>
+    <copyright>(C) 2005 - 2015 RocketTheme, LLC. All rights reserved.</copyright>
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
-    <version>1.8.10</version>
-    <description>RokSprocket Component for Joomla</description>
+    <version>2.1.9</version>
+    <description>Parent for all PHP based projects</description>
 
     <files folder="site">
         <folder>tables</folder>
@@ -54,7 +54,6 @@
             <folder>language</folder>
             <folder>controllers</folder>
             <filename>index.html</filename>
-            <filename>checksums</filename>
             <folder>models</folder>
         </files>
     </administration>

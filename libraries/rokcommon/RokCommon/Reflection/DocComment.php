@@ -1,8 +1,8 @@
 <?php
 /**
- * @version                                             $Id: DocComment.php 49831 2012-02-29 17:54:19Z btowles $
+ * @version                                             $Id: DocComment.php 10831 2013-05-29 19:32:17Z btowles $
  * @author                                              RocketTheme http://www.rockettheme.com
- * @copyright                                           Copyright (C) 2007 - ${copyright_year} RocketTheme, LLC
+ * @copyright                                           Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license                                             http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * Based on Addendum

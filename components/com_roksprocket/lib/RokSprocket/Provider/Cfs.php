@@ -1,14 +1,14 @@
 <?php
+
 /**
- * @version   $Id$
+ * @version   $Id: Cfs.php 21657 2014-06-19 18:02:32Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
-
 class RokSprocket_Provider_Cfs extends RokSprocket_Provider_AbstarctWordpressBasedProvider
 {
-    protected static $extra_fields;
+	protected static $extra_fields;
 
 	/**
 	 * @static
@@ -51,7 +51,7 @@ class RokSprocket_Provider_Cfs extends RokSprocket_Provider_AbstarctWordpressBas
 		$item->setProvider($this->provider_name);
 		$item->setId($raw_item->post_id);
 		$item->setAlias($raw_item->post_name);
-        $item->setAuthor(($raw_item->display_name) ? $raw_item->display_name : $raw_item->user_nicename);
+		$item->setAuthor(($raw_item->display_name) ? $raw_item->display_name : $raw_item->user_nicename);
 		$item->setTitle($raw_item->post_title);
 		$item->setDate($raw_item->post_date);
 		$item->setPublished(($raw_item->post_status == "publish") ? true : false);
@@ -65,8 +65,8 @@ class RokSprocket_Provider_Cfs extends RokSprocket_Provider_AbstarctWordpressBas
 		$item->setMetaData(null);
 
 		//Set up texts array
-		$texts       = array();
-		if($text_fields = self::getFieldTypes(array("text", "wysiwyg"))){
+		$texts = array();
+		if ($text_fields = self::getFieldTypes(array("text", "wysiwyg"))) {
 			$text = '';
 			foreach ($text_fields as $field) {
 				$texts['text_' . $field['id']] = self::getFieldValue($raw_item->post_id, $field['id']);
@@ -74,12 +74,13 @@ class RokSprocket_Provider_Cfs extends RokSprocket_Provider_AbstarctWordpressBas
 		}
 		$texts['text_post_content'] = $raw_item->post_content;
 		$texts['text_post_excerpt'] = $raw_item->post_excerpt;
-        $texts = $this->processPlugins($texts);
+		$texts['text_post_title']   = $raw_item->post_title;
+		$texts                      = $this->processPlugins($texts);
 		$item->setTextFields($texts);
 
 		//set up images array
-		$images       = array();
-        if ($image_fields = self::getFieldTypes("file")){
+		$images = array();
+		if ($image_fields = self::getFieldTypes("file")) {
 			$image = '';
 			foreach ($image_fields as $field) {
 				$image = new RokSprocket_Item_Image();
@@ -103,8 +104,8 @@ class RokSprocket_Provider_Cfs extends RokSprocket_Provider_AbstarctWordpressBas
 		$item->setPrimaryImage($images['image_thumbnail']);
 
 		//set up links array
-		$links       = array();
-		if($link_fields = self::getFieldTypes("url")){
+		$links = array();
+		if ($link_fields = self::getFieldTypes("url")) {
 			$link = '';
 			foreach ($link_fields as $field) {
 				$link_field = new RokSprocket_Item_Link();
@@ -121,10 +122,9 @@ class RokSprocket_Provider_Cfs extends RokSprocket_Provider_AbstarctWordpressBas
 		$item->setPrimaryLink($primary_link);
 
 		$item->setCommentCount($raw_item->comment_count);
-		if (isset($raw_item->tags)) {
-			$tags = (explode(',', $raw_item->tags)) ? explode(',', $raw_item->tags) : array();
-			$item->setTags($tags);
-		}
+        if (!empty($raw_item->tags)) {
+            $item->setTags($raw_item->tags);
+        }
 
 		$item->setDbOrder($dborder);
 
@@ -146,15 +146,15 @@ class RokSprocket_Provider_Cfs extends RokSprocket_Provider_AbstarctWordpressBas
 	 */
 	public static function getImageTypes()
 	{
-        $list   = array();
+		$list = array();
 
-		if($fields = self::getFieldTypes(array("file"))){
-            foreach ($fields as $field) {
-                $list['image_' . $field['id']]            = array();
-                $list['image_' . $field['id']]['group']   = $field['id'];
-                $list['image_' . $field['id']]['display'] = $field['label'];
-            }
-        }
+		if ($fields = self::getFieldTypes(array("file"))) {
+			foreach ($fields as $field) {
+				$list['image_' . $field['id']]            = array();
+				$list['image_' . $field['id']]['group']   = $field['id'];
+				$list['image_' . $field['id']]['display'] = $field['label'];
+			}
+		}
 		return $list;
 	}
 
@@ -163,15 +163,15 @@ class RokSprocket_Provider_Cfs extends RokSprocket_Provider_AbstarctWordpressBas
 	 */
 	public static function getLinkTypes()
 	{
-        $list   = array();
+		$list = array();
 
-		if($fields = self::getFieldTypes(array("url"))){
-            foreach ($fields as $field) {
-                $list['url_' . $field['id']]            = array();
-                $list['url_' . $field['id']]['group']   = $field['id'];
-                $list['url_' . $field['id']]['display'] = $field['label'];
-            }
-        }
+		if ($fields = self::getFieldTypes(array("url"))) {
+			foreach ($fields as $field) {
+				$list['url_' . $field['id']]            = array();
+				$list['url_' . $field['id']]['group']   = $field['id'];
+				$list['url_' . $field['id']]['display'] = $field['label'];
+			}
+		}
 		return $list;
 	}
 
@@ -180,19 +180,20 @@ class RokSprocket_Provider_Cfs extends RokSprocket_Provider_AbstarctWordpressBas
 	 */
 	public static function getTextTypes()
 	{
-        $list = array();
+		$list = array();
 
-		if($fields = self::getFieldTypes(array("text", "textarea"))){
+		if ($fields = self::getFieldTypes(array("text", "textarea"))) {
 
-            foreach ($fields as $field) {
-                $list['text_' . $field['id']]            = array();
-                $list['text_' . $field['id']]['group']   = $field['id'];
-                $list['text_' . $field['id']]['display']  = $field['label'];
-            }
-        }
+			foreach ($fields as $field) {
+				$list['text_' . $field['id']]            = array();
+				$list['text_' . $field['id']]['group']   = $field['id'];
+				$list['text_' . $field['id']]['display'] = $field['label'];
+			}
+		}
 		$static = array(
 			'text_post_content' => array('group' => null, 'display' => 'Post Content'),
 			'text_post_excerpt' => array('group' => null, 'display' => 'Post Excerpt'),
+			'text_post_title'   => array('group' => null, 'display' => 'Post Title'),
 		);
 		$list   = array_merge($static, $list);
 		return $list;
@@ -200,35 +201,35 @@ class RokSprocket_Provider_Cfs extends RokSprocket_Provider_AbstarctWordpressBas
 
 	private static function getFieldTypes($needed_field_types = false)
 	{
-        if (!isset(self::$extra_fields)) {
+		if (!isset(self::$extra_fields)) {
 
-            $fields = array();
-            $field_groups = get_posts(array('post_type' => 'cfs', 'post_status' => 'publish'));
-            foreach($field_groups as $field_group){
-                $group = get_post_meta($field_group->ID, 'cfs_fields', true);
-                foreach($group as $field){
-                    $fields[] = $field;
-                }
-            }
+			$fields       = array();
+			$field_groups = get_posts(array('post_type' => 'cfs', 'post_status' => 'publish'));
+			foreach ($field_groups as $field_group) {
+				$group = get_post_meta($field_group->ID, 'cfs_fields', true);
+				foreach ($group as $field) {
+					$fields[] = $field;
+				}
+			}
 //            $fields = array_combine($fields, $next_fields);
 
-            self::$extra_fields = $fields;
-            if (self::$extra_fields == null) {
-                self::$extra_fields = array();
-            }
-        }
+			self::$extra_fields = $fields;
+			if (self::$extra_fields == null) {
+				self::$extra_fields = array();
+			}
+		}
 
-        if (!is_array($needed_field_types)) {
-            $needed_field_types = array($needed_field_types);
-        }
-        foreach(self::$extra_fields as $key => $val){
-            if(in_array($val['type'], $needed_field_types)){
-                $types[] = $val;
-            }
-        }
+		if (!is_array($needed_field_types)) {
+			$needed_field_types = array($needed_field_types);
+		}
+		foreach (self::$extra_fields as $key => $val) {
+			if (in_array($val['type'], $needed_field_types)) {
+				$types[] = $val;
+			}
+		}
 
-        return $types;
-    }
+		return $types;
+	}
 
 	private static function getFieldValue($post_id = false, $field_id = false)
 	{
@@ -237,8 +238,8 @@ class RokSprocket_Provider_Cfs extends RokSprocket_Provider_AbstarctWordpressBas
 		global $wpdb;
 
 		$query = 'SELECT pm.meta_value';
-		$query .= ' FROM ' .  $wpdb->prefix . 'cfs_values AS cv';
-		$query .= ' LEFT JOIN ' .  $wpdb->prefix . 'postmeta AS pm ON pm.meta_id = cv.meta_id';
+		$query .= ' FROM ' . $wpdb->prefix . 'cfs_values AS cv';
+		$query .= ' LEFT JOIN ' . $wpdb->prefix . 'postmeta AS pm ON pm.meta_id = cv.meta_id';
 		$query .= ' WHERE cv.field_id = "' . $field_id . '"';
 		$query .= ' AND cv.post_id = "' . $post_id . '"';
 

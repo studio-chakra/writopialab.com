@@ -1,6 +1,6 @@
 <?php
 /**
- * @version   $Id: imagepicker.php 57243 2012-10-09 04:09:34Z btowles $
+ * @version   $Id: imagepicker.php 19227 2014-02-27 00:37:34Z djamil $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2012 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -65,7 +65,7 @@ class RokCommon_Form_Field_ImagePicker extends RokCommon_Form_AbstractField
 		$html[] = '		<input data-imagepicker-display="true" data-original-title="'.rc__($tipTitle).'" type="text" value="'.$path.'" '.$class.$placeholder.' />';
 		$html[] = '		<input type="hidden" id="'.$this->id.'" name="'.$this->name.'" value="'.str_replace('"', "'", $this->value).'" />';
 		$html[] = $this->_getDropdown();
-		$html[] = '		<a href="'.$link.'" class="modal imagepicker" title="Select Image" rel="{handler: \'iframe\', size: {x: 695, y: 450}}"><i class="icon tool picker"></i></a>';
+		$html[] = '		<a href="'.$link.'" class="modal imagepicker" title="Select Image" rel="{handler: \'iframe\', size: {x: 790, y: 450}}"><i class="icon tool picker"></i></a>';
 		$html[] = '</div>';
 
 		return implode("\n", $html);

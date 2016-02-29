@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: Wordpress.php 57540 2012-10-14 18:27:59Z btowles $
+ * @version   $Id: Wordpress.php 20058 2014-03-31 20:35:45Z jakub $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - ${copyright_year} RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -72,7 +72,11 @@ class RokCommon_Header_Wordpress extends RokCommon_Header_AbstractHeader
 	 */
 	public function addInlineScript($text, $order = self::DEFAULT_ORDER)
 	{
-		echo "<script type=\"text/javascript\">\n" . (string)$text . "\n</script>";
+        if( !is_admin() ) {
+            add_action( 'wp_head', create_function( '$text', "echo '<script type=\"text/javascript\">\n" . addslashes( $text ) . "</script>\n';" ), $order );
+        } else {
+            echo "<script type=\"text/javascript\">\n" . (string)$text . "</script>\n";
+        }
 	}
 
 	/**

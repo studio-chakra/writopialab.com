@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id$
+ * @version   $Id: ModRokSprocket.php 19249 2014-02-27 19:21:50Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -15,6 +15,15 @@ class ModRokSprocket extends RokSprocket
 		RokCommon_Composite::addPackagePath($this->context_base,JPATH_SITE.'/components/com_roksprocket',10);
 		RokCommon_Composite::addPackagePath($this->context_base,JPATH_SITE.'/modules/mod_roksprocket',15);
 		RokCommon_Composite::addPackagePath($this->context_base,$this->container['roksprocket.template.override.path'],20);
+	}
+
+	public function render(RokSprocket_ItemCollection $items)
+	{
+		$rendered = parent::render($items);
+		if (!isset($this->params) || $this->params->get('run_content_plugins', 'onmodule') == 'onmodule' || $this->params->get('run_content_plugins', 'onmodule') == 1) {
+			$rendered = JHtml::_('content.prepare', $rendered);
+		}
+		return $rendered;
 	}
 
 	/**

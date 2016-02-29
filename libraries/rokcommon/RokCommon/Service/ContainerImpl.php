@@ -40,7 +40,7 @@
  * @package    symfony
  * @subpackage dependency_injection
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
- * @version    SVN: $Id: ContainerImpl.php 57540 2012-10-14 18:27:59Z btowles $
+ * @version    SVN: $Id: ContainerImpl.php 18351 2014-01-31 22:54:29Z btowles $
  */
 class RokCommon_Service_ContainerImpl implements RokCommon_Service_Container, ArrayAccess, Iterator
 {
@@ -457,11 +457,17 @@ class RokCommon_Service_ContainerImpl implements RokCommon_Service_Container, Ar
      */
     static public function camelize($id)
     {
-        return preg_replace(array(
-                                 '/(^|_|-)+(.)/e', '/\.(.)/e'
-                            ), array(
-                                    "strtoupper('\\2')", "'_'.strtoupper('\\1')"
-                               ), $id);
+	    $id = preg_replace_callback('/(^|_|-)+(.)/', create_function ('$matches', 'return strtoupper($matches[2]);'), $id);
+		$id =  preg_replace_callback('/\.(.)/', create_function ('$matches', 'return "_".strtoupper($matches[1]);'), $id);
+	    return $id;
+
+		//        return preg_replace(array(
+		//                                 '/(^|_|-)+(.)/e', '/\.(.)/e'
+		//                            ), array(
+		//                                    "strtoupper('\\2')", "'_'.strtoupper('\\1')"
+		//                               ), $id);
+
+
     }
 
     /**

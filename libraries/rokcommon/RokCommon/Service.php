@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: Service.php 57540 2012-10-14 18:27:59Z btowles $
+ * @version   $Id: Service.php 27318 2015-03-04 12:51:02Z matias $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - ${copyright_year} RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 defined('ROKCOMMON') or die;
@@ -55,7 +55,7 @@ class RokCommon_Service extends RokCommon_Service_Container_Builder
 	 * @static
 	 * @return RokCommon_Service_Container
 	 */
-	public static function &getContainer()
+	public static function getContainer()
 	{
 		if (!isset(self::$containerInstance)) {
 			self::$containerInstance = new self;

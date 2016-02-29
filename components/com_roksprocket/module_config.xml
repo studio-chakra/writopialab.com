@@ -1,8 +1,7 @@
 <config>
     <fields name="params">
         <fieldset name="roksprocket" overwrite="false" addfieldpath="/components/com_roksprocket/fields">
-            <field name="provider_selector" type="label" label="Choose your Content Provider and Layout Type"
-                   class="first" optionorder="0"/>
+            <field name="provider_selector" type="label" label="" class="first" optionorder="0"/>
             <field name="provider" type="providerselection" default="joomla" label="Content Provider" description=""
                    class="content_provider" refresher="true" configkey="roksprocket.providers.registered"
                    optionorder="1"/>

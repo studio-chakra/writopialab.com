@@ -2,7 +2,7 @@
     <filter name="title" label="Title" type="RokCommon_Filter_Type_Text"/>
     <filter name="alias" label="Alias" type="RokCommon_Filter_Type_Text"/>
     <filter name="articletext" label="Article Text" type="RokCommon_Filter_Type_LargeText"/>
-    <filter name="tag" label="Tags" type="RokCommon_Filter_Type_LargeText"/>
+    <filter name="tag" label="Tag" type="RokCommon_Filter_Type_PickList" populator="RokSprocket_Provider_Zoo_TagPopulator"/>
     <filter name="published" label="Published" type="RokCommon_Filter_Type_Boolean"/>
     <filter name="publish_up" label="Publish Up" type="RokCommon_Filter_Type_Date"/>
     <filter name="publish_down" label="Publish Down" type="RokCommon_Filter_Type_Date"/>

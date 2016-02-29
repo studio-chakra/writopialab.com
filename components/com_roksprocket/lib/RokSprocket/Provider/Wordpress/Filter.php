@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id$
+ * @version   $Id: Filter.php 21664 2014-06-19 19:53:13Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -14,6 +14,21 @@ class RokSprocket_Provider_Wordpress_Filter extends RokSprocket_Provider_Abstrac
 	protected function setBaseQuery()
 	{
         global $wpdb;
+
+		$created_post_types = get_post_types( array( 'public' => true ) );
+
+		if( is_array( $created_post_types ) && !empty( $created_post_types ) ) {
+			foreach ( $created_post_types as $match => $name ) {
+				$match = trim( $match );
+				if ( !empty( $match ) ) {
+					$post_types_query[] = 'p.post_type = "' . $match . '"';
+				}
+			}
+			if ( !empty( $post_types_query ) ) {
+				$combined_post_types_query = '(' . implode( ' OR ', $post_types_query ) . ')';
+			}
+		}
+
         $this->base_query = '';
         $this->base_query .= 'SELECT p.ID as post_id, p.post_author, p.post_date, p.post_content, p.post_title, p.post_excerpt, p.post_status, p.post_password';
         $this->base_query .= ', p.post_name, p.post_name, p.post_modified, p.guid, p.post_parent, p.menu_order, p.post_type, p.comment_count';
@@ -40,8 +55,8 @@ class RokSprocket_Provider_Wordpress_Filter extends RokSprocket_Provider_Abstrac
         //join over users
         $this->base_query .= ' LEFT JOIN '.$wpdb->base_prefix.'users as u ON u.ID = p.post_author';
 
-        //only posts and pages
-        $this->base_where[] = '(p.post_type = "post" OR p.post_type = "page")';
+		//created public post types
+		$this->base_where[] = $combined_post_types_query;
         $this->base_where[] = '(p.post_status != "auto-draft" AND p.post_status != "inherit")';
 
         //group by id
@@ -152,6 +167,14 @@ class RokSprocket_Provider_Wordpress_Filter extends RokSprocket_Provider_Abstrac
             $this->filter_where[] = '(' . implode(' OR ', $wheres) . ')';
         }
 	}
+
+    /**
+   	 * @param $data
+   	 */
+   	protected function parentpage($data)
+   	{
+           $this->filter_where[] = 'p.post_parent IN (' . implode(',', $data) . ')';
+   	}
 
     /**
      * @static
@@ -272,14 +295,14 @@ class RokSprocket_Provider_Wordpress_Filter extends RokSprocket_Provider_Abstrac
 	/**
 	 * @param $data
 	 */
-	protected function articletext($data)
+	protected function content($data)
 	{
         global $wpdb;
 		$wheres = array();
 		foreach ($data as $match) {
 			$match = trim($match);
 			if (!empty($match)) {
-				$wheres[] = 'p.post_content LIKE ' . $this->db->quote('%' . $this->db->escape($match, true) . '%');
+				$wheres[] = 'p.post_content LIKE "%' . esc_sql($match) . '%"';
 			}
 		}
 		if (!empty($wheres)) {

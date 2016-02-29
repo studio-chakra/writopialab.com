@@ -1,17 +1,17 @@
 <?php
 /**
- * @version   $Id$
+ * @version   $Id: RokSprocket.php 19576 2014-03-10 20:32:35Z djamil $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
 class RokSprocket
 {
-    /**
-     * @var bool
-     */
-    protected static $globalHeadersRendered = false;
+	/**
+	 * @var bool
+	 */
+	protected static $globalHeadersRendered = false;
 
 	/** @var \RokCommon_Registry */
 	protected $params;
@@ -25,10 +25,10 @@ class RokSprocket
 	 */
 	protected $logger;
 
-    /**
-     *
-     */
-    const BASE_PACKAGE_NAME = 'roksprocket_base';
+	/**
+	 *
+	 */
+	const BASE_PACKAGE_NAME = 'roksprocket_base';
 
 	/**
 	 * @var
@@ -71,7 +71,7 @@ class RokSprocket
 
 
 		// get the layout
-		$layout_name    = $this->params->get('layout');
+		$layout_name = $this->params->get('layout');
 
 		$layout_service = $this->container[sprintf('roksprocket.layouts.%s.service', $layout_name)];
 		// add the layout classpath
@@ -82,16 +82,11 @@ class RokSprocket
 		}
 		/** @var $i18n RokCommon_I18N */
 		$layout_lang_paths = $this->container[sprintf('roksprocket.layouts.%s.paths', $layout_name)];
-		foreach($layout_lang_paths as $lang_path)
-		{
-			// TODO fix loading of layout language files
-			//@$i18n->loadLanguageFiles('roksprocket_layout_'.$layout_name, $lang_path);
-
-            if(defined('ABS_PATH')){
-                global $roksprocket_plugin_rel_path;
-                load_plugin_textdomain('wp_roksprocket_layout_'.$layout_name, false, ROKSPROCKET_PLUGIN_REL_PATH . 'layouts/'.$layout_name.'/language/');
-                $i18n->addDomain('wp_roksprocket_layout_'.$layout_name);
-            }
+		foreach ($layout_lang_paths as $lang_path) {
+			if (defined('ABS_PATH')) {
+				rs_load_plugin_textdomain('wp_roksprocket_layout_' . $layout_name, $lang_path . '/language');
+				$i18n->addDomain('wp_roksprocket_layout_' . $layout_name);
+			}
 		}
 
 		/** @var $layout RokSprocket_Layout */
@@ -157,21 +152,22 @@ class RokSprocket
 	}
 
 
-    /**
-     * @static
-     *
-     */
-    public static function registerPaths()
+	/**
+	 * @static
+	 *
+	 */
+	public static function registerPaths()
 	{
 
 	}
 
-    /**
-     * @param null $ajax_path
-     */
-    public function renderGlobalHeaders($ajax_path = null)
+	/**
+	 * @param null $ajax_path
+	 */
+	public function renderGlobalHeaders($ajax_path = null)
 	{
 		if (!self::$globalHeadersRendered) {
+			if(defined('_JEXEC')){ JHtml::_('behavior.framework'); }
 			RokCommon_Header::addScript(RokCommon_Composite::get($this->context_base . '.assets.js')->getUrl('mootools-mobile.js'));
 			RokCommon_Header::addScript(RokCommon_Composite::get($this->context_base . '.assets.js')->getUrl('rokmediaqueries.js'));
 			RokCommon_Header::addScript(RokCommon_Composite::get($this->context_base . '.assets.js')->getUrl('roksprocket.js'));
@@ -208,12 +204,12 @@ class RokSprocket
 	{
 		$container = RokCommon_Service::getContainer();
 
-		$provider_type  = $parameters->get('provider', 'joomla');
+		$provider_type = $parameters->get('provider', 'joomla');
 
 		/** @var $provider RokSprocket_IProvider */
 		$provider_service = $container['roksprocket.providers.registered.' . $provider_type . '.service'];
 		$provider         = $container->$provider_service;
-
+		$container->setParameter('roksprocket.current_provider', $provider);
 		$provider->setParams($parameters);
 
 		$provider_filters  = $parameters->get($provider_type . '_filters', array());
@@ -259,6 +255,8 @@ class RokSprocket
 		$provider_service = $container['roksprocket.providers.registered.' . $provider_type . '.service'];
 		$provider         = $container->$provider_service;
 
+		$container->setParameter('roksprocket.current_provider', $provider);
+
 		$provider->setParams($extra_parameters);
 
 		$filters = array();
@@ -287,19 +285,19 @@ class RokSprocket
 	 *
 	 * @return RokSprocket_ItemCollection
 	 */
-	protected static function getItems(RokSprocket_IProvider &$provider, $moduleId, $filters, $sort_filters, $sort_type, $sort_append, $apply_random, $unpublished = false, $displayedIds = array()) {
-		if (!empty($filters)) {
-			$provider->setFilterChoices($filters, $sort_filters);
-			$provider->setModuleId($moduleId);
-            $provider->setDisplayedIds($displayedIds);
-			$provider->setShowUnpublished($unpublished);
-			$items                       = $provider->getItems();
+	protected static function getItems(RokSprocket_IProvider &$provider, $moduleId, $filters, $sort_filters, $sort_type, $sort_append, $apply_random, $unpublished = false, $displayedIds = array())
+	{
+		$provider->setModuleId($moduleId);
+		$provider->setDisplayedIds($displayedIds);
+		$provider->setShowUnpublished($unpublished);
+		$provider->setFilterChoices($filters, $sort_filters);
+		$items = $provider->getItems();
+
+		if (!empty($items)) {
 			$sort_options                = array();
 			$sort_options['append']      = $sort_append;
 			$sort_options['applyrandom'] = $apply_random;
 			$items->sort($sort_type, $sort_options);
-		} else {
-			$items = new  RokSprocket_ItemCollection();
 		}
 
 		return $items;

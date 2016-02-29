@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: Wordpress.php 58634 2012-12-16 13:08:25Z jakub $
+ * @version   $Id: Wordpress.php 21335 2014-05-30 14:50:16Z jakub $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - ${copyright_year} RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -15,7 +15,7 @@ class RokCommon_PlatformInfo_Wordpress extends RokCommon_PlatformInfo_AbstractPl
      */
     public function getUrlForPath($filepath)
     {
-        $base = WP_CONTENT_URL;
+        $base = content_url();
         $file_real_path = self::clean($filepath,'/');
         $site_real_path = self::clean(WP_CONTENT_DIR,'/');
         $url_path = $base.str_replace($site_real_path,'',$file_real_path);
@@ -70,7 +70,11 @@ class RokCommon_PlatformInfo_Wordpress extends RokCommon_PlatformInfo_AbstractPl
 
 	public function getUrlBase()
 	{
-		return false;
+        if( is_multisite() ) {
+            return trailingslashit( network_site_url() );
+        } else {
+            return trailingslashit( site_url() );
+        }
 	}
 
 

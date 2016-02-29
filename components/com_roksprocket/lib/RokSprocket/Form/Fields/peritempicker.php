@@ -1,6 +1,6 @@
 <?php
 /**
- * @version   $Id: peritempicker.php 57157 2012-10-05 05:41:29Z btowles $
+ * @version   $Id: peritempicker.php 11812 2013-06-27 17:49:30Z djamil $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2012 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -16,10 +16,40 @@ class RokCommon_Form_Field_PerItemPicker extends RokCommon_Form_AbstractField
     protected $data;
     protected $isCustom = true;
 
+	/**
+	 * @var RokCommon_Service_Container
+	 */
+	protected $container;
+
+	public function __construct($form = null)
+	{
+		parent::__construct($form);
+		$this->container =  RokCommon_Service::getContainer();
+	}
+
+	public function getLabel()
+	{
+		if ($this->container->hasParameter('roksprocket.current_provider'))
+		{
+			/** @var RokSprocket_IProvider $provider */
+			$provider = $this->container->getParameter('roksprocket.current_provider');
+			if (!$provider->allowFieldRender($this->type, $this->fieldname, $this->value)) return '';
+		}
+		return parent::getLabel();
+	}
+
+
 	function getInput(){
 		//JHTML::_('behavior.modal');
 		//$this->_loadAssets();
 		$this->_setOptions();
+
+		if ($this->container->hasParameter('roksprocket.current_provider'))
+		{
+			/** @var RokSprocket_IProvider $provider */
+			$provider = $this->container->getParameter('roksprocket.current_provider');
+			$provider->filterPerItemTypes($this->type, $this->fieldname, $this->options);
+		}
 
 		if (preg_match("/^-([a-z]{1,})-$/", $this->value)){
 			if ($this->value == '-article-' && preg_match("/_title$/", $this->id)) $this->value = '-title-';
@@ -31,9 +61,10 @@ class RokCommon_Form_Field_PerItemPicker extends RokCommon_Form_AbstractField
 
 		$html = array();
 
+		$cleaned_value = htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8');
 		$html[] = '<div class="peritempicker-wrapper'.(!$this->isCustom ? ' peritempicker-noncustom' : '').'" data-peritempicker="true" data-peritempicker-id="'.$this->id.'" data-peritempicker-name="'.$this->name.'">';
-		$html[] = '		<input data-peritempicker-display="true" data-original-title="'.htmlspecialchars($this->value).'" type="text" value="'.htmlspecialchars($this->value).'" '.$class.$placeholder.' />';
-		$html[] = '		<input type="hidden" id="'.$this->id.'" name="'.$this->name.'" value="'.htmlspecialchars($this->value).'" />';
+		$html[] = '		<input data-peritempicker-display="true" data-original-title="'.$cleaned_value.'" type="text" value="'.$cleaned_value.'" '.$class.$placeholder.' />';
+		$html[] = '		<input type="hidden" id="'.$this->id.'" name="'.$this->name.'" value="'.$cleaned_value.'" />';
 		$html[] = $this->_getDropdown();
 		$html[] = '</div>';
 
@@ -61,6 +92,9 @@ class RokCommon_Form_Field_PerItemPicker extends RokCommon_Form_AbstractField
 		$list = "";
 		$options = $this->options;
 
+		if (isset($this->value) && !array_key_exists($this->value, $options)) $this->value = '-title-';
+		if (isset($this->value) && !array_key_exists($this->value, $options)) $this->value = '-none-';
+
 		foreach($options as $option){
 			$attributes = $option['attributes'];
 			$class = (isset($attributes['class']) ? $attributes['class'] : "") . (isset($attributes['disabled']) ? " disabled" : "");
@@ -80,7 +114,7 @@ class RokCommon_Form_Field_PerItemPicker extends RokCommon_Form_AbstractField
 		if (count($options) > 1){
 			$output[] = '<div class="sprocket-dropdown imagepicker">';
 			$output[] = '	<a href="#" class="btn dropdown-toggle" data-toggle="dropdown">';
-			$output[] = ' 		<span class="name">'.(!$this->isCustom ? $this->options[$this->value]['name'] : '').'</span>';
+			$output[] = ' 		<span class="name">'.(!$this->isCustom && isset($this->options[$this->value]) ? $this->options[$this->value]['name'] : '').'</span>';
 			$output[] = ' 		<span class="caret"></span>';
 			$output[] = '	</a>';
 			$output[] = '	<ul class="dropdown-menu">';

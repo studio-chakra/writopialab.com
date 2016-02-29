@@ -1,10 +1,12 @@
 /*
+ * @version   $Id: multiselect.js 10889 2013-05-30 07:48:35Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
-((function(){if(typeof this.RokSprocket=="undefined"){this.RokSprocket={};}this.MultiSelect=new Class({Implements:[Options,Events],initialize:function(a){this.setOptions(a);
-this.elements=this.reload();this.attach();},reattach:function(){this.elements=this.reload();this.attach();},attach:function(){this.elements.each(function(a){if(!a.retrieve("tags:field:attached",false)){a.store("multiselect:field:attached",true);
+((function(){if(typeof this.RokSprocket=="undefined"){this.RokSprocket={};
+}this.MultiSelect=new Class({Implements:[Options,Events],initialize:function(a){this.setOptions(a);this.elements=this.reload();this.attach();},reattach:function(){this.elements=this.reload();
+this.attach();},attach:function(){this.elements.each(function(a){if(!a.retrieve("tags:field:attached",false)){a.store("multiselect:field:attached",true);
 var b={tags:{click:a.retrieve("multiselect:field:click",function(d,c){if(d.target.get("data-multiselect-holder")===null){return true;}a.getElement("[data-multiselect-maininput]").focus();
 }.bind(this)),unselect:a.retrieve("multiselect:field:remove",function(d,c){this.unselect.call(this,a,c);}.bind(this)),select:a.retrieve("multiselect:feeds:select",function(d,c){this.select.call(this,a,c);
 }.bind(this)),mouseenter:a.retrieve("multiselect:feeds:mouseenter",function(d,c){this.mouseenter.call(this,a,c);}.bind(this)),keydown:a.retrieve("multiselect:feeds:keydown",function(d,c){this.keydown.call(this,d,a,c);

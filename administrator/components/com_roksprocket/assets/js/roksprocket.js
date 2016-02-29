@@ -1,9 +1,4 @@
-/*
- * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
- * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
- */
-/*
+/*!
 ---
 provides: moofx
 version: 3.1.0
@@ -1587,9 +1582,81 @@ Unmatrix 2d
         };
     }
 });
-
+/*!
+ * @version   $Id: roksprocket.js 21927 2014-07-10 23:29:54Z djamil $
+ * @author    RocketTheme http://www.rockettheme.com
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
+ */
 ((function(){
 	if (typeof this.RokSprocket == 'undefined') this.RokSprocket = {};
+
+
+	var ua = navigator.userAgent.toLowerCase(),
+		platform = navigator.platform.toLowerCase(),
+		UA = ua.match(/(opera|ie|trident|firefox|chrome|version)[\s\/:]([\w\d\.]+)?.*?(safari|version[\s\/:]([\w\d\.]+)|rv:(\d.?)|$)/) || [null, 'unknown', 0],
+		mode = (UA[1] == 'ie' || UA[1] == 'trident') && document.documentMode;
+
+	var Browser = this.Browser = {
+
+		extend: Function.prototype.extend,
+
+		name: (UA[1] == 'version') ? UA[3] : (UA[1] == 'trident' ? 'ie' : UA[1]),
+
+		version: mode || parseFloat((UA[1] == 'opera' && UA[4]) ? UA[4] : ((UA[1] == 'trident' && UA[5]) ? UA[5] : UA[2])),
+
+		Platform: {
+			name: ua.match(/ip(?:ad|od|hone)/) ? 'ios' : (ua.match(/(?:webos|android)/) || platform.match(/mac|win|linux/) || ['other'])[0]
+		},
+
+		Features: {
+			xpath: !!(document.evaluate),
+			air: !!(window.runtime),
+			query: !!(document.querySelector),
+			json: !!(window.JSON)
+		},
+
+		Plugins: {}
+
+	};
+
+	Browser[Browser.name] = true;
+	Browser[Browser.name + parseInt(Browser.version, 10)] = true;
+	Browser.Platform[Browser.Platform.name] = true;
+
+	// Request
+
+	Browser.Request = (function(){
+
+		var XMLHTTP = function(){
+			return new XMLHttpRequest();
+		};
+
+		var MSXML2 = function(){
+			return new ActiveXObject('MSXML2.XMLHTTP');
+		};
+
+		var MSXML = function(){
+			return new ActiveXObject('Microsoft.XMLHTTP');
+		};
+
+		return Function.attempt(function(){
+			XMLHTTP();
+			return XMLHTTP;
+		}, function(){
+			MSXML2();
+			return MSXML2;
+		}, function(){
+			MSXML();
+			return MSXML;
+		});
+
+	})();
+
+	Browser.Features.xhr = !!(Browser.Request);
+
+
+
 
 	var OnInputEvent = (Browser.name == 'ie' && Browser.version <= 9) ? 'keypress' : 'input';
 
@@ -1602,6 +1669,8 @@ Unmatrix 2d
 			Object.each(RokSprocket.dynamicfields.list, function(fieldname, id){
 				RokSprocket.dynamicfields.addChange(id, fieldname);
 			});
+
+			//$$('.panel-right > ul > li:not([style])').setStyle('display', 'block');
 		},
 		attachLastFire: function(){
 			document.getElements('.dynamicfield-last-fire').addEvent('change', function(){
@@ -1611,44 +1680,54 @@ Unmatrix 2d
 		},
 		addChange: function(id, fieldname){
 			document.id(id).addEvent('change', function(){
-				if (!this.options.length || !this.options[this.selectedIndex]) return;
-				var rel = document.id(this.options[this.selectedIndex]).get('rel'),
-					fields = document.getElements('.'+fieldname+':not([data-dynamic=false])'),
-					values = document.getElements('.' + rel + ':not([data-dynamic=false])');
-
-				var fieldsDropdowns = fields.filter(function(value){
-					return value.get('tag') == 'option';
-				});
-				var dropdowns = values.filter(function(value){
-					return value.get('tag') == 'option';
-				});
-
-				var fieldsParent = fields.getParent('li'),
-					valuesParent = values.getParent('li');
-
-				fieldsParent.each(function(field){ if (field) field.setStyle('display','none'); });
-				valuesParent.each(function(field){ if (field) field.setStyle('display','block'); });
-
-				//fields.getParent('li').setStyle('display','none');
-				//values.getParent('li').setStyle('display','block');
-
-				// special case for dropdowns
-				[dropdowns, fieldsDropdowns].flatten().each(function(option){
-					var select = option.getParent('select'),
-						activeOption = select.getElement('option[value='+select.get('value')+']:not(.'+rel+')');
-
-					if (select.get('value') == option.get('value') && activeOption && !activeOption.hasClass(rel)){
-						var firstValue = select.getFirst().get('value'),
-							sprocketDropdown = select.getParent('.sprocket-dropdown [data-value='+firstValue+']');
-						if (sprocketDropdown) sprocketDropdown.fireEvent('click', {target: sprocketDropdown});
-						else select.set('value', firstValue).fireEvent('change');
-					}
-				});
-
-
-				// let's fire all the subinstances of dynamicfields to clear possible conflicts
-				document.getElements('.dynamicfield-subinstance.'+rel+':not(#'+id+')').fireEvent('change');
+				RokSprocket.dynamicfields.fireChange.apply(document.id(id), [id, fieldname]);
 			}).fireEvent('change');
+		},
+		fireChange: function(id, fieldname){
+			var element = this;
+
+			if (typeOf(element) != 'element') element = document.id(id);
+			if (!element.options.length || !element.options[element.selectedIndex]) return;
+			var rel = document.id(element.options[element.selectedIndex]).get('rel'),
+				fields = document.getElements('.'+fieldname+':not([data-dynamic=false])'),
+				values = document.getElements('.' + rel + ':not([data-dynamic=false])');
+
+			var fieldsDropdowns = fields.filter(function(value){
+				return value.get('tag') == 'option';
+			});
+			var dropdowns = values.filter(function(value){
+				return value.get('tag') == 'option';
+			});
+
+			var fieldsParent = fields.getParent('li'),
+				valuesParent = values.getParent('li');
+
+			fieldsParent.each(function(field){ if (field) field.setStyle('display','none'); });
+			valuesParent.each(function(field){ if (field) field.setStyle('display','block'); });
+
+			//fields.getParent('li').setStyle('display','none');
+			//values.getParent('li').setStyle('display','block');
+
+			// special case for dropdowns
+			[dropdowns, fieldsDropdowns].flatten().each(function(option){
+				var select = option.getParent('select'),
+					activeOption = select.getElement('option[value='+select.get('value')+']:not(.'+rel+')');
+
+				if (select.get('value') == option.get('value') && activeOption && !activeOption.hasClass(rel)){
+					var firstValue = select.getFirst().get('value'),
+						sprocketDropdown = select.getParent('.sprocket-dropdown [data-value='+firstValue+']');
+					if (sprocketDropdown) sprocketDropdown.fireEvent('click', {target: sprocketDropdown});
+					else select.set('value', firstValue).fireEvent('change');
+				}
+			});
+
+
+			// let's fire all the subinstances of dynamicfields to clear possible conflicts
+			document.getElements('.dynamicfield-subinstance.'+rel+':not(#'+id+')').fireEvent('change');
+		},
+		refreshProvider: function(){
+			var provider = RokSprocket.params + '_provider';
+			//RokSprocket.dynamicfields.fireChange(provider, RokSprocket.dynamicfields.list[provider]);
 		}
 	};
 
@@ -1732,7 +1811,7 @@ Unmatrix 2d
 
 			layout.addEvent('change', function(){
 				if (!RokSprocket.layout.flag){
-					document.getElement('.panel-left h6 i.spinner').fx({opacity: 1}, {duration: '300ms'});
+					moofx(document.getElement('.panel-left h6 i.spinner')).animate({opacity: 1}, {duration: '300ms'});
 					RokSprocket.articles.getItems();
 				}
 			});
@@ -1740,8 +1819,128 @@ Unmatrix 2d
 	};
 
 	this.RokSprocket.init = function(){
-		this.RokSprocket.dynamicfields.attach();
-		this.RokSprocket.dynamicfields.attachLastFire();
+		this.RokSprocket.content = {
+			getModuleId: function(){
+				var field = document.id('jform_id') || document.id('id');
+				return (field ? field.get('value') : 0).toInt();
+			},
+			getInstanceId: function(){
+				var field = document.id('jform_uuid') || document.id('uuid');
+				return (field ? field.get('value') : "0");
+			},
+			getLayout: function(){
+				return document.getElement('#'+RokSprocket.params+'_layout').get('value');
+			},
+			getProvider: function(){
+				return document.getElement('#'+RokSprocket.params+'_provider').get('value');
+			},
+			getFilters: function(type){
+				var provider = RokSprocket.content.getProvider();
+
+				return RokSprocket.filters.getFilters(provider + (type || '_filters')) || {};
+			},
+			getArticlesIDs: function(){
+				var filters = RokSprocket.content.getFilters('_articles'),
+					articles = [];
+
+				Object.each(filters.object, function(value, key){
+					articles.push(RokSprocket.content.getFormat() + Object.getFromPath(filters.object[key], 'root.article'));
+				});
+
+				filters.json = JSON.encode(articles);
+
+				return filters;
+			},
+			getSort: function(){
+				var provider = RokSprocket.content.getProvider(),
+					sort = document.getElement('[id$=' + provider + '_sort]'),
+					append = document.getElement('[id$=' + provider + '_sort_manual_append]'),
+					filter = sort ? RokSprocket.content.getFilters('_sort_' + sort.get('value') + '_filters') : null,
+					result = {
+						type: sort ? sort.get('value') : '',
+						rules: filter ? filter.object : {}
+					};
+
+				if (result.type == 'manual' && append) result.append = append.get('value');
+
+				return {json: JSON.encode(result)};
+			},
+			getProviderSubmit: function(){
+				var datasets = document.getElements('[data-provider-submit].provider_' + RokSprocket.content.getProvider()),
+					extras = {},
+					query = [];
+				if (!datasets.length) return false;
+
+				datasets.each(function(dataset){
+					var key = dataset.get('data-provider-submit'),
+						value = dataset.get('value');
+
+					extras[key] = value;
+					query.push(key + '=' + value);
+				});
+
+				return {object: extras, keyvalue: query.join('&')};
+			},
+			getFormat: function(){
+				return RokSprocket.content.getProvider() + '-';
+			}
+		};
+
+		if (this.RokSprocket.content.getModuleId()){
+			this.RokSprocket.dynamicfields.attach();
+			this.RokSprocket.dynamicfields.attachLastFire();
+			this.RokSprocket.dynamicfields.refreshProvider();
+		} else {
+			this.RokSprocket.selector = {
+				init: function(){
+					var provider  = document.id('create-new-provider'),
+						layout    = document.id('create-new-layout'),
+						providers = $$('[data-sprocket-provider]'),
+						layouts   = $$('[data-sprocket-layout]'),
+						recommendedElement;
+
+
+					moofx(document.getElement('[data-sprocket-notice]')).style({opacity: 0, transform: 'scale(0)', visibility: 'visible'});
+
+					providers.addEvent('click', function(e){
+						if (e) e.preventDefault();
+						providers.removeClass('active');
+						this.addClass('active');
+						provider.set('value', this.get('data-sprocket-provider'));
+					});
+
+					layouts.addEvent('click', function(e){
+						if (e) e.preventDefault();
+						layouts.removeClass('active');
+						this.addClass('active');
+						layout.set('value', this.get('data-sprocket-layout'));
+
+						if (recommendedElement) recommendedElement.removeClass('asterisk');
+
+						var recommended        = JSON.parse(this.get('data-sprocket-recommended')),
+							notice             = document.getElement('[data-sprocket-notice]');
+
+						recommendedElement = document.getElement('[data-sprocket-provider="'+recommended+'"]');
+						if (recommended){
+							var strongs = notice.getElements('strong');
+							strongs[0].set('text', this.get('text'));
+							strongs[1].set('text', recommendedElement.get('text'));
+						}
+
+						if (!recommended){
+							if (recommendedElement) recommendedElement.removeClass('asterisk');
+							moofx(notice).animate({ transform: 'scale(0)', opacity: 0 }, { duration: '250ms' });
+						} else {
+							if (recommendedElement) recommendedElement.addClass('asterisk').fireEvent('click');
+							moofx(notice).animate({ transform: 'scale(1)', opacity: 1 }, { duration: '200ms' });
+						}
+					});
+				}
+			};
+
+			this.RokSprocket.selector.init();
+		}
+
 		this.RokSprocket.displayLimit.attach();
 		this.RokSprocket.tabs = new Tabs();
 		this.RokSprocket.dropdowns = new Dropdowns({
@@ -1784,7 +1983,8 @@ Unmatrix 2d
 											RokSprocket.articles.resetFlag();
 											if (_this.target){
 												var select = _this.target.getElement('!> .dropdown-menu ~ .dropdown-original select');
-												RokSprocket.dropdowns.selection({target: _this.target}, select).hideAll();
+												if (select) RokSprocket.dropdowns.selection({target: _this.target}, select).hideAll();
+												else document.fireEvent('click', {target: _this.target.getElement('[data-additem-action]')});
 											}
 										}
 									},
@@ -1858,6 +2058,7 @@ Unmatrix 2d
 				if (!this.elements.length){
 					var params = RokSprocket.params,
 						list = ['[data-filter]',
+								'[data-additem-action="addItem"]',
 								'#'+params+'_provider !> .dropdown-original !~ .dropdown-menu li[data-value]',
 								'#'+params+'_layout !> .dropdown-original !~ .dropdown-menu li[data-value]',
 								'#'+params+'_joomla_sort !> .dropdown-original !~ .dropdown-menu li[data-value]',
@@ -1875,7 +2076,8 @@ Unmatrix 2d
 					elements = [
 						selects,
 						RokSprocket.filters.containers,
-						RokSprocket.filters.containers.getElements('a')
+						RokSprocket.filters.containers.getElements('a'),
+						document.getElement('[data-additem-action]')
 					].flatten();
 
 				if (state){
@@ -1890,11 +2092,15 @@ Unmatrix 2d
 			}
 		});
 
+		if (RokSprocket.content.getModuleId()){
 		this.RokSprocket.articles = new Articles('.articles', {
 			onModelSuccess: function(response){
-				document.getElement('.panel-left h6 i.spinner').fx({opacity: 0}, {duration: '300ms'});
+				//console.log(response && !response.data.payload);
+				//if (response && !response.data.payload) return;
+				moofx(document.getElement('.panel-left h6 i.spinner')).animate({opacity: 0}, {duration: '300ms'});
 				RokSprocket.layout.flag = true;
-				document.getElement('.layoutselection').fireEvent('change');
+				//document.getElement('.layoutselection').fireEvent('change');
+				if (RokSprocket.content.getProvider() == 'simple') RokSprocket.dynamicfields.refreshProvider();
 				RokSprocket.layout.flag = false;
 				document.getElements('.articles .sprocket-tip').twipsy({placement: 'left', offset: 5});
 
@@ -1902,11 +2108,15 @@ Unmatrix 2d
 
 				RokSprocket.updateOrder();
 
+				//RokSprocket.dynamicfields.refreshProvider();
+
 				// attach image and peritem pickers
 				var peritempickers = document.getElements('.articles [data-peritempicker]'),
+					peritempickerstags = document.getElements('.articles [data-peritempickertags]'),
 					imagepickers = document.getElements('.articles [data-imagepicker]');
 
 				RokSprocket.peritempicker.attach(peritempickers);
+				RokSprocket.peritempickertags.attach(peritempickerstags);
 				RokSprocket.imagepicker.attach(imagepickers);
 
 				// reattach tags and multiselect
@@ -1941,6 +2151,7 @@ Unmatrix 2d
 				}
 			}
 		});
+		}
 
 		this.RokSprocket.updateOrder = function(){
 			RokSprocket.articles.container.getElements('[data-article-id]').each(function(element, i){
@@ -1953,17 +2164,27 @@ Unmatrix 2d
 			RokSprocket.articles.updateLimit(RokSprocket.displayLimit.getValue());
 		};
 
+		/*this.RokSprocket.additem = new AddItem('.articles', {
+			onModelSuccess: function(response){
+				console.log('response');
+			}
+		});*/
+
+		document.addEvent('click:relay([data-additem-action])', function(e, element){
+			moofx(document.getElement('.panel-left h6 i.spinner')).animate({opacity: 1}, {duration: '300ms'});
+			RokSprocket.articles.getItemsWithNew();
+		});
 
 		this.RokSprocket.filters = new Filters({
 			onFiltersChange: function(provider, filters){
 				if (!provider || !provider.contains('_sort_manual_filters')){
-					document.getElement('.panel-left h6 i.spinner').fx({opacity: 1}, {duration: '300ms'});
+					moofx(document.getElement('.panel-left h6 i.spinner')).animate({opacity: 1}, {duration: '300ms'});
 					RokSprocket.articles.getItems();
 				}
 			}
 		});
 
-		if (RokSprocketFilters && RokSprocketFilters.filters){
+		if (typeof RokSprocketFilters != 'undefined' && RokSprocketFilters.filters){
 			this.RokSprocket.filters.addDataSets(RokSprocketFilters.filters, RokSprocketFilters.template);
 		}
 
@@ -1992,7 +2213,7 @@ Unmatrix 2d
 					.getElement('ul').empty().set('html', '<li>' + message + '</li>');
 
 				if (document.body.get('data-spy'))
-					system.addClass('alert').addClass('alert-' + (type == 'message' ? 'success' : 'error'))
+					system.addClass('alert').addClass('alert-' + (type == 'message' ? 'success' : 'error'));
 
 			},
 			hide: function(type){
@@ -2010,70 +2231,7 @@ Unmatrix 2d
 			}
 		};
 
-		this.RokSprocket.content = {
-			getModuleId: function(){
-				var field = document.id('jform_id');
-				return (field ? field.get('value') : 0).toInt();
-			},
-			getLayout: function(){
-				return document.getElement('#'+RokSprocket.params+'_layout').get('value');
-			},
-			getProvider: function(){
-				return document.getElement('.content_provider').get('value');
-			},
-			getFilters: function(type){
-				var provider = RokSprocket.content.getProvider();
-
-				return RokSprocket.filters.getFilters(provider + (type || '_filters'));
-			},
-			getArticlesIDs: function(){
-				var filters = RokSprocket.content.getFilters('_articles'),
-					articles = [];
-
-				Object.each(filters.object, function(value, key){
-					articles.push(RokSprocket.content.getFormat() + Object.getFromPath(filters.object[key], 'root.article'));
-				});
-
-				filters.json = JSON.encode(articles);
-
-				return filters;
-			},
-			getSort: function(){
-				var provider = RokSprocket.content.getProvider(),
-					sort = document.getElement('[id$=' + provider + '_sort]'),
-					append = document.getElement('[id$=' + provider + '_sort_manual_append]'),
-					filter = RokSprocket.content.getFilters('_sort_' + sort.get('value') + '_filters'),
-					result = {
-						type: sort.get('value'),
-						rules: filter ? filter.object : {}
-					};
-
-				if (result.type == 'manual') result.append = append.get('value');
-
-				return {json: JSON.encode(result)};
-			},
-			getProviderSubmit: function(){
-				var datasets = document.getElements('[data-provider-submit].provider_' + RokSprocket.content.getProvider()),
-					extras = {},
-					query = [];
-				if (!datasets.length) return false;
-
-				datasets.each(function(dataset){
-					var key = dataset.get('data-provider-submit'),
-						value = dataset.get('value');
-
-					extras[key] = value;
-					query.push(key + '=' + value);
-				});
-
-				return {object: extras, keyvalue: query.join('&')};
-			},
-			getFormat: function(){
-				return RokSprocket.content.getProvider() + '-';
-			}
-		};
-
-		this.RokSprocket.previewLength.attach();
+		if (RokSprocket.content.getModuleId()) this.RokSprocket.previewLength.attach();
 
 		this.RokSprocket.sorting = {
 			init: function(){
@@ -2113,9 +2271,9 @@ Unmatrix 2d
 													var provider = RokSprocket.content.getProvider(),
 														filter = document.getElement('[data-filter*='+provider+'_sort_manual_filters]');
 
-													RokSprocket.filters.empty(filter.get('data-filter'));
+													if (filter) RokSprocket.filters.empty(filter.get('data-filter'));
 													RokSprocket.sorting.toItem(target.get('data-value'));
-													RokSprocket.filters.fireEvent('onFiltersChange');
+													if (filter) RokSprocket.filters.fireEvent('onFiltersChange');
 
 													RokSprocket.dropdowns.hideAll();
 													this.hide();
@@ -2149,6 +2307,7 @@ Unmatrix 2d
 				});
 
 				if (sortDropdown) sortDropdown.addEvent('beforeChange', RokSprocket.sorting.changeEvent);
+
 			},
 			changeEvent: function(event, select, value, selected){
 				var target = event.target,
@@ -2185,9 +2344,10 @@ Unmatrix 2d
 			}
 		};
 
-		document.getElement('.content_provider').addEvent('change', RokSprocket.sorting.init);
-		this.RokSprocket.layout.attach();
-
+		if (RokSprocket.content.getModuleId()){
+			//document.getElement('.content_provider').addEvent('change', RokSprocket.sorting.init);
+			this.RokSprocket.layout.attach();
+		}
 
 		this.RokSprocket.save = {
 			ajax: null,
@@ -2198,12 +2358,27 @@ Unmatrix 2d
 
 				save.set('onclick', null);
 
+				if (!RokSprocket.content.getModuleId()){
+					var continueButton = document.getElement('.create-new .btn');
+					RokSprocket.continueButton = continueButton;
+					if (continueButton){
+						continueButton.addEvent('click', function(e){
+							if (e) e.preventDefault();
+							if (this.hasClass('disabled')) return;
+
+							RokSprocket.save.button.fireEvent('click');
+							this.addClass('disabled');
+						});
+					}
+				}
+
 				// I don't know if I hate more Joomla! for the inline JS or IE for not handling properly the onclick
 				// Workaround for IE that keeps dirty onclick events even if removed.
 				if (Browser.ie){
 					var clone = save.clone();
 					clone.inject(save, 'after');
 					save.dispose();
+					clone.onclick = function(){return false;}
 					save = clone;
 				}
 
@@ -2217,7 +2392,7 @@ Unmatrix 2d
 					onFailure: RokSprocket.save.events.failure
 				});
 
-				var onclick = save.get('onclick') || 'function(){ return false; }';
+				//var onclick = save.get('onclick') || 'function(){ return false; }';
 
 				save.addEvent('click', function(e){
 					if (e) e.stop();
@@ -2233,15 +2408,18 @@ Unmatrix 2d
 
 					// in case it's needed, onclick is the original submit function...
 					// eval(onclick);
+					return false;
 				});
 			},
 			events:{
 				request: function(){
 					RokSprocket.messages.hide();
 					RokSprocket.save.button.addClass('disabled spinner spinner-32');
+					if (RokSprocket.continueButton) RokSprocket.continueButton.addClass('disabled');
 				},
 				complete: function(){
 					RokSprocket.save.button.removeClass('disabled spinner spinner-32');
+					if (RokSprocket.continueButton) RokSprocket.continueButton.removeClass('disabled');
 				},
 				success: function(response){
 					response = new Response(response, {onError: RokSprocket.save.events.failure.bind(this)});
@@ -2251,10 +2429,10 @@ Unmatrix 2d
 						RokSprocket.messages.show('message', 'All changes have been successfully saved.');
 
 						// all good, let's reset the flag
-						RokSprocket.articles.resetFlag();
+						if (RokSprocket.articles) RokSprocket.articles.resetFlag();
 
 						// check if it's new module
-						if (!document.id('jform_id')){
+						if (!RokSprocket.content.getModuleId()){
 							RokSprocket.modal.set({
 								'title': 'New RokSprocket Module Saved',
 								'body': '<p>The module has been saved successfully and because it\'s been detected as new the page will be refreshed.</p><p>Please wait...</p>',
@@ -2286,6 +2464,131 @@ Unmatrix 2d
 		};
 
 		this.RokSprocket.save.init();
+
+		this.RokSprocket.remove = {
+			list: [],
+			init: function(){
+				RokSprocket.remove.attach();
+			},
+
+			attach: function(){
+				var twoStepsClick = document.retrieve('roksprocket:simple:remove', function(e, element){
+					e.preventDefault();
+					var status = element.retrieve('roksprocket:simple:step', 0);
+					if (!status) RokSprocket.remove.oneStep(element);
+					else if (status == 1) RokSprocket.remove.deleteItem(element);
+					else return false;
+				});
+
+				document.addEvents({
+					'click:relay([data-article-id] .remove-wrapper)': twoStepsClick,
+					'click:relay(:not([data-article-id] .remove-wrapper))': RokSprocket.remove.revertAll
+				});
+			},
+
+			oneStep: function(element){
+				element.store('roksprocket:simple:step', 1);
+				element.getParent('.summary').getElement('.details').setStyle('display', 'block');
+				element.getParent('.summary').getElement('.remove, .deleting').setStyle('display', 'none');
+				element.getParent('.summary').getElement('.confirm').setStyle('display', 'inline-block');
+				RokSprocket.remove.list.push(element);
+			},
+
+			deleteItem: function(element){
+				var item = element.getParent('[data-article-id]'),
+					id = item.get('data-article-id');
+
+				element.store('roksprocket:simple:step', 2);
+				element.getParent('.summary').getElement('.details').setStyle('display', 'none');
+				element.getParent('.summary').getElements('.remove, .confirm').setStyle('display', 'none');
+				element.getParent('.summary').getElement('.deleting').setStyle('display', 'inline-block');
+				RokSprocket.articles.removeItem(id);
+			},
+
+			revertSingle: function(element){
+				element.store('roksprocket:simple:step', 0);
+				element.getParent('.summary').getElement('.details').setStyle('display', 'block');
+				element.getParent('.summary').getElement('.confirm, .deleting').setStyle('display', 'none');
+				element.getParent('.summary').getElement('.remove').setStyle('display', 'inline-block');
+				RokSprocket.remove.list.erase(element);
+			},
+
+			revertAll: function(event, element){
+				if (element.hasClass('details') || element.hasClass('remove-wrapper') || element.getParent('.remove-wrapper')) return true;
+				for (var i = RokSprocket.remove.list.length - 1; i >= 0; i--) {
+					RokSprocket.remove.revertSingle(RokSprocket.remove.list[i]);
+				}
+			}
+		};
+
+		this.RokSprocket.remove.init();
+
+		this.RokSprocket.editTitle = {
+			init: function(){
+				RokSprocket.editTitle.attach();
+			},
+			attach: function(){
+				var click = document.retrieve('roksprocket:edittitle:click', function(e, element){
+						RokSprocket.editTitle.show(element);
+					}),
+					keyup = document.retrieve('roksprocket:edittitle:keyup', function(e, element){
+						if (e.key == 'esc') RokSprocket.editTitle.hide(element);
+						if (e.key == 'enter') RokSprocket.editTitle.save(element);
+					}),
+					check = document.retrieve('roksprocket:edittitle:check', function(e, element){
+						RokSprocket.editTitle.save(element);
+					}),
+					cross = document.retrieve('roksprocket:edittitle:cross', function(e, element){
+						RokSprocket.editTitle.hide(element);
+					});
+
+				document.addEvents({
+					'click:relay([data-article-title-edit])': click,
+					'click:relay([data-article-title-cross])': cross,
+					'click:relay([data-article-title-check])': check,
+					'keyup:relay([data-article-title-input])': keyup
+				});
+			},
+
+			show: function(element){
+				var parent = element.getParent('[data-article-title]'),
+					input = parent.getElement('[data-article-title-input]'),
+					text = parent.getElement('span'),
+					edit = parent.getElements('[data-article-title-edit]'),
+					actions = parent.getElements('[data-article-title-cross], [data-article-title-check]');
+
+				text.setStyle('display', 'none');
+				actions.setStyle('display', 'inline-block');
+				edit.setStyle('display', 'none');
+				input.set('type', 'text');
+				input.focus();
+				input.select();
+			},
+
+			hide: function(element){
+				var parent = element.getParent('[data-article-title]'),
+					input = parent.getElement('[data-article-title-input]'),
+					text = parent.getElement('span'),
+					edit = parent.getElements('[data-article-title-edit]'),
+					actions = parent.getElements('[data-article-title-cross], [data-article-title-check]');
+
+				text.setStyle('display', 'inline-block');
+				edit.setStyle('display', 'inline-block');
+				actions.setStyle('display', 'none');
+				input.set('type', 'hidden').set('value', text.get('text').clean());
+			},
+
+			save: function(element){
+				var parent = element.getParent('[data-article-title]'),
+					input = parent.getElement('[data-article-title-input]'),
+					text = parent.getElement('span');
+
+				text.set('text', input.get('value'));
+				RokSprocket.editTitle.hide(element);
+			}
+		};
+
+		this.RokSprocket.editTitle.init();
 
 		this.RokSprocket.CopyToClipboard = {
 			button: null,
@@ -2442,7 +2745,7 @@ Unmatrix 2d
 
 		// alerts close
 		document.getElements('[data-dismiss]:not([data-dismiss=true])').each(function(action){
-			var alert = action.getParent('.' + action.get('data-dismiss'));
+			var alert = action.getParent('.' + action.get('data-dismiss')) || action.getParent('#system-message-container').getElement('.' + action.get('data-dismiss'));
 
 			if (alert.get('data-cookie')){
 				if (Cookie.read(alert.get('data-cookie')) == 'hide') alert.setStyle('display', 'none');
@@ -2452,14 +2755,17 @@ Unmatrix 2d
 				e.stop();
 
 				var dismiss = action.get('data-dismiss'),
-					wrapper = action.getParent('.' + dismiss);
+					wrapper = action.getParent('.' + dismiss) || action.getParent('#system-message-container').getElement('.' + dismiss);
 
-				if (wrapper) wrapper.fx({opacity: 0}, {
-					callback: function(){
-						wrapper.dispose();
-						Cookie.write(wrapper.get('data-cookie'), 'hide', {duration: 1, path: new URI(window.location.href).get('directory')});
-					}
-				});
+				if (wrapper){
+					action.dispose();
+					wrapper.fx({opacity: 0}, {
+						callback: function(){
+							wrapper.dispose();
+							Cookie.write(wrapper.get('data-cookie'), 'hide', {duration: 1, path: new URI(window.location.href).get('directory')});
+						}
+					});
+				}
 			});
 
 		}, this);
@@ -2485,7 +2791,9 @@ Unmatrix 2d
 	window.addEvent('domready', this.RokSprocket.init);
 	window.addEvent('load', function(){
 		// fire the provider again
-		document.getElement('.content_provider').fireEvent('change');
+		if (!RokSprocket.content.getModuleId()) return;
+
+		//document.getElement('.content_provider').fireEvent('change');
 
 		RokSprocket.articles.fireEvent('onModelSuccess');
 
@@ -2495,6 +2803,38 @@ Unmatrix 2d
 		});
 	});
 
+//<1.4compat>
+
+// Flash detection
+
+var version = (Function.attempt(function(){
+	return navigator.plugins['Shockwave Flash'].description;
+}, function(){
+	return new ActiveXObject('ShockwaveFlash.ShockwaveFlash').GetVariable('$version');
+}) || '0 r0').match(/\d+/g);
+
+Browser.Plugins.Flash = {
+	version: Number(version[0] || '0.' + version[1]) || 0,
+	build: Number(version[2]) || 0
+};
+
+//</1.4compat>
+
+// String scripts
+
+Browser.exec = function(text){
+	if (!text) return text;
+	if (window.execScript){
+		window.execScript(text);
+	} else {
+		var script = document.createElement('script');
+		script.setAttribute('type', 'text/javascript');
+		script.text = text;
+		document.head.appendChild(script);
+		document.head.removeChild(script);
+	}
+	return text;
+};
 
 /* Ugly workaround for data-sets issue for IE < 9 on Moo < 1.4.4 */
 if (MooTools.version < "1.4.4" && (Browser.name == 'ie' && Browser.version < 9)){
@@ -2560,7 +2900,12 @@ Object.extend({
 })());
 
 
-
+/*!
+ * @version   $Id: roksprocket.js 21927 2014-07-10 23:29:54Z djamil $
+ * @author    RocketTheme http://www.rockettheme.com
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
+ */
 ((function(){
 	if (typeof this.RokSprocket == 'undefined') this.RokSprocket = {};
 
@@ -2649,6 +2994,12 @@ Object.extend({
 	});
 
 })());
+/*!
+ * @version   $Id: roksprocket.js 21927 2014-07-10 23:29:54Z djamil $
+ * @author    RocketTheme http://www.rockettheme.com
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
+ */
 ((function(){
 
 	if (typeof this.RokSprocket == 'undefined') this.RokSprocket = {};
@@ -2858,7 +3209,12 @@ Object.extend({
 	});
 
 })());
-
+/*!
+ * @version   $Id: roksprocket.js 21927 2014-07-10 23:29:54Z djamil $
+ * @author    RocketTheme http://www.rockettheme.com
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
+ */
 ((function(){
 	if (typeof this.RokSprocket == 'undefined') this.RokSprocket = {};
 
@@ -3476,6 +3832,12 @@ Object.extend({
 	});
 
 })());
+/*!
+ * @version   $Id: roksprocket.js 21927 2014-07-10 23:29:54Z djamil $
+ * @author    RocketTheme http://www.rockettheme.com
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
+ */
 ((function(){
 	if (typeof this.RokSprocket == 'undefined') this.RokSprocket = {};
 
@@ -3541,6 +3903,7 @@ Object.extend({
 
 		getItems: function(more){
 			if (this.model.isRunning) this.model.cancel();
+			this.model.options.data.model_action = 'getItems';
 			//if (this.flag.getState()) return;
 
 			var extras = RokSprocket.content.getProviderSubmit().object,
@@ -3548,10 +3911,66 @@ Object.extend({
 					provider: RokSprocket.content.getProvider(),
 					layout: RokSprocket.content.getLayout(),
 					module_id: RokSprocket.content.getModuleId(),
+					uuid: RokSprocket.content.getInstanceId(),
 					filters: RokSprocket.content.getFilters('_filters').json,
 					articles: RokSprocket.content.getFilters('_articles').json,
 					sort: RokSprocket.content.getSort().json,
 					display_limit: RokSprocket.displayLimit.getValue()
+				};
+
+			if (extras) params['extras'] = extras;
+			params['load_all'] = (more && more.load_all) ? more.load_all : false;
+
+			params['page'] = (more && more.page ? more.page : 1);
+
+			this.loadmore = !!more;
+
+			this.setParams(params).send();
+		},
+
+		getItemsWithNew: function(more){
+			if (this.model.isRunning) this.model.cancel();
+			this.model.options.data.model_action = 'getItemsWithNew';
+			//if (this.flag.getState()) return;
+
+			var extras = RokSprocket.content.getProviderSubmit().object,
+				params = {
+					provider: RokSprocket.content.getProvider(),
+					layout: RokSprocket.content.getLayout(),
+					module_id: RokSprocket.content.getModuleId(),
+					uuid: RokSprocket.content.getInstanceId(),
+					filters: RokSprocket.content.getFilters('_filters').json,
+					articles: RokSprocket.content.getFilters('_articles').json,
+					sort: RokSprocket.content.getSort().json,
+					display_limit: RokSprocket.displayLimit.getValue()
+				};
+
+			if (extras) params['extras'] = extras;
+			params['load_all'] = (more && more.load_all) ? more.load_all : false;
+
+			params['page'] = (more && more.page ? more.page : 1);
+
+			this.loadmore = !!more;
+
+			this.setParams(params).send();
+		},
+
+		removeItem: function(item, more){
+			if (this.model.isRunning) this.model.cancel();
+			this.model.options.data.model_action = 'removeItem';
+			//if (this.flag.getState()) return;
+
+			var extras = RokSprocket.content.getProviderSubmit().object,
+				params = {
+					provider: RokSprocket.content.getProvider(),
+					layout: RokSprocket.content.getLayout(),
+					module_id: RokSprocket.content.getModuleId(),
+					uuid: RokSprocket.content.getInstanceId(),
+					filters: RokSprocket.content.getFilters('_filters').json,
+					articles: RokSprocket.content.getFilters('_articles').json,
+					sort: RokSprocket.content.getSort().json,
+					display_limit: RokSprocket.displayLimit.getValue(),
+					item_id: item
 				};
 
 			if (extras) params['extras'] = extras;
@@ -3590,15 +4009,28 @@ Object.extend({
 			response = new Response(response, {onError: this.error.bind(this)});
 
 			this.articles.empty();
-			this.container.addClass('no-articles');
-
 			var html = response.getPath('payload.html');
+
 			if (html !== null){
+				this.container.set('class', 'clearfix provider-' + RokSprocket.content.getProvider() + ' articles no-articles');
+
 				var dummy = new Element('div', {html: html});
 				if (!this.loadmore) this.container.getElements('[data-article-id]').dispose();
 				this.container.adopt(dummy.getChildren());
 				this.container.getElements('[data-article-id]').each(this.addArticle.bind(this));
-				if (this.articles.length) this.container.removeClass('no-articles');
+				if (this.articles.length) this.container.set('class', 'clearfix provider-' + RokSprocket.content.getProvider() + ' articles');
+			} else {
+				var payload = response.getPath('payload');
+				if (payload){
+					var removedItem = JSON.decode(payload).removed_item,
+						removedItemElement = this.container.getElement('[data-article-id='+removedItem+']');
+
+					moofx(removedItemElement).animate({opacity: 0, transform: 'scale(0)'}, {duration: 300, callback: function(){
+						removedItemElement.dispose();
+						this.container.getElements('[data-article-id]').each(this.addArticle.bind(this));
+						this.container.set('class', 'clearfix provider-' + RokSprocket.content.getProvider() + ' articles' + (this.articles.length ? '' : ' no-articles'));
+					}.bind(this)});
+				}
 			}
 
 			RokSprocket.Paging.more = response.getPath('payload.more') || false;
@@ -3681,7 +4113,7 @@ Object.extend({
 				relay: {
 					'click:relay(.preview-wrapper)': this.getPreview.bind(this),
 					'change:relay(.item-params select, .item-params input)': this.setFlag.bind(this),
-					'keyup:relay(.item-params input)': this.setFlag.bind(this),
+					'keyup:relay(.item-params input, [data-article-title-input])': this.setFlag.bind(this),
 					'mouseenter:relay(.item-params input[type=text]:not([data-imagepicker-display],[data-peritempicker-display]))': this.showTipPreview.bind(this),
 					'mouseleave:relay(.item-params input[type=text]:not([data-imagepicker-display],[data-peritempicker-display]))': this.hideTipPreview.bind(this),
 					'blur:relay(.item-params input[type=text])': this.hideTipPreview.bind(this),
@@ -3698,12 +4130,14 @@ Object.extend({
 
 		attach: function(){
 			this.element.addEvents(this.bounds.relay);
-			this.element.getElement('.info-wrapper').addEvents(this.bounds.info);
+			var info = this.element.getElement('.info-wrapper');
+			if (info) info.addEvents(this.bounds.info);
 		},
 
 		detach: function(){
 			this.element.removeEvents(this.bounds.relay);
-			this.element.getElement('.info-wrapper').removeEvents(this.bounds.info);
+			var info = this.element.getElement('.info-wrapper');
+			if (info) info.removeEvents(this.bounds.info);
 		},
 
 		getID: function(){
@@ -3802,6 +4236,12 @@ Object.extend({
 	});
 
 })());
+/*!
+ * @version   $Id: roksprocket.js 21927 2014-07-10 23:29:54Z djamil $
+ * @author    RocketTheme http://www.rockettheme.com
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
+ */
 ((function(){
 	if (typeof this.RokSprocket == 'undefined') this.RokSprocket = {};
 
@@ -3868,6 +4308,12 @@ Object.extend({
 	});
 
 })());
+/*!
+ * @version   $Id: roksprocket.js 21927 2014-07-10 23:29:54Z djamil $
+ * @author    RocketTheme http://www.rockettheme.com
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
+ */
 (function (doc, win, udef) {
 
 	var
@@ -4310,6 +4756,12 @@ Object.extend({
 	win.Twipsy = Twipsy;
 
 })(document, self, undefined);
+/*!
+ * @version   $Id: roksprocket.js 21927 2014-07-10 23:29:54Z djamil $
+ * @author    RocketTheme http://www.rockettheme.com
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
+ */
 ((function(){
 
 	if (typeof this.RokSprocket == 'undefined') this.RokSprocket = {};
@@ -4425,6 +4877,12 @@ Object.extend({
 	});
 
 })());
+/*!
+ * @version   $Id: roksprocket.js 21927 2014-07-10 23:29:54Z djamil $
+ * @author    RocketTheme http://www.rockettheme.com
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
+ */
 ((function(){
 
 	if (typeof this.RokSprocket == 'undefined') this.RokSprocket = {};
@@ -4601,6 +5059,12 @@ Object.extend({
 	});
 
 })());
+/*!
+ * @version   $Id: roksprocket.js 21927 2014-07-10 23:29:54Z djamil $
+ * @author    RocketTheme http://www.rockettheme.com
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
+ */
 ((function(){
 	if (typeof this.RokSprocket == 'undefined') this.RokSprocket = {};
 
@@ -4643,6 +5107,12 @@ Object.extend({
 	});
 
 })());
+/*!
+ * @version   $Id: roksprocket.js 21927 2014-07-10 23:29:54Z djamil $
+ * @author    RocketTheme http://www.rockettheme.com
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
+ */
 if (typeof this.RokSprocket == 'undefined') this.RokSprocket = {};
 
 
@@ -4851,7 +5321,12 @@ if (typeof this.RokSprocket == 'undefined') this.RokSprocket = {};
 		};
 	}
 })());
-
+/*!
+ * @version   $Id: roksprocket.js 21927 2014-07-10 23:29:54Z djamil $
+ * @author    RocketTheme http://www.rockettheme.com
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
+ */
 ((function(){
 	if (typeof this.RokSprocket == 'undefined') this.RokSprocket = {};
 	var OnInputEvent = (Browser.name == 'ie' && Browser.version <= 9) ? 'keypress' : 'input';
@@ -5111,6 +5586,266 @@ if (typeof this.RokSprocket == 'undefined') this.RokSprocket = {};
 	});
 
 })());
+/*!
+ * @version   $Id: roksprocket.js 21927 2014-07-10 23:29:54Z djamil $
+ * @author    RocketTheme http://www.rockettheme.com
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
+ */
+((function(){
+    if (typeof this.RokSprocket == 'undefined') this.RokSprocket = {};
+    var OnInputEvent = (Browser.name == 'ie' && Browser.version <= 9) ? 'keypress' : 'input';
+
+    this.PerItemPickerTags = new Class({
+
+        Implements: [Options, Events],
+        options: {},
+
+        initialize: function(options){
+            this.setOptions(options);
+
+            this.attach();
+        },
+
+        getPickers: function(){
+            this.pickers = document.getElements('[data-peritempickertags]');
+
+            return this.pickers;
+        },
+
+        attach: function(picker){
+            var pickers = (picker ? new Elements([picker]).flatten() : this.getPickers());
+
+            this.fireEvent('beforeAttach', pickers);
+
+            pickers.each(function(picker){
+                var select = picker.getElement('select'),
+                    display = picker.getElement('[data-peritempickertags-display]'),
+                    input = picker.getElement('#' + picker.get('data-peritempickertags-id'));
+
+                var change = select.retrieve('roksprocket:pickers:change', function(event){
+                        this.change.call(this, event, select);
+                    }.bind(this)),
+                    keypress = display.retrieve('roksprocket:pickers:input', function(event){
+                        this.keypress.call(this, event, display, input, select);
+                    }.bind(this)),
+                    focus = display.retrieve('roksprocket:pickers:focus', function(event){
+                        this.focus.call(this, event, display, input);
+                    }.bind(this)),
+                    blur = display.retrieve('roksprocket:pickers:blur', function(event){
+                        this.blur.call(this, event, display, input, select);
+                    }.bind(this));
+
+                if (!input.get('value').test(/^-([a-z]{1,})-$/)){
+                    display.store('display_value', display.get('value') || '');
+                    input.store('user_value', input.get('value') || '');
+                }
+
+                select.addEvent('change', change);
+                display.addEvent(OnInputEvent, keypress);
+                display.addEvent('focus', focus);
+                //display.addEvent('blur', blur);
+                //display.twipsy({placement: 'above', offset: 5, html: false});
+
+            }, this);
+
+            this.fireEvent('afterAttach', pickers);
+        },
+
+        detach: function(picker){
+            var pickers = (picker ? new Elements([picker]).flatten() : this.pickers);
+
+            this.fireEvent('beforeDetach', pickers);
+
+            pickers.each(function(picker){
+                var change = picker.retrieve('roksprocket:pickers:change'),
+                    keypress = picker.retrieve('roksprocket:pickers:input'),
+                    select = picker.getElement('select'),
+                    display = picker.getElement('[data-peritempickertags-display]');
+
+                select.removeEvent('change', change);
+                display.removeEvent(OnInputEvent, keypress);
+
+            }, this);
+
+            if (!picker) document.store('roksprocket:pickers:document', false).removeEvent('click', this.bounds.document);
+
+            this.fireEvent('afterDetach', pickers);
+        },
+
+        change: function(event, select){
+            var value = select.get('value'),
+                parent = select.getParent('.peritempickertags-wrapper'),
+                hidden = parent.getElement('input[type=hidden]'),
+                display = parent.getElement('[data-peritempickertags-display]'),
+                dropdown = parent.getElement('.sprocket-dropdown [data-toggle]'),
+                title = dropdown.getElement('span.name');
+
+            RokSprocket.tags.reset(parent.getElement('[data-tags]'));
+
+            if (value.test(/^-([a-z]{1,})-$/)){
+                parent.addClass('peritempickertags-noncustom');
+                title.set('text', select.getElement('[value='+value+']').get('text'));
+
+                display.set('value', select.get('value'));
+                hidden.set('value', value);
+            } else {
+                parent.removeClass('peritempickertags-noncustom');
+                title.set('text', '');
+
+                if (display.get('value').test(/^-([a-z]{1,})-$/)){
+                    display.set('value', display.retrieve('display_value', ''));
+                    hidden.set('value', hidden.retrieve('user_value', ''));
+                }
+
+                this.keypress(false, display, hidden, select);
+            }
+
+        },
+
+        keypress: function(event, display, input, select){
+            var value = display.get('value');
+
+            this.update(input, value);
+        },
+
+        focus: function(event, display, input){
+            new TextArea(input, display);
+        },
+
+        update: function(input, settings){
+            input = document.id(input);
+
+            // RokSprocket.SiteURL is always available
+
+            var parent = input.getParent('[data-peritempickertags]'),
+                display = parent.getElement('[data-peritempickertags-display]'),
+                value = display.get('value');
+
+            display
+                .set('value', value).store('display_value', value);
+
+            input.set('value', value).store('juser_value', value);
+        }
+
+    });
+
+    var TextArea = new Class({
+        Implements: [Options, Events],
+        options: {},
+        initialize: function(input, display, options){
+            this.setOptions(options);
+
+            this.input = document.id(input);
+            this.display = document.id(display);
+            this.wrapper = null;
+            this.textarea = null;
+
+            this.build();
+        },
+
+        build: function(){
+            this.wrapper = new Element('div.peritempickertags-textarea-wrapper').adopt(
+                new Element('span[data-peritempickertags-close].close', {html: '&times;'}),
+                new Element('textarea.peritempickertags-textarea')
+            ).inject(document.body);
+
+            this.wrapper.styles({position: 'absolute'});
+            this.textarea = this.wrapper.getElement('textarea');
+
+            this.attach();
+            this.show();
+
+            return this;
+        },
+
+        destroy: function(){
+            this.detach();
+            this.wrapper.dispose();
+
+            return this;
+        },
+
+        attach: function(){
+            var keypress = this.wrapper.retrieve('roksprocket:pickers:textarea', function(event){
+                    this.keypress.call(this, event);
+                }.bind(this)),
+                close = this.wrapper.retrieve('roksprocket:pickers:close', function(event){
+                    this.keypress.call(this, event);
+                    this.destroy.call(this, event);
+                }.bind(this));
+
+            document.body.addEvent('keyup:keys(esc)', close);
+            this.textarea.addEvent('keydown', keypress);
+            this.wrapper.addEvents({
+                'blur:relay(textarea)': close,
+                'click:relay(.close)': close
+            });
+
+            return this;
+        },
+
+        detach: function(){
+            var keypress = this.wrapper.retrieve('roksprocket:pickers:textarea'),
+                close = this.wrapper.retrieve('roksprocket:pickers:close');
+
+            document.body.removeEvent('keyup:keys(esc)', close);
+            this.textarea.removeEvent('keydown', keypress);
+            this.wrapper.removeEvents({
+                'blur:relay(textarea)': close,
+                'click:relay(.close)': close
+            });
+
+            return this;
+        },
+
+        keypress: function(event){
+            var value = this.textarea.get('value');
+
+            this.input.set('value', value);
+            this.display.set('value', value);
+
+            if (event && event.type == 'keydown'){
+                if (event.key == 'tab'){
+                    var next = this.input.getNext('[type!=hidden]');
+                    next.set('tabindex', 0).focus();
+                    next.set('tabindex', null);
+                }
+            }
+
+            return this;
+        },
+
+        show: function(){
+            this.wrapper.styles({display: 'block'}).position({relativeTo: this.display});
+            this.textarea.set('value', this.display.get('value'));
+            this.textarea.focus()
+
+            return this;
+        },
+
+        hide: function(){
+            this.wrapper.styles({display: 'none'});
+
+            return this;
+        },
+
+        toElement: function(){
+            return this.wrapper;
+        }
+    });
+
+    window.addEvent('domready', function(){
+        this.RokSprocket.peritempickertags = new PerItemPickerTags();
+    });
+
+})());
+/*!
+ * @version   $Id: roksprocket.js 21927 2014-07-10 23:29:54Z djamil $
+ * @author    RocketTheme http://www.rockettheme.com
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
+ */
 ((function(){
 	this.ResizableTextbox = new Class({
 
@@ -5158,10 +5893,10 @@ if (typeof this.RokSprocket == 'undefined') this.RokSprocket = {};
 
 	});
 })());
-/**
- * @version   $Id$
+/*!
+ * @version   $Id: roksprocket.js 21927 2014-07-10 23:29:54Z djamil $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -5280,6 +6015,17 @@ if (typeof this.RokSprocket == 'undefined') this.RokSprocket = {};
 			box.set('tween', {duration: 200, onComplete: function(){ box.dispose(); }}).fade('out');
 		},
 
+		reset: function(container, values){
+			var maininput = container.getElement('[data-tags-maininput]'),
+				realinput = container.getElement('[data-tags-input]'),
+				current = realinput.get('value'),
+				currentList = current.split(',');
+
+			var boxes = container.getElements('[data-tags-box]');
+			realinput.set('value', '');
+			if (boxes.length) boxes.dispose();
+		},
+
 		reload: function(assign){
 			if (!assign) return document.getElements('[data-tags]');
 
@@ -5294,7 +6040,12 @@ if (typeof this.RokSprocket == 'undefined') this.RokSprocket = {};
 	});
 
 })());
-
+/*!
+ * @version   $Id: roksprocket.js 21927 2014-07-10 23:29:54Z djamil $
+ * @author    RocketTheme http://www.rockettheme.com
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
+ */
  ((function(){
 
 	if (typeof this.RokSprocket == 'undefined') this.RokSprocket = {};
@@ -5500,7 +6251,7 @@ if (typeof this.RokSprocket == 'undefined') this.RokSprocket = {};
 	});
 
 })());
-/*
+/*!
 ---
 name: Picker
 description: Creates a Picker, which can be used for anything
@@ -5840,7 +6591,7 @@ var Picker = new Class({
 	}
 
 });
-/*
+/*!
 ---
 name: Picker.Attach
 description: Adds attach and detach methods to the Picker, to attach it to element events
@@ -6002,7 +6753,7 @@ Picker.Attach = new Class({
 	}
 
 });
-/*
+/*!
 ---
 name: Picker.Date
 description: Creates a DatePicker, can be used for picking years/months/days and time, or all of them
@@ -6670,6 +7421,12 @@ var isUnavailable = function(type, date, options){
 };
 
 })();
+/*!
+ * @version   $Id: roksprocket.js 21927 2014-07-10 23:29:54Z djamil $
+ * @author    RocketTheme http://www.rockettheme.com
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+ * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
+ */
 ((function(){
 
 	window.addEvent('domready', function(){
@@ -6754,7 +7511,10 @@ var isUnavailable = function(type, date, options){
 		}
 	});
 })());
-
+/*!
+// Simple Set Clipboard System
+// Author: Joseph Huckaby
+*/
 ((function(){
 
 	var SWFFile = 'ZeroClipboard' + (Browser.Plugins.Flash && Browser.Plugins.Flash.version >= 10 ? '10' : '') + '.swf';

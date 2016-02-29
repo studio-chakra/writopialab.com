@@ -1,16 +1,18 @@
 /**
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 /* Features - Layout Slideshow - Core */
 .layout-slideshow {position: relative;}
 .layout-slideshow:after {display: table;content: "";*zoom: 1;clear: both;}
 .layout-slideshow ul {list-style: none !important;margin: 0;padding: 0;}
+.layout-slideshow .sprocket-none {opacity: 0;visibility: hidden;display: none;}
 
 /* Features - Layout Slideshow - Content */
 .layout-slideshow .sprocket-features-img-list {position: relative;overflow: hidden;}
 .layout-slideshow .sprocket-features-img-container {position: absolute;top: 0;}
+.layout-slideshow .sprocket-features-img-container img {width: 100%;}
 .layout-slideshow .sprocket-features-content {position: absolute;top: 40px;left: 40px;width: 50%;}
 .layout-slideshow .sprocket-features-title {font-size: 2em;line-height: 1.3em;margin: 0 0 15px 0;padding: 10px;display: inline-block;}
 .layout-slideshow .sprocket-features-desc {font-size: 1.1em;line-height: 1.3em;margin: 0;padding: 10px;display: inline-block;}
@@ -38,3 +40,4 @@
 
 /* Features - Layout Slideshow - Transitions */
 .layout-slideshow .sprocket-features-pagination li, .layout-slideshow .sprocket-features-arrows .arrow {-webkit-transition: opacity 0.2s ease-in;-moz-transition: opacity 0.2s ease-in;-o-transition: opacity 0.2s ease-in;transition: opacity 0.2s ease-in;}
+

@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: Filter.php 59197 2013-03-07 02:57:33Z steph $
+ * @version   $Id: Filter.php 11320 2013-06-07 22:30:23Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -410,5 +410,13 @@ class RokSprocket_Provider_FieldsAttach_Filter extends RokSprocket_Provider_Abst
 	protected function sort_hits($data)
 	{
 		$this->normalSortBy('a.hits', $data);
+	}
+
+	/**
+	 * @param $data
+	 */
+	protected function sort_ordering($data)
+	{
+		$this->normalSortBy('a.ordering', $data);
 	}
 }

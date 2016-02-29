@@ -1,12 +1,12 @@
 /*
- * ---
- * name: Picker
- * description: Creates a Picker, which can be used for anything
- * authors: Arian Stolwijk
- * requires: [Core/Element.Dimensions, Core/Fx.Tween, Core/Fx.Transitions]
- * provides: Picker
- * ...
- */
+---
+name: Picker.Date
+description: Creates a DatePicker, can be used for picking years/months/days and time, or all of them
+authors: Arian Stolwijk
+requires: [Picker, Picker.Attach, Locale.en-US.DatePicker, More/Locale, More/Date]
+provides: Picker.Date
+...
+*/
 (function(){this.DatePicker=Picker.Date=new Class({Extends:Picker.Attach,options:{timePicker:false,timePickerOnly:false,timeWheelStep:1,yearPicker:true,yearsPerPage:20,startDay:1,rtl:false,startView:"days",openLastView:false,pickOnly:false,canAlwaysGoUp:["months","days"],updateAll:false,weeknumbers:false,months_abbr:null,days_abbr:null,years_title:function(f,e){var g=f.get("year");
 return g+"-"+(g+e.yearsPerPage-1);},months_title:function(f,e){return f.get("year");},days_title:function(f,e){return f.format("%b %Y");},time_title:function(f,e){return(e.pickOnly=="time")?Locale.get("DatePicker.select_a_time"):f.format("%d %B, %Y");
 }},initialize:function(g,f){this.parent(g,f);this.setOptions(f);f=this.options;["year","month","day","time"].some(function(h){if(f[h+"PickerOnly"]){f.pickOnly=h;

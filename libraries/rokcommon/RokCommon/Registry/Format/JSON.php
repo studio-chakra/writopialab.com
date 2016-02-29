@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   ${project.version} ${build_date}
+ * @version   3.2.0 March 4, 2015
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - ${copyright_year} RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * derived from JoomlaRTCacheDriver with original copyright and license

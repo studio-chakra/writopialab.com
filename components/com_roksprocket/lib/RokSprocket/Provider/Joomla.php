@@ -1,11 +1,11 @@
 <?php
+
 /**
- * @version   $Id$
+ * @version   $Id: Joomla.php 23375 2014-10-06 15:30:20Z james $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
-
 class RokSprocket_Provider_Joomla extends RokSprocket_Provider_AbstarctJoomlaBasedProvider
 {
 	/**
@@ -35,10 +35,10 @@ class RokSprocket_Provider_Joomla extends RokSprocket_Provider_AbstarctJoomlaBas
 	 */
 	protected function convertRawToItem($raw_item, $dborder = 0)
 	{
-		require_once (JPath::clean(JPATH_SITE . '/components/com_content/helpers/route.php'));
-        if (file_exists(JPath::clean(JPATH_SITE . '/libraries/joomla/html/html/content.php'))) require_once (JPath::clean(JPATH_SITE . '/libraries/joomla/html/html/content.php'));
-        if(class_exists('JModelLegacy')) JModelLegacy::addIncludePath(JPATH_SITE.'/components/com_content/models', 'ContentModel');
-        //$textfield = $this->params->get('joomla_articletext_field', '');
+		require_once(JPath::clean(JPATH_SITE . '/components/com_content/helpers/route.php'));
+		if (file_exists(JPath::clean(JPATH_SITE . '/libraries/joomla/html/html/content.php'))) require_once(JPath::clean(JPATH_SITE . '/libraries/joomla/html/html/content.php'));
+		if (class_exists('JModelLegacy')) JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_content/models', 'ContentModel');
+		//$textfield = $this->params->get('joomla_articletext_field', '');
 
 		$item = new RokSprocket_Item();
 
@@ -55,8 +55,8 @@ class RokSprocket_Provider_Joomla extends RokSprocket_Provider_AbstarctJoomlaBas
 		$item->setMetaKey($raw_item->metakey);
 		$item->setMetaDesc($raw_item->metadesc);
 		$item->setMetaData($raw_item->metadata);
-        $item->setPublishUp($raw_item->publish_up);
-        $item->setPublishDown($raw_item->publish_down);
+		$item->setPublishUp($raw_item->publish_up);
+		$item->setPublishDown($raw_item->publish_down);
 
 
 		$images = array();
@@ -70,6 +70,7 @@ class RokSprocket_Provider_Joomla extends RokSprocket_Provider_AbstarctJoomlaBas
 					$image_intro->setCaption($raw_images->image_intro_caption);
 					$image_intro->setAlttext($raw_images->image_intro_alt);
 					$images[$image_intro->getIdentifier()] = $image_intro;
+					$item->setPrimaryImage($image_intro);
 				}
 				if (isset($raw_images->image_fulltext) && !empty($raw_images->image_fulltext)) {
 					$image_fulltext = new RokSprocket_Item_Image();
@@ -87,9 +88,9 @@ class RokSprocket_Provider_Joomla extends RokSprocket_Provider_AbstarctJoomlaBas
 		}
 
 		$primary_link = new RokSprocket_Item_Link();
-		$slug = !empty($raw_item->alias) ? ($raw_item->id.':'.$raw_item->alias) : $raw_item->id;
-		$catslug = !empty($raw_item->category_alias) ? ($raw_item->catid.':'.$raw_item->category_alias) : $raw_item->catid;
-		$primary_link->setUrl(JRoute::_(ContentHelperRoute::getArticleRoute($slug, $catslug),true));
+		$slug         = !empty($raw_item->alias) ? ($raw_item->id . ':' . $raw_item->alias) : $raw_item->id;
+		$catslug      = !empty($raw_item->category_alias) ? ($raw_item->catid . ':' . $raw_item->category_alias) : $raw_item->catid;
+		$primary_link->setUrl(JRoute::_(ContentHelperRoute::getArticleRoute($slug, $catslug), true));
 		$primary_link->getIdentifier('article_link');
 
 		$item->setPrimaryLink($primary_link);
@@ -127,22 +128,38 @@ class RokSprocket_Provider_Joomla extends RokSprocket_Provider_AbstarctJoomlaBas
 			}
 		}
 
-        $texts = array();
-        $texts['text_introtext'] = $raw_item->introtext;
-        $texts['text_fulltext'] = $raw_item->fulltext;
-        $texts['text_metadesc'] = $raw_item->metadesc;
-        $texts = $this->processPlugins($texts);
-        $item->setTextFields($texts);
-        $item->setText($texts['text_introtext']);
+		$texts                   = array();
+		$texts['text_introtext'] = $raw_item->introtext;
+		$texts['text_fulltext']  = $raw_item->fulltext;
+		$texts['text_metadesc']  = $raw_item->metadesc;
+		$texts['text_title']     = $raw_item->title;
+		$texts                   = $this->processPlugins($texts);
+		$item->setTextFields($texts);
+		$item->setText($texts['text_introtext']);
 
 		$item->setDbOrder($dborder);
 
 		// unknown joomla items
 		$item->setCommentCount(0);
-		$item->setTags(array());
+
+		if (isset($raw_item->tags) && !empty($raw_item->tags)) {
+			$item->setTags($raw_item->tags);
+		} else {
+			$item->setTags(array());
+		}
 
 		return $item;
 	}
+
+	protected function populateTags(array $raw_results)
+	{
+		$container = RokCommon_Service::getContainer();
+		/** @var RokSprocket_Provider_Joomla_ITagMerge $tagmerge */
+		$tagmerge = $container->getService('roksprocket.filter.processor.joomla_tagmerge');
+		$tagmerge->populateTags($raw_results);
+		return $raw_results;
+	}
+
 
 	/**
 	 * @param $id
@@ -160,13 +177,13 @@ class RokSprocket_Provider_Joomla extends RokSprocket_Provider_AbstarctJoomlaBas
 	public static function getImageTypes()
 	{
 		return array(
-			'image_intro'   => array(
-				'group'  => null,
-				'display'=> 'Article Intro Image'
+			'image_intro'    => array(
+				'group'   => null,
+				'display' => 'Article Intro Image'
 			),
-			'image_fulltext'=> array(
-				'group'  => null,
-				'display'=> 'Article Full Image'
+			'image_fulltext' => array(
+				'group'   => null,
+				'display' => 'Article Full Image'
 			)
 		);
 	}
@@ -177,38 +194,43 @@ class RokSprocket_Provider_Joomla extends RokSprocket_Provider_AbstarctJoomlaBas
 	public static function getLinkTypes()
 	{
 		return array(
-			'urla'   => array(
-				'group'  => null,
-				'display'=> 'Link A'
+			'urla' => array(
+				'group'   => null,
+				'display' => 'Link A'
 			),
-			'urlb'   => array(
-				'group'  => null,
-				'display'=> 'Link B'
+			'urlb' => array(
+				'group'   => null,
+				'display' => 'Link B'
 			),
-			'urlc'   => array(
-				'group'  => null,
-				'display'=> 'Link C'
+			'urlc' => array(
+				'group'   => null,
+				'display' => 'Link C'
 			)
 		);
 	}
-    /**
-     * @return array the array of link types and label
-     */
-    public static function getTextTypes()
-    {
-        return array(
-            'text_introtext'   => array(
-                'group'  => null,
-                'display'=> 'Intro Text'
-            ),
-            'text_fulltext'   => array(
-                'group'  => null,
-                'display'=> 'Full Text'
-            ),
-            'text_metadesc'   => array(
-                'group'  => null,
-                'display'=> 'Meta Description Text'
-            ),
-        );
-    }
+
+	/**
+	 * @return array the array of link types and label
+	 */
+	public static function getTextTypes()
+	{
+		return array(
+			'text_title'     => array(
+				'group'   => null,
+				'display' => 'Article Title'
+			),
+			'text_introtext' => array(
+				'group'   => null,
+				'display' => 'Intro Text'
+			),
+			'text_fulltext'  => array(
+				'group'   => null,
+				'display' => 'Full Text'
+			),
+			'text_metadesc'  => array(
+				'group'   => null,
+				'display' => 'Meta Description Text'
+			),
+		);
+	}
 }

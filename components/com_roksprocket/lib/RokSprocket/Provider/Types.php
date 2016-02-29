@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id$
+ * @version   $Id: Types.php 21657 2014-06-19 18:02:32Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -63,15 +63,16 @@ class RokSprocket_Provider_Types extends RokSprocket_Provider_AbstarctWordpressB
 
         //Set up texts array
         $texts = array();
-        $text_fields = self::getFieldTypes(array("textfield", "wysiwyg"));
+        $text_fields = self::getFieldTypes(array("textfield", "textarea", "wysiwyg", "checkbox", "numeric", "colorpicker", "email", "phone", "radio", "select"));
         if (count($text_fields)) {
             $text = '';
             foreach ($text_fields as $key => $val) {
-                $texts['text_' . $key] = get_post_meta($raw_item->post_id, $key);
+                $texts['text_' . $key] = get_post_meta($raw_item->post_id, $val['meta_key'], true);
             }
         }
         $texts['text_post_content'] = $raw_item->post_content;
         $texts['text_post_excerpt'] = $raw_item->post_excerpt;
+        $texts['text_post_title'] = $raw_item->post_title;
         $texts = $this->processPlugins($texts);
         $item->setTextFields($texts);
 
@@ -82,7 +83,7 @@ class RokSprocket_Provider_Types extends RokSprocket_Provider_AbstarctWordpressB
             $image = '';
             foreach ($image_fields as $key => $val) {
                 $image = new RokSprocket_Item_Image();
-                $image->setSource(get_post_meta($raw_item->post_id, $key));
+                $image->setSource(get_post_meta($raw_item->post_id, $val['meta_key'], true));
                 $image->setIdentifier('image_' . $key);
                 $image->setCaption('');
                 $image->setAlttext('');
@@ -103,12 +104,12 @@ class RokSprocket_Provider_Types extends RokSprocket_Provider_AbstarctWordpressB
 
         //set up links array
         $links = array();
-        $link_fields = self::getFieldTypes("url");
+        $link_fields = self::getFieldTypes(array("url", "audio", "video", "file", "embed"));
         if (count($text_fields)) {
             $link = '';
             foreach ($link_fields as $key => $val) {
                 $link_field = new RokSprocket_Item_Link();
-                $link_field->setUrl(get_post_meta($raw_item->post_id, $key));
+                $link_field->setUrl(get_post_meta($raw_item->post_id, $val['meta_key'], true));
                 $link_field->setText('');
                 $links['url_' . $key] = $link_field;
             }
@@ -121,9 +122,8 @@ class RokSprocket_Provider_Types extends RokSprocket_Provider_AbstarctWordpressB
         $item->setPrimaryLink($primary_link);
 
         $item->setCommentCount($raw_item->comment_count);
-        if (isset($raw_item->tags)) {
-            $tags = (explode(',', $raw_item->tags)) ? explode(',', $raw_item->tags) : array();
-            $item->setTags($tags);
+        if (!empty($raw_item->tags)) {
+            $item->setTags($raw_item->tags);
         }
 
         $item->setDbOrder($dborder);
@@ -161,7 +161,7 @@ class RokSprocket_Provider_Types extends RokSprocket_Provider_AbstarctWordpressB
      */
     public static function getLinkTypes()
     {
-        $fields = self::getFieldTypes(array("url"));
+        $fields = self::getFieldTypes(array("url", "audio", "video", "file", "embed"));
         $list = array();
         foreach ($fields as $key => $val) {
             $list['url_' . $key]            = array();
@@ -176,7 +176,7 @@ class RokSprocket_Provider_Types extends RokSprocket_Provider_AbstarctWordpressB
      */
     public static function getTextTypes()
     {
-        $fields = self::getFieldTypes(array("textfield", "wysiwyg"));
+        $fields = self::getFieldTypes(array("textfield", "textarea", "wysiwyg", "checkbox", "numeric", "colorpicker", "email", "phone", "radio", "select"));
 
         $list = array();
         foreach ($fields as $key => $val) {
@@ -187,6 +187,7 @@ class RokSprocket_Provider_Types extends RokSprocket_Provider_AbstarctWordpressB
         $static = array(
             'text_post_content' => array('group' => null, 'display' => 'Post Content'),
             'text_post_excerpt' => array('group' => null, 'display' => 'Post Excerpt'),
+            'text_post_title' => array('group' => null, 'display' => 'Post Title'),
         );
         $list = array_merge($static, $list);
         return $list;

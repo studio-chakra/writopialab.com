@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id$
+ * @version   $Id: AbstractWordpressPlatformFilter.php 21664 2014-06-19 19:53:13Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -238,13 +238,13 @@ abstract class RokSprocket_Provider_AbstractWordpressPlatformFilter implements R
 							$wheres[] = 'DATEDIFF(NOW(),' . $field . ') < DATEDIFF(NOW(), DATE_SUB(NOW(),INTERVAL ' . (int)$match['value'] . ' ' . $range . '))';
 							break;
 						case 'exactly':
-							$wheres[] = 'DATEDIFF("' . mysql_real_escape_string($match) . '",' . $field . ') = 0';
+							$wheres[] = 'DATEDIFF("' . esc_sql($match) . '",' . $field . ') = 0';
 							break;
 						case 'before':
-							$wheres[] = 'DATEDIFF("' . mysql_real_escape_string($match) . '",' . $field . ') > 0';
+							$wheres[] = 'DATEDIFF("' . esc_sql($match) . '",' . $field . ') > 0';
 							break;
 						case 'after':
-							$wheres[] = 'DATEDIFF("' . mysql_real_escape_string($match) . '",' . $field . ') < 0';
+							$wheres[] = 'DATEDIFF("' . esc_sql($match) . '",' . $field . ') < 0';
 							break;
 						case 'today':
 							$wheres[] = 'DATE(' . $field . ') = DATE(NOW())';
@@ -285,16 +285,16 @@ abstract class RokSprocket_Provider_AbstractWordpressPlatformFilter implements R
 				if (!empty($match)) {
 					switch ($type) {
 						case 'equals':
-							$wheres[] = $field . '=' . (float)mysql_real_escape_string($match);
+							$wheres[] = $field . '=' . (float)esc_sql($match);
 							break;
 						case 'greaterthan':
-							$wheres[] = $field . ' > ' . (float)mysql_real_escape_string($match);
+							$wheres[] = $field . ' > ' . (float)esc_sql($match);
 							break;
 						case 'lessthan':
-							$wheres[] = $field . ' < ' . (float)mysql_real_escape_string($match);
+							$wheres[] = $field . ' < ' . (float)esc_sql($match);
 							break;
 						case 'isnot':
-							$wheres[] = $field . ' != ' . (float)mysql_real_escape_string($match);
+							$wheres[] = $field . ' != ' . (float)esc_sql($match);
 							break;
 
 					}
@@ -322,16 +322,16 @@ abstract class RokSprocket_Provider_AbstractWordpressPlatformFilter implements R
 						case 'matches':
 							break;
 						case 'contains':
-							$wheres[] = $field . ' like "%' . mysql_real_escape_string($match) . '%"';
+							$wheres[] = $field . ' like "%' . esc_sql($match) . '%"';
 							break;
 						case 'beginswith':
-							$wheres[] = $field . ' like "' . mysql_real_escape_string($match) . '%"';
+							$wheres[] = $field . ' like "' . esc_sql($match) . '%"';
 							break;
 						case 'endswith':
-							$wheres[] = $field . ' like "%' . mysql_real_escape_string($match) . '%"';
+							$wheres[] = $field . ' like "%' . esc_sql($match) . '%"';
 							break;
 						case 'is':
-							$wheres[] = $field . ' = "' . mysql_real_escape_string($match) . '%"';
+							$wheres[] = $field . ' = "' . esc_sql($match) . '%"';
 							break;
 
 					}
@@ -366,7 +366,7 @@ abstract class RokSprocket_Provider_AbstractWordpressPlatformFilter implements R
 		foreach ($data as $match) {
 			$match = trim($match);
 			if (!empty($match)) {
-				$wheres[] = $field . ' LIKE "%' . mysql_real_escape_string($match) . '%"';
+				$wheres[] = $field . ' LIKE "%' . esc_sql($match) . '%"';
 			}
 		}
 		if (!empty($wheres)) {

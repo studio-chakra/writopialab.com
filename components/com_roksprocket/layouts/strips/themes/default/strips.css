@@ -1,6 +1,6 @@
 /**
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 /* Layout - Sprocket Strips - Core */
@@ -16,21 +16,21 @@
 .sprocket-strips-text {display: block;}
 .sprocket-strips-content .readon {margin-top: 10px;}
 .sprocket-strips-container > li {float: left;margin: 10px 1%;}
-.cols-1 > li {width: 98%;}
-.cols-2 > li {width: 48%;}
-.cols-3 > li {width: 31.33%;}
-.cols-4 > li {width: 23%;}
-.cols-5 > li {width: 18%;}
-.cols-6 > li {width: 14.6667%;}
-.cols-7 > li {width: 12.2555%;}
-.cols-8 > li {width: 10.5%;}
-.cols-9 > li {width: 9.11%;}
-.cols-10 > li {width: 8%;}
-.cols-11 > li {width: 7.09%;}
-.cols-12 > li {width: 6.33%;}
+.sprocket-strips .cols-1 > li {width: 98%;}
+.sprocket-strips .cols-2 > li {width: 48%;}
+.sprocket-strips .cols-3 > li {width: 31.33%;}
+.sprocket-strips .cols-4 > li {width: 23%;}
+.sprocket-strips .cols-5 > li {width: 18%;}
+.sprocket-strips .cols-6 > li {width: 14.6667%;}
+.sprocket-strips .cols-7 > li {width: 12.2555%;}
+.sprocket-strips .cols-8 > li {width: 10.5%;}
+.sprocket-strips .cols-9 > li {width: 9.11%;}
+.sprocket-strips .cols-10 > li {width: 8%;}
+.sprocket-strips .cols-11 > li {width: 7.09%;}
+.sprocket-strips .cols-12 > li {width: 6.33%;}
 
 @media (max-width: 767px) {
-	.cols-1 > li, .cols-2 > li, .cols-3 > li, .cols-4 > li, .cols-5 > li, .cols-6 > li, .cols-7 > li, .cols-8 > li, .cols-9 > li, .cols-10 > li, .cols-11 > li, .cols-12 > li {width: 100%;float: none;}
+	.sprocket-strips .cols-1 > li, .sprocket-strips .cols-2 > li, .sprocket-strips .cols-3 > li, .sprocket-strips .cols-4 > li, .sprocket-strips .cols-5 > li, .sprocket-strips .cols-6 > li, .sprocket-strips .cols-7 > li, .sprocket-strips .cols-8 > li, .sprocket-strips .cols-9 > li, .sprocket-strips .cols-10 > li, .sprocket-strips .cols-11 > li, .sprocket-strips .cols-12 > li {width: 98%;float: none;}
 }
 
 /* Layout - Sprocket Strips - Navigation */

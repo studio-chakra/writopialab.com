@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     $Id: Form.php 57540 2012-10-14 18:27:59Z btowles $
+ * @version     $Id: Form.php 19098 2014-02-25 21:03:54Z btowles $
  * @author      RocketTheme http://www.rockettheme.com
- * @copyright   Copyright (C) 2007 - ${copyright_year} RocketTheme, LLC
+ * @copyright   Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license     http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * Derived From:
@@ -2080,5 +2080,30 @@ class RokCommon_Form
 	public function setName($name)
 	{
 		$this->name = $name;
+	}
+
+
+	/**
+	 * Getter for the form data
+	 *
+	 * @return   RokCommon_Registry  Object with the data
+	 *
+	 * @since    3.2
+	 */
+	public function getData()
+	{
+		return $this->data;
+	}
+
+	/**
+	 * Method to get the XML form object
+	 *
+	 * @return  SimpleXMLElement  The form XML object
+	 *
+	 * @since   3.2
+	 */
+	public function getXml()
+	{
+		return $this->xml;
 	}
 }

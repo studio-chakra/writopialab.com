@@ -2,61 +2,61 @@
     <fields name="params">
         <fieldset name="roksprocket" overwrite="false">
             <field name="lists_layout_title" type="label" label="ROKSPROCKET_LISTS_LAYOUT_TITLE" default=""
-                   description="" optionorder="50" class="layout layout_lists"/>
+                   description="" optionorder="50" class=""/>
             <field name="lists_themes" label="ROKSPROCKET_THEMES_LABEL" type="containerlist"
                    description="ROKSPROCKET_THEMES_DESC" configkey="roksprocket.layouts.lists.themes" optionorder="51"
-                   class="layout layout_lists"/>
+                   class=""/>
             <field name="lists_enable_accordion" type="containerlist" default="1"
                    label="ROKSPROCKET_LISTS_ACCORDION_LABEL"
-                   description="ROKSPROCKET_LISTS_ACCORDION_DESC" optionorder="52" class="layout layout_lists">
+                   description="ROKSPROCKET_LISTS_ACCORDION_DESC" optionorder="52" class="">
                 <option value="1">ENABLE</option>
                 <option value="0">DISABLE</option>
             </field>
             <field name="lists_previews_length" type="textplus" default="20" append="words"
                    label="ROKSPROCKET_PREVIEWSLENGTH_LABEL" description="ROKSPROCKET_PREVIEWSLENGTH_DESC"
-                   optionorder="53" class="layout layout_lists"/>
+                   optionorder="53" class=""/>
             <field name="lists_strip_html_tags" type="containerlist" default="1" label="ROKSPROCKET_STRIP_HTML_TAGS_LABEL"
-                   description="ROKSPROCKET_STRIP_HTML_TAGS_DESC" optionorder="53.5" class="layout layout_lists">
+                   description="ROKSPROCKET_STRIP_HTML_TAGS_DESC" optionorder="53.5" class="">
                 <option value="1">JYES</option>
                 <option value="0">JNO</option>
             </field>
             <field name="lists_items_per_page" type="text" default="5" append="chrs"
                    label="ROKSPROCKET_LISTS_ITEMSPERPAGE_LABEL" description="ROKSPROCKET_LISTS_ITEMSPERPAGE_DESC"
-                   optionorder="54" class="layout layout_lists"/>
+                   optionorder="54" class=""/>
             <field name="lists_show_arrows" type="containerlist" default="show" label="ROKSPROCKET_ARROW_LABEL"
-                   description="ROKSPROCKET_ARROW_DESC" optionorder="55" class="layout layout_lists">
+                   description="ROKSPROCKET_ARROW_DESC" optionorder="55" class="">
                 <option value="show">JSHOW</option>
                 <option value="hide">JHIDE</option>
             </field>
             <field name="lists_show_pagination" type="containerlist" default="1" label="ROKSPROCKET_PAGINATION_LABEL"
-                   description="ROKSPROCKET_PAGINATION_DESC" optionorder="56" class="layout layout_lists">
+                   description="ROKSPROCKET_PAGINATION_DESC" optionorder="56" class="">
                 <option value="1">JSHOW</option>
                 <option value="0">JHIDE</option>
             </field>
             <field name="lists_autoplay" type="containerlist" default="0" label="ROKSPROCKET_AUTOPLAY_LABEL"
-                   description="ROKSPROCKET_AUTOPLAY_DESC" optionorder="57" class="layout layout_lists">
+                   description="ROKSPROCKET_AUTOPLAY_DESC" optionorder="57" class="">
                 <option value="1">ENABLE</option>
                 <option value="0">DISABLE</option>
             </field>
             <field name="lists_autoplay_delay" type="textplus" default="5" append="s"
                    label="ROKSPROCKET_AUTOPLAY_DELAY_LABEL" description="ROKSPROCKET_AUTOPLAY_DELAY_DESC"
-                   optionorder="58" class="layout layout_lists"/>
+                   optionorder="58" class=""/>
             <field name="lists_resize_enable" type="containerlist" default="0"
                    label="ROKSPROCKET_RESIZE_ENABLE_LABEL" description="ROKSPROCKET_RESIZE_ENABLE_DESC"
-                   optionorder="59.1" class="layout layout_lists" group_open="true" group_class="group_imageresize">
+                   optionorder="59.1" class="" group_open="true" group_class="group_imageresize">
                 <option value="1">ENABLE</option>
                 <option value="0">DISABLE</option>
             </field>
             <field name="lists_resize_width" type="textplus" default="0" append="px"
                    label="ROKSPROCKET_RESIZE_WIDTH_LABEL" description="ROKSPROCKET_RESIZE_WIDTH_DESC"
-                   optionorder="59.2" class="layout layout_lists" group_bit="true"/>
+                   optionorder="59.2" class="" group_bit="true"/>
             <field name="lists_resize_height" type="textplus" default="0" append="px"
                    label="ROKSPROCKET_RESIZE_HEIGHT_LABEL" description="ROKSPROCKET_RESIZE_HEIGHT_DESC"
-                   optionorder="59.3" class="layout layout_lists" group_close="true"/>
+                   optionorder="59.3" class="" group_close="true"/>
 
             <field name="lists_layout_defaults_title" type="label"
                    label="ROKSPROCKET_LISTS_LAYOUT_DEFAULTS_TITLE"
-                   default="" description="" optionorder="80" class="layout layout_lists"/>
+                   default="" description="" optionorder="80" class=""/>
             <field name="lists_title_default" label="ROKSPROCKET_DEFAULT_TITLE"
                    description="ROKSPROCKET_DEFAULT_TITLE_DESC" type="provideroptionedselector"
                    configkey="roksprocket.providers.registered" controller="provider" populator="getTextTypes"

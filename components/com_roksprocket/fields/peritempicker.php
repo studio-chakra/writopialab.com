@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id$
+ * @version   $Id: peritempicker.php 11812 2013-06-27 17:49:30Z djamil $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 defined('JPATH_PLATFORM') or die;
@@ -21,10 +21,40 @@ class JFormFieldPerItemPicker extends JFormField
     protected $data;
     protected $isCustom = true;
 
+	/**
+	 * @var RokCommon_Service_Container
+	 */
+	protected $container;
+
+	public function __construct($form = null)
+	{
+		parent::__construct($form);
+		$this->container =  RokCommon_Service::getContainer();
+	}
+
+	protected function getLabel()
+	{
+		if ($this->container->hasParameter('roksprocket.current_provider'))
+		{
+			/** @var RokSprocket_IProvider $provider */
+			$provider = $this->container->getParameter('roksprocket.current_provider');
+			if (!$provider->allowFieldRender($this->type, $this->fieldname, $this->value)) return '';
+		}
+		return parent::getLabel();
+	}
+
+
 	function getInput(){
 		JHtml::_('behavior.modal');
 		//$this->_loadAssets();
 		$this->_setOptions();
+
+		if ($this->container->hasParameter('roksprocket.current_provider'))
+		{
+			/** @var RokSprocket_IProvider $provider */
+			$provider = $this->container->getParameter('roksprocket.current_provider');
+			$provider->filterPerItemTypes($this->type, $this->fieldname, $this->options);
+		}
 
 		if (preg_match("/^-([a-z]{1,})-$/", $this->value)){
 			if ($this->value == '-article-' && preg_match("/_title$/", $this->id)) $this->value = '-title-';
@@ -67,6 +97,9 @@ class JFormFieldPerItemPicker extends JFormField
 		$list = "";
 		$options = $this->options;
 
+		if (isset($this->value) && !array_key_exists($this->value, $options)) $this->value = '-title-';
+		if (isset($this->value) && !array_key_exists($this->value, $options)) $this->value = '-none-';
+
 		foreach($options as $option){
 			$attributes = $option['attributes'];
 			$class = (isset($attributes['class']) ? $attributes['class'] : "") . (isset($attributes['disabled']) ? " disabled" : "");
@@ -86,7 +119,7 @@ class JFormFieldPerItemPicker extends JFormField
 		if (count($options) > 1){
 			$output[] = '<div class="sprocket-dropdown imagepicker">';
 			$output[] = '	<a href="#" class="btn dropdown-toggle" data-toggle="dropdown">';
-			$output[] = ' 		<span class="name">'.(!$this->isCustom ? $this->options[$this->value]['name'] : '').'</span>';
+			$output[] = ' 		<span class="name">'.(!$this->isCustom && isset($this->options[$this->value]) ? $this->options[$this->value]['name'] : '').'</span>';
 			$output[] = ' 		<span class="caret"></span>';
 			$output[] = '	</a>';
 			$output[] = '	<ul class="dropdown-menu">';
@@ -103,6 +136,7 @@ class JFormFieldPerItemPicker extends JFormField
 
 		// original select
 		$output[] = '		<select class="chzn-done" '.((count($options) == 1) ? ' style="display: none;"' : '').'>';
+
 		foreach($options as $option){
 			$attributes = $option['attributes'];
 			$divider = (isset($attributes['data-divider']))? $attributes['data-divider'] : "";

@@ -2,9 +2,9 @@
     <fields name="params">
         <fieldset name="peritem" overwrite="false">
             <field name="strips_item_title" label="ROKSPROCKET_LAYOUT_STRIPS_TITLE_LABEL" type="peritempicker" default="-default-" icon="text" optionorder="54" description="ROKSPROCKET_LAYOUT_STRIPS_TITLE_DESC">
-                <option value="-none-">JNONE</option>
                 <option value="-default-">JDEFAULT</option>
                 <option value="-title-">ROKSPROCKET_ARTICLE_TITLE</option>
+                <option value="-none-">JNONE</option>
                 <option value="divider"></option>
                 <option value="">ROKSPROCKET_CUSTOM</option>
             </field>

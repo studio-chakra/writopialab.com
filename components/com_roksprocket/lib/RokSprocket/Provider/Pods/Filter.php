@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id$
+ * @version   $Id: Filter.php 21664 2014-06-19 19:53:13Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -267,20 +267,20 @@ class RokSprocket_Provider_Pods_Filter extends RokSprocket_Provider_AbstractWord
     /**
      * @param $data
      */
-    protected function articletext($data)
-    {
-//        global $wpdb;
-//		$wheres = array();
-//		foreach ($data as $match) {
-//			$match = trim($match);
-//			if (!empty($match)) {
-//				$wheres[] = 'p.post_content LIKE ' . $this->db->quote('%' . $this->db->escape($match, true) . '%');
-//			}
-//		}
-//		if (!empty($wheres)) {
-//			$this->filter_where[] = '(' . implode(' OR ', $wheres) . ')';
-//		}
-    }
+	protected function content($data)
+	{
+		global $wpdb;
+		$wheres = array();
+		foreach ($data as $match) {
+			$match = trim($match);
+			if (!empty($match)) {
+				$wheres[] = 'p.post_content LIKE "%' . esc_sql($match) . '%"';
+			}
+		}
+		if (!empty($wheres)) {
+			$this->filter_where[] = '(' . implode(' OR ', $wheres) . ')';
+		}
+	}
 
     protected function pod($data)
     {

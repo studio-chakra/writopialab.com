@@ -272,7 +272,7 @@ class RokCommon_Form_Field_List extends RokCommon_Form_AbstractField
 	protected function attachJavaScript(){
 		$js = array();
 		$js[] = "window.addEvent('domready', function(){";
-		$js[] = "	if (typeof RokSprocket != 'undefined'){";
+		$js[] = "	if (typeof RokSprocket != 'undefined' && typeof RokSprocket.articles != 'undefined'){";
 		$js[] = "		RokSprocket.articles.addEvent('onModelSuccess', function(response){";
 		$js[] = "			RokSprocket.dropdowns.attach(document.getElements('.articles .dropdown-original select'));";
 		$js[] = "		});";

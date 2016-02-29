@@ -2,6 +2,7 @@
     <filter name="title" label="ROKSPROCKET_TITLE" type="RokCommon_Filter_Type_Sort"/>
     <filter name="alias" label="ROKSPROCKET_ALIAS" type="RokCommon_Filter_Type_Sort"/>
     <filter name="category" label="ROKSPROCKET_CATEGORY" type="RokCommon_Filter_Type_Sort"/>
+    <filter name="ordering" label="ROKSPROCKET_PRIORITY" type="RokCommon_Filter_Type_Sort"/>
     <filter name="createddate" label="ROKSPROCKET_CREATED_DATE" type="RokCommon_Filter_Type_Sort"/>
     <filter name="modifieddate" label="ROKSPROCKET_MODIFIED_DATE" type="RokCommon_Filter_Type_Sort"/>
     <filter name="modifiedby" label="ROKSPROCKET_MODIFIED_BY" type="RokCommon_Filter_Type_Sort"/>
