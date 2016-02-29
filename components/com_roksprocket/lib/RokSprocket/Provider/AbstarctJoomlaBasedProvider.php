@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id$
+ * @version   $Id: AbstarctJoomlaBasedProvider.php 19583 2014-03-10 22:54:45Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -14,12 +14,15 @@ abstract class RokSprocket_Provider_AbstarctJoomlaBasedProvider extends RokSproc
 	public function getItems()
 	{
 
+		if (empty($this->filters)) return new RokSprocket_ItemCollection();
+
 		// setup active menu item if not there
 		$app    = JFactory::getApplication();
 		$menus  = $app->getMenu('site');
+        $menu_id = $menus->getDefault()->id;
 		$active = $menus->getActive();
 		$input  = $app->input;
-		if ($active == null && $passed_item_id = $input->get('ItemId', $menus->getDefault()->id, 'int')) {
+		if ($active == null && $passed_item_id = $input->get('ItemId', $menu_id, 'int')) {
 			$menus->setActive($passed_item_id);
 		}
 
@@ -41,20 +44,26 @@ abstract class RokSprocket_Provider_AbstarctJoomlaBasedProvider extends RokSproc
 		/** @var $query JDatabaseQuery */
 		$query         = $filer_processor->getQuery();
 		$display_limit = (int)$this->params->get('display_limit', 0);
-		$string_query  = (string)$query;
 		if ($app->isSite() && is_int($display_limit) && $display_limit > 0) {
 			$query = (string)$query . ' LIMIT ' . $display_limit;
 		}
 
 		$db = JFactory::getDbo();
-		$db->setQuery($query);
-		$raw_results = $db->loadObjectList();
+		$string_query = (string)$query;
+		$db->setQuery($string_query);
+		$raw_results = $db->loadObjectList('id');
 		if ($error = $db->getErrorMsg()) {
 			throw new RokSprocket_Exception($error);
 		}
+		$raw_results = $this->populateTags($raw_results);
 		$converted = $this->convertRawToItems($raw_results);
 		$this->mapPerItemData($converted);
 		return $converted;
+	}
+
+	protected function populateTags(array $raw_results)
+	{
+		return $raw_results;
 	}
 
 	/**
@@ -257,12 +266,13 @@ abstract class RokSprocket_Provider_AbstarctJoomlaBasedProvider extends RokSproc
      */
     protected function processPlugins($texts = array())
 	{
-        if(JFactory::getApplication()->isSite()){
-            foreach ($texts as $k => $v) {
-                $texts[$k] = JHtml::_('content.prepare', $v);
-            }
-        }
-
+		if (!isset($this->params) || $this->params->get('run_content_plugins', 'onmodule') == 'oneach' || $this->params->get('run_content_plugins', 'onmodule') == 1) {
+	        if(JFactory::getApplication()->isSite()){
+	            foreach ($texts as $k => $v) {
+	                $texts[$k] = JHtml::_('content.prepare', $v);
+	            }
+	        }
+		}
 		return $texts;
 	}
 }

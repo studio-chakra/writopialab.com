@@ -10,8 +10,8 @@
 				   notice=""/>
 			<field name="joomla_filters" type="filters" default="" multiple="false" label="" description=""
 				   class="provider provider_joomla filter_filters" optionorder="13"
-				   filterlocationparam="roksprocket.providers.registered.joomla.path"
-				   filterfile="filters.xml" emptybuttontext="ROKSPROCKET_ADD_FILTERS"
+				   filterlocationparam="roksprocket.providers.registered.joomla.path" filterfileparam="roksprocket.providers.registered.joomla.filter.file"
+				   emptybuttontext="ROKSPROCKET_ADD_FILTERS"
 				   notice=""/>
 			<field name="joomla_sort" type="dynamicfields" label=""
 				   class="provider provider_joomla dynamicfield-subinstance" optionorder="14" default="automatic" description="">

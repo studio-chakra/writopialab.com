@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: rokinjectmodule.php 9475 2013-04-18 15:31:07Z steph $
+ * @version   $Id: rokinjectmodule.php 28743 2015-08-19 16:51:12Z kat $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2014 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -30,16 +30,23 @@ class plgContentRokInjectModule extends JPlugin
 	 */
 	public function onContentPrepare($context, &$article, &$params, $limitstart)
 	{
+		// Don't run this plugin when the content is being indexed
+		if ($context == 'com_finder.indexer') {
+			return true;
+		}
 
-		$checksum = md5($context . $article->text . ($params ? $params->__toString() : '') . $limitstart);
+		if (is_scalar($params) || (is_object($params) && method_exists($params, '__toString' ))) {
+			$serializedParams = (string) $params;
+		} elseif (is_array($params)) {
+			$serializedParams = json_encode($params);
+		} else {
+			$serializedParams = 'xxx';
+		}
+
+		$checksum = md5($context . $article->text . $serializedParams . $limitstart);
 		if (!in_array($checksum, self::$has_run)) {
 			self::$has_run[] = $checksum;
 			// [module-28 style=xhtml|none] syntax for loading any module instance
-
-			// Don't run this plugin when the content is being indexed
-			if ($context == 'com_finder.indexer') {
-				return true;
-			}
 
 			$regex   = '/\[module-(\d{1,})(.*)\]/i';
 			$matches = array();

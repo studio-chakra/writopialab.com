@@ -21,6 +21,14 @@
 					<parameter key="displayname">Default</parameter>
 					<parameter key="basefile">index.php</parameter>
 				</parameter>
+				<parameter key="modern" type="collection">
+					<parameter key="displayname">Modern</parameter>
+					<parameter key="basefile">index.php</parameter>
+				</parameter>
+				<parameter key="portrait" type="collection">
+					<parameter key="displayname">Portrait</parameter>
+					<parameter key="basefile">index.php</parameter>
+				</parameter>
 			</parameter>
 		</parameter>
 	</parameters>

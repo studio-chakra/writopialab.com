@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id$
+ * @version   $Id: Filter.php 13721 2013-09-24 16:46:17Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -13,33 +13,34 @@ class RokSprocket_Provider_Zoo_Filter extends RokSprocket_Provider_AbstractJooml
 	 */
 	protected function setBaseQuery()
 	{
-		$this->query->select('a.id, a.application_id, a.type, a.name as title, a.alias' . ', a.state as published, a.access, a.created, a.created_by, a.created_by_alias, a.modified, a.elements, a.hits' . ', a.publish_up, a.publish_down, a.params');
+		//$this->query->select('a.id, a.application_id, a.type, a.name as title, a.alias' . ', a.state as published, a.access, a.created, a.created_by, a.created_by_alias, a.modified, a.elements, a.hits' . ', a.publish_up, a.publish_down, a.priority, a.params');
+		$this->query->select('a.id');
 		$this->query->from('#__zoo_item as a');
 
-		$this->query->select('CONCAT(",", s.value) AS articletext');
+		//$this->query->select('CONCAT(",", s.value) AS articletext');
 		$this->query->join('LEFT', '#__zoo_search_index AS s ON s.item_id = a.id');
 
-		$this->query->select('CONCAT_WS(",", t.name) AS tags');
+		//$this->query->select('CONCAT_WS(",", t.name) AS tags');
 		$this->query->join('LEFT', '#__zoo_tag AS t ON t.item_id = a.id');
 
-		$this->query->select('COUNT(co.id) AS comment_count');
+		//$this->query->select('COUNT(co.id) AS comment_count');
 		$this->query->join('LEFT', '#__zoo_comment AS co ON co.item_id = a.id');
 
-		$this->query->select('c.name AS category_title, GROUP_CONCAT(DISTINCT ci.category_id) AS cid');
+		//$this->query->select('c.name AS category_title, GROUP_CONCAT(DISTINCT ci.category_id) AS cid');
 		$this->query->join('LEFT', '#__zoo_category_item AS ci ON ci.item_id = a.id');
 		$this->query->join('LEFT', '#__zoo_category AS c ON c.id = ci.category_id');
-		$this->query->select('CASE WHEN (EXISTS (SELECT true FROM #__zoo_category_item WHERE item_id = a.id AND category_id = 0)) THEN 1 ELSE 0 END AS featured');
+		//$this->query->select('CASE WHEN (EXISTS (SELECT true FROM #__zoo_category_item WHERE item_id = a.id AND category_id = 0)) THEN 1 ELSE 0 END AS featured');
 
-		$this->query->select('ua.name AS author_name');
+		//$this->query->select('ua.name AS author_name');
 		$this->query->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
 
-		$this->query->select('um.name AS last_modified_by');
+		//$this->query->select('um.name AS last_modified_by');
 		$this->query->join('LEFT', '#__users AS um ON um.id = a.modified_by');
 
 		$this->query->select('ROUND(AVG(v.value), 0) AS rating');
 		$this->query->join('LEFT', '#__zoo_rating AS v ON a.id = v.item_id');
 
-		$this->query->select('vl.title AS access_title');
+		//$this->query->select('vl.title AS access_title');
 		$this->query->join('LEFT', '#__viewlevels AS vl ON a.access = vl.id');
 		$this->query->group('a.id');
 	}
@@ -65,9 +66,19 @@ class RokSprocket_Provider_Zoo_Filter extends RokSprocket_Provider_AbstractJooml
 	{
 		$user                 = JFactory::getUser();
 		$this->access_where[] = 'a.access IN (' . implode(',', $user->getAuthorisedViewLevels()) . ')';
-		if (!$this->showUnpublished) {
-			$this->access_where[] = 'a.state = 1';
-		}
+        if (!$this->showUnpublished) {
+            // Show both the published and unpublished articles
+            if ((!$user->authorise('core.edit.state', 'com_content')) && (!$user->authorise('core.edit', 'com_content'))) {
+                $this->access_where[] = '(a.state = 1 or a.state = 2)';
+                // Hide any articles that are not in the published date range
+                $now                  = JFactory::getDate()->toSql();
+                $nullDate             = $this->db->getNullDate();
+                $this->access_where[] = '(a.publish_up = ' . $this->db->Quote($nullDate) . ' OR a.publish_up <= ' . $this->db->Quote($now) . ')';
+                $this->access_where[] = '(a.publish_down = ' . $this->db->Quote($nullDate) . ' OR a.publish_down >= ' . $this->db->Quote($now) . ')';
+            }
+
+        }
+        $this->access_where[] = '(a.state != -2)'; // Never show trashed
 	}
 
     /**
@@ -366,7 +377,7 @@ class RokSprocket_Provider_Zoo_Filter extends RokSprocket_Provider_AbstractJooml
 	 */
 	protected function sort_title($data)
 	{
-		$this->normalSortBy('title', $data);
+		$this->normalSortBy('a.name', $data);
 	}
 
 	/**
@@ -406,7 +417,7 @@ class RokSprocket_Provider_Zoo_Filter extends RokSprocket_Provider_AbstractJooml
 	 */
 	protected function sort_modifiedby($data)
 	{
-		$this->normalSortBy('last_modified_by', $data);
+		$this->normalSortBy('um.name', $data);
 	}
 
 	/**
@@ -414,7 +425,7 @@ class RokSprocket_Provider_Zoo_Filter extends RokSprocket_Provider_AbstractJooml
 	 */
 	protected function sort_author($data)
 	{
-		$this->normalSortBy('author_name', $data);
+		$this->normalSortBy('ua.name', $data);
 	}
 
 	/**
@@ -433,6 +444,13 @@ class RokSprocket_Provider_Zoo_Filter extends RokSprocket_Provider_AbstractJooml
 		$this->normalSortBy('a.hits', $data);
 	}
 
+    /**
+   	 * @param $data
+   	 */
+   	protected function sort_ordering($data)
+   	{
+   		$this->normalSortBy('a.priority', $data);
+   	}
 
 	/**
 	 * @param $field

@@ -22,6 +22,9 @@ include_once(JPATH_COMPONENT_ADMINISTRATOR.'/helpers/legacy_class.php');
  */
 class RokSprocketViewModule extends RokSprocketLegacyJView
 {
+	/**
+	 * @var JForm
+	 */
 	public $form;
 	public $item;
 	public $state;
@@ -46,6 +49,7 @@ class RokSprocketViewModule extends RokSprocketLegacyJView
 		JHtml::_('behavior.keepalive');
 
 		$this->container   = RokCommon_Service::getContainer();
+
 		$this->form        = $this->get('Form');
 		$this->item        = $this->get('Item');
 		$this->state       = $this->get('State');
@@ -61,6 +65,7 @@ class RokSprocketViewModule extends RokSprocketLegacyJView
 		}
 		$this->perItemForm = $this->getModel()->getPerItemsForm($this->layout);
 
+		/** @var $i18n RokCommon_I18N */
 		/** @var $i18n RokCommon_I18N */
 		$i18n = $this->container->i18n;
 
@@ -111,6 +116,11 @@ class RokSprocketViewModule extends RokSprocketLegacyJView
 		RokCommon_Header::addInlineScript("RokSprocket.params = 'jform_params';RokSprocket.SiteURL = '" . $siteURL . "'; RokSprocket.AdminURL = '" . $adminURL . "'; RokSprocket.URL = RokSprocket.AdminURL + '/index.php?option=" . JFactory::getApplication()->input->getString('option') . "&task=ajax&format=raw';" . $load_more_script);
 		RokCommon_Header::addStyle($siteURL . '/components/com_roksprocket/fields/filters/css/datepicker.css');
 
+		$template_path_param = sprintf('roksprocket.providers.registered.%s.templatepath',strtolower($this->provider));
+		if ($this->container->hasParameter($template_path_param))
+		{
+			RokCommon_Composite::addPackagePath('roksprocket', $this->container->getParameter($template_path_param), 30);
+		}
 		parent::display($tpl);
 	}
 
@@ -126,7 +136,12 @@ class RokSprocketViewModule extends RokSprocketLegacyJView
 		$user       = JFactory::getUser();
 		$isNew      = ($this->item->id == 0);
 		$checkedOut = !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
-		$canDo      = ModulesHelper::getActions($this->state->get('filter.category_id'), $this->item->id);
+		if (method_exists('ModulesHelper','getActions')){
+			$canDo = ModulesHelper::getActions($this->state->get('filter.category_id'), $this->item->id);
+		}
+		else {
+			$canDo = JHelperContent::getActions('com_modules','',$this->item->id);
+		}
 		$item       = $this->get('Item');
 
 		JToolBarHelper::title(JText::sprintf('COM_MODULES_MANAGER_MODULE', JText::_($this->item->module)), 'roksprocket-logo');
@@ -178,7 +193,7 @@ class RokSprocketViewModule extends RokSprocketLegacyJView
 			}
 		}
 
-		RokCommon_Header::addStyle(JURI::base(true) . '/components/com_roksprocket/assets/styles/roksprocket.css?nocache=1.8.10');
+		RokCommon_Header::addStyle(JURI::base(true) . '/components/com_roksprocket/assets/styles/roksprocket.css?nocache=2.1.9');
 	}
 
 	protected function compileJS()
@@ -192,11 +207,12 @@ class RokSprocketViewModule extends RokSprocketLegacyJView
 			$assets = JPATH_COMPONENT_ADMINISTRATOR . '/assets';
 			@include_once($assets . '/less/jsmin.php');
 
-			$admin_assets  = $admin_path . '/assets/js/';
-			$app           = $admin_path . '/assets/application/';
-			$filters       = $site_path . '/fields/filters/js/';
-			$imagepicker   = $site_path . '/fields/imagepicker/js/';
-			$peritempicker = $site_path . '/fields/peritempicker/js/';
+			$admin_assets      = $admin_path . '/assets/js/';
+			$app               = $admin_path . '/assets/application/';
+			$filters           = $site_path . '/fields/filters/js/';
+			$imagepicker       = $site_path . '/fields/imagepicker/js/';
+			$peritempicker     = $site_path . '/fields/peritempicker/js/';
+			$peritempickertags = $site_path . '/fields/peritempickertags/js/';
 			$tags = $site_path . '/fields/tags/js/';
 			$multiselect = $site_path . '/fields/multiselect/js/';
 
@@ -214,6 +230,7 @@ class RokSprocketViewModule extends RokSprocketLegacyJView
 				$app . 'Flag',
 				$imagepicker . 'imagepicker',
 				$peritempicker . 'peritempicker',
+				$peritempickertags . 'peritempickertags',
 				$tags . 'resizable-textbox',
 				$tags . 'tags',
 				$multiselect . 'multiselect',
@@ -237,7 +254,7 @@ class RokSprocketViewModule extends RokSprocketLegacyJView
 			file_put_contents($admin_assets . 'roksprocket.js', $buffer);
 		}
 
-		RokCommon_Header::addScript(JURI::base(true) . '/components/com_roksprocket/assets/js/roksprocket.js?nocache=1.8.10');
+		RokCommon_Header::addScript(JURI::base(true) . '/components/com_roksprocket/assets/js/roksprocket.js?nocache=2.1.9');
 
 		/*
 			To keep track of the ordering

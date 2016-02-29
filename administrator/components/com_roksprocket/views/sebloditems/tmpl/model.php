@@ -1,6 +1,6 @@
 <?php
 /**
- * @version        $Id: element.php 1251 2011-10-19 17:50:13Z joomlaworks $
+ * @version        $Id: model.php 10885 2013-05-30 06:31:41Z btowles $
  * @package        K2
  * @author        JoomlaWorks http://www.joomlaworks.gr
  * @copyright    Copyright (c) 2006 - 2011 JoomlaWorks Ltd. All rights reserved.

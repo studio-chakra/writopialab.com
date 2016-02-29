@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id$
+ * @version   $Id: Filter.php 19247 2014-02-27 18:27:46Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -13,7 +13,7 @@ class RokSprocket_Provider_K2_Filter extends RokSprocket_Provider_AbstractJoomla
 	 */
 	protected function setBaseQuery()
 	{
-		$this->query->select('a.id, a.title, a.alias, a.introtext, a.`fulltext`, a.catid' . ', a.published, a.access, a.created, a.modified, a.extra_fields, a.extra_fields_search, a.created_by, a.created_by_alias, a.featured, a.language, a.hits' . ', a.publish_up, a.publish_down, a.language, a.metakey, a.metadesc, a.metadata');
+		$this->query->select('a.id, a.title, a.alias, a.introtext, a.`fulltext`, a.catid' . ', a.published, a.access, a.created, a.modified, a.extra_fields, a.extra_fields_search, a.created_by, a.created_by_alias, a.featured, a.language, a.hits' . ', a.publish_up, a.publish_down, a.ordering, a.language, a.metakey, a.metadesc, a.metadata');
 		$this->query->from('#__k2_items as a');
 
 		$this->query->select('c.name AS category_title, c.image AS category_image, c.alias as category_alias');
@@ -58,7 +58,8 @@ class RokSprocket_Provider_K2_Filter extends RokSprocket_Provider_AbstractJoomla
             require_once (JPATH_SITE.'/components/com_k2/models/itemlist.php');
         $wheres = array();
         foreach($data as $match){
-            $categories = K2ModelItemlist::getCategoryTree($match);
+            $k2model = new K2ModelItemlist();
+            $categories = $k2model->getCategoryTree($match);
             $sql = @implode(',', $categories);
             $wheres[] = "a.catid IN ({$sql})";
         }
@@ -148,7 +149,8 @@ class RokSprocket_Provider_K2_Filter extends RokSprocket_Provider_AbstractJoomla
             require_once (JPATH_SITE.'/components/com_k2/models/itemlist.php');
         $wheres = array();
         foreach($data as $match){
-            $categories = K2ModelItemlist::getCategoryTree($match);
+            $k2model = new K2ModelItemlist();
+            $categories = $k2model->getCategoryTree($match);
             $sql = @implode(',', $categories);
             $wheres[] = "a.catid IN ({$sql})";
         }
@@ -286,7 +288,14 @@ class RokSprocket_Provider_K2_Filter extends RokSprocket_Provider_AbstractJoomla
 		foreach ($data as $match) {
 			$match = trim($match);
 			if (!empty($match)) {
-				$wheres[] = 'CONCAT_WS(",", t.name) like ' . $this->db->quote('%' . $this->db->escape($match, true) . '%');
+				if(is_numeric($match))
+				{
+					$wheres[] = "t.id = " . intval($match);
+				}
+				else{
+					// keeping this around for old tags backwards compatability
+					$wheres[] = 'CONCAT_WS(",", t.name) like ' . $this->db->quote('%' . $this->db->escape($match, true) . '%');
+				}
 			}
 		}
 		if (!empty($wheres)) {
@@ -382,4 +391,12 @@ class RokSprocket_Provider_K2_Filter extends RokSprocket_Provider_AbstractJoomla
 	{
 		$this->normalSortBy('a.hits', $data);
 	}
+
+    /**
+   	 * @param $data
+   	 */
+   	protected function sort_ordering($data)
+   	{
+   		$this->normalSortBy('a.ordering', $data);
+   	}
 }

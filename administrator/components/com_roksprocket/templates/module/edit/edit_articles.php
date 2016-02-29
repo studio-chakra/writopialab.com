@@ -24,7 +24,7 @@ defined('_JEXEC') or die;
 		<i class="right icon spinner spinner-16"></i>
 	</h6>
 </div>
-<div class="clearfix articles<?php echo (!count($that->articles) ? ' no-articles': '');?><?php echo (!$that->showitems ? ' hide-items': '');?>">
+<div class="clearfix provider-<?php echo $that->provider;?> articles<?php echo (!count($that->articles) ? ' no-articles': '');?><?php echo (!$that->showitems ? ' hide-items': '');?>" data-roksprocket-articles>
 	<div class="article-description">
 		<span class="article-instructions"></span>
 		<div class="article-text">

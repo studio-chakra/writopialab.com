@@ -12,6 +12,7 @@
         <parameter key="roksprocket.template.subdir">roksprocket</parameter>
         <parameter key="roksprocket.template.override.path">%template.path%/%roksprocket.template.subdir%</parameter>
         <parameter key="roksprocket.platformhelper.class">RokSprocket_PlatformHelper_Unsupported</parameter>
+        <parameter key="roksprocket.form.wrapper.class">RokSprocket_Form_Wrapper_JForm</parameter>
     </parameters>
     <services>
         <service id="roksprocket_dispatcher" class="%roksprocket.dispatcher.class%"/>

@@ -1,15 +1,15 @@
 <?php
 /**
- * @version   $Id: File.php 39425 2011-07-04 00:32:54Z btowles $
+ * @version   $Id: Articles.php 19427 2014-03-03 23:45:57Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
 class RokSprocketAdminAjaxModelArticles extends RokCommon_Ajax_AbstractModel
 {
 	/**
-	 * Delete the file and all associated rows (done by foreign keys) and files
+	 * Get the items for the module and provider based on the filters passed and paginated  adding a new item first
 	 * $params object should be a json like
 	 * <code>
 	 * {
@@ -25,7 +25,41 @@ class RokSprocketAdminAjaxModelArticles extends RokCommon_Ajax_AbstractModel
 	 *
 	 * @param $params
 	 *
-	 * @throws #C\Exception|?
+	 * @throws Exception
+	 * @throws RokCommon_Ajax_Exception
+	 * @return \RokCommon_Ajax_Result
+	 */
+	public function getItemsWithNew($params)
+	{
+		$container = RokCommon_Service::getContainer();
+		// add a new item
+		$provider_class = $container->getParameter(sprintf('roksprocket.providers.registered.%s.class', strtolower($params->provider)));
+		if ($params->uuid != '0')
+		{
+			$params->module_id = $params->uuid;
+		}
+		call_user_func_array(array($provider_class, 'addNewItem'), array($params->module_id));
+		return $this->getItems($params);
+	}
+
+	/**
+	 * Get the items for the module and provider based on the filters passed and paginated
+	 * $params object should be a json like
+	 * <code>
+	 * {
+	 *  "page": 3,
+	 *  "items_per_page":6,
+	 *  "module_id": 5,
+	 *  "provider":"joomla",
+	 *  "filters":  {"1":{"root":{"access":"1"}},"2":{"root":{"author":"43"}}},
+	 *  "sortby":"date",
+	 *  "get_remaining": true
+	 * }
+	 * </code>
+	 *
+	 * @param $params
+	 *
+	 * @throws Exception
 	 * @throws RokCommon_Ajax_Exception
 	 * @return \RokCommon_Ajax_Result
 	 */
@@ -33,10 +67,16 @@ class RokSprocketAdminAjaxModelArticles extends RokCommon_Ajax_AbstractModel
 	{
 		$result = new RokCommon_Ajax_Result();
 		try {
-			$html = '';
+			$html              = '';
+			$provider_filters  = null;
+			$provider_articles = null;
 
-			$provider_filters  = RokCommon_JSON::decode($params->filters);
-			$provider_articles = RokCommon_JSON::decode($params->articles);
+			if (isset($params->filters)) {
+				$provider_filters = RokCommon_JSON::decode($params->filters);
+			}
+			if (isset($params->articles)) {
+				$provider_articles = RokCommon_JSON::decode($params->articles);
+			}
 
 			$decoded_sort_parameters = array();
 			try {
@@ -53,8 +93,17 @@ class RokSprocketAdminAjaxModelArticles extends RokCommon_Ajax_AbstractModel
 			if (isset($params->extras)) {
 				$extras = $params->extras;
 			}
+			if ($params->uuid != '0')
+			{
+				$params->module_id = $params->uuid;
+			}
+			$items = RokSprocket::getItemsWithFilters($params->module_id, $params->provider, $provider_filters, $provider_articles, $sort_filters, $sort_type, $sort_append, new RokCommon_Registry($extras), false, true);
 
-			$items             = RokSprocket::getItemsWithFilters($params->module_id, $params->provider, $provider_filters, $provider_articles, $sort_filters, $sort_type, $sort_append, new RokCommon_Registry($extras), false, true);
+			$container           = RokCommon_Service::getContainer();
+			$template_path_param = sprintf('roksprocket.providers.registered.%s.templatepath', strtolower($params->provider));
+			if ($container->hasParameter($template_path_param)) {
+				RokCommon_Composite::addPackagePath('roksprocket', $container->getParameter($template_path_param), 30);
+			}
 			$total_items_count = $items->count();
 			$page              = $params->page;
 			$more              = false;
@@ -78,7 +127,7 @@ class RokSprocketAdminAjaxModelArticles extends RokCommon_Ajax_AbstractModel
 			foreach ($items as $article):
 				$per_item_form = $this->getPerItemsForm($params->layout);
 				$per_item_form->setFormControl(sprintf('items[%s]', $article->getArticleId()));
-				$per_item_form->bind(array('params'=> $article->getParams()));
+				$per_item_form->bind(array('params' => $article->getParams()));
 				echo RokCommon_Composite::get('roksprocket.module.edit')->load('edit_article.php', array(
 				                                                                                        'itemform' => $per_item_form,
 				                                                                                        'article'  => $article,
@@ -90,17 +139,105 @@ class RokSprocketAdminAjaxModelArticles extends RokCommon_Ajax_AbstractModel
 
 
 			$result->setPayload(array(
-			                         'more'     => $more,
-			                         'page'     => $page,
-			                         'next_page'=> $next_page,
-			                         'amount'   => $total_items_count,
-			                         'html'     => $html
+			                         'more'      => $more,
+			                         'page'      => $page,
+			                         'next_page' => $next_page,
+			                         'amount'    => $total_items_count,
+			                         'html'      => $html
 			                    ));
 		} catch (Exception $e) {
 
 			throw $e;
 		}
 		return $result;
+	}
+
+	protected function loadLayoutLanguage($layout)
+	{
+		$container = RokCommon_Service::getContainer();
+		/** @var $i18n RokCommon_I18N */
+		$i18n              = $container->i18n;
+		$layout_lang_paths = $container[sprintf('roksprocket.layouts.%s.paths', $layout)];
+		foreach ($layout_lang_paths as $lang_path) {
+			@$i18n->loadLanguageFiles('roksprocket_layout_' . $layout, $lang_path);
+		}
+	}
+
+	/**
+	 * @param $type
+	 *
+	 * @return RokCommon_Config_Form
+	 */
+	protected function getPerItemsForm($type)
+	{
+		JForm::addFieldPath(JPATH_SITE . '/components/com_roksprocket/fields');
+		$options   = new RokCommon_Options();
+		$container = RokCommon_Service::getContainer();
+		// load up the layouts
+		$layoutinfo = $container['roksprocket.layouts.' . $type];
+		if (isset($layoutinfo->options->peritem)) {
+			$section = new RokCommon_Options_Section('peritem_' . $type, $layoutinfo->options->peritem);
+			foreach ($layoutinfo->paths as $layoutpath) {
+				$section->addPath($layoutpath);
+			}
+			$options->addSection($section);
+		}
+
+		$rcform = $rcform = new RokCommon_Config_Form(new JForm('roksprocket_peritem'));
+		$xml    = $options->getJoinedXml();
+
+		$version = new JVersion();
+		if (version_compare($version->getShortVersion(), '3.0', '>=')) {
+			$jxml = new SimpleXMLElement($xml->asXML());
+		} elseif (version_compare($version->getShortVersion(), '3.0', '<')) {
+			$jxml = new JXMLElement($xml->asXML());
+		}
+
+		$fieldsets = $jxml->xpath('/config/fields[@name = "params"]/fieldset');
+		foreach ($fieldsets as $fieldset) {
+			$overwrite = ((string)$fieldset['overwrite'] == 'true') ? true : false;
+			$rcform->load($fieldset, $overwrite, '/config');
+		}
+		return $rcform;
+	}
+
+	/**
+	 * Remove an item
+	 * $params object should be a json like
+	 * <code>
+	 * {
+	 *  "module_id": 5,
+	 *  "provider":"simple",
+	 *  "item_id":  123,
+	 * }
+	 * </code>
+	 *
+	 * @param $params
+	 *
+	 * @throws Exception
+	 * @throws RokCommon_Ajax_Exception
+	 * @return \RokCommon_Ajax_Result
+	 */
+	public function removeItem($params)
+	{
+		$result = new RokCommon_Ajax_Result();
+
+		//get the provider and id values
+
+		list($provider, $item_id) = explode('-',$params->item_id);
+		if ($params->uuid != '0')
+		{
+			$params->module_id = $params->uuid;
+		}
+		// get the provider
+		$container      = RokCommon_Service::getContainer();
+		$provider_class = $container->getParameter(sprintf('roksprocket.providers.registered.%s.class', strtolower($provider)));
+		// have the provider remove the item
+		if (call_user_func_array(array($provider_class, 'removeItem'), array($item_id, $params->module_id)))
+		{
+			$result->setPayload(RokCommon_JSON::encode(array('removed_item'=>$params->item_id)));
+		}
+		return $this->getItems($params);
 	}
 
 	/**
@@ -114,6 +251,7 @@ class RokSprocketAdminAjaxModelArticles extends RokCommon_Ajax_AbstractModel
 	 *
 	 * @param $params
 	 *
+	 * @throws Exception
 	 * @return RokCommon_Ajax_Result
 	 */
 	public function getInfo($params)
@@ -135,7 +273,7 @@ class RokSprocketAdminAjaxModelArticles extends RokCommon_Ajax_AbstractModel
 			$article = $provider->getArticleInfo($id, true);
 
 			ob_start();
-			echo RokCommon_Composite::get('roksprocket.module.edit')->load('edit_article_info_' . $provider_type . '.php', array('article'=> $article));
+			echo RokCommon_Composite::get('roksprocket.module.edit')->load('edit_article_info_' . $provider_type . '.php', array('article' => $article));
 			$html .= ob_get_clean();
 
 			$result->setPayload(array('html' => $html));
@@ -156,7 +294,7 @@ class RokSprocketAdminAjaxModelArticles extends RokCommon_Ajax_AbstractModel
 	 *
 	 * @param $params
 	 *
-	 * @throws #C\Exception|?
+	 * @throws Exception
 	 * @return \RokCommon_Ajax_Result
 	 */
 	public function getPreview($params)
@@ -181,7 +319,7 @@ class RokSprocketAdminAjaxModelArticles extends RokCommon_Ajax_AbstractModel
 			$article = $provider->getArticlePreview($id);
 
 			ob_start();
-			echo RokCommon_Composite::get('roksprocket.module.edit')->load('edit_article_preview.php', array('article'=> $article));
+			echo RokCommon_Composite::get('roksprocket.module.edit')->load('edit_article_preview.php', array('article' => $article));
 			$html .= ob_get_clean();
 
 			$result->setPayload(array('html' => $html));
@@ -189,54 +327,5 @@ class RokSprocketAdminAjaxModelArticles extends RokCommon_Ajax_AbstractModel
 			throw $e;
 		}
 		return $result;
-	}
-
-	/**
-	 * @param $type
-	 *
-	 * @return RokCommon_Config_Form
-	 */
-	protected function getPerItemsForm($type)
-	{
-		JForm::addFieldPath(JPATH_SITE . '/components/com_roksprocket/fields');
-		$options   = new RokCommon_Options();
-		$container = RokCommon_Service::getContainer();
-		// load up the layouts
-		$layoutinfo = $container['roksprocket.layouts.' . $type];
-		if (isset($layoutinfo->options->peritem)) {
-			$section = new RokCommon_Options_Section('peritem_' . $type, $layoutinfo->options->peritem);
-			foreach ($layoutinfo->paths as $layoutpath) {
-				$section->addPath($layoutpath);
-			}
-			$options->addSection($section);
-		}
-
-		$rcform    = $rcform = new RokCommon_Config_Form(new JForm('roksprocket_peritem'));
-		$xml       = $options->getJoinedXml();
-
-        $version = new JVersion();
-		if (version_compare($version->getShortVersion(), '3.0', '>=')) {
-            $jxml      = new SimpleXMLElement($xml->asXML());
-		} elseif (version_compare($version->getShortVersion(), '3.0', '<')) {
-            $jxml      = new JXMLElement($xml->asXML());
-        }
-
-		$fieldsets = $jxml->xpath('/config/fields[@name = "params"]/fieldset');
-		foreach ($fieldsets as $fieldset) {
-			$overwrite = ((string)$fieldset['overwrite'] == 'true') ? true : false;
-			$rcform->load($fieldset, $overwrite, '/config');
-		}
-		return $rcform;
-	}
-
-	protected function loadLayoutLanguage($layout)
-	{
-		$container = RokCommon_Service::getContainer();
-		/** @var $i18n RokCommon_I18N */
-		$i18n              = $container->i18n;
-		$layout_lang_paths = $container[sprintf('roksprocket.layouts.%s.paths', $layout)];
-		foreach ($layout_lang_paths as $lang_path) {
-			@$i18n->loadLanguageFiles('roksprocket_layout_' . $layout, $lang_path);
-		}
 	}
 }

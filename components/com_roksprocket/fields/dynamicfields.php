@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id$
+ * @version   $Id: dynamicfields.php 19225 2014-02-27 00:15:10Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 defined('JPATH_PLATFORM') or die;
@@ -14,8 +14,18 @@ JFormHelper::loadFieldClass('list');
 
 class JFormFieldDynamicFields extends JFormFieldList
 {
-	protected $type = 'DynamicFields';
 	protected static $js_loaded = false;
+	protected $type = 'DynamicFields';
+	/**
+	 * @var RokCommon_Service_Container
+	 */
+	protected $container;
+
+	public function __construct($form = null)
+	{
+		parent::__construct($form);
+		$this->container = RokCommon_Service::getContainer();
+	}
 
 	protected function getLabel()
 	{
@@ -26,7 +36,7 @@ class JFormFieldDynamicFields extends JFormFieldList
 			$description = rc__((string)$this->element['description']);
 			return '<label class="sprocket-tip" title="' . $description . '">' . $label . '</label>';
 		} else {
-			return;
+			return '';
 		}
 
 	}
@@ -40,9 +50,16 @@ class JFormFieldDynamicFields extends JFormFieldList
 		$html = array();
 		$attr = '';
 
+		$css_classes   = explode(' ', (string)$this->element['class']);
+		$css_classes   = array_merge($css_classes, $this->getProviderClasses());
+		$css_classes[] = strtolower($this->type);
+		$css_classes[] = 'chzn-done';
+		$css_classes   = array_unique($css_classes);
+		$attr .= ' class="' . implode(' ', $css_classes) . '"';
+
 		// Initialize some field attributes.
-		$this->element['class'] = $this->element['class'] ? (string)$this->element['class'] . " " . strtolower($this->type) : strtolower($this->type);
-		$attr .= $this->element['class'] ? ' class="' . (string)$this->element['class'] . ' chzn-done"' : ' class="chzn-done"';
+//		$this->element['class'] = $this->element['class'] ? (string)$this->element['class'] . " " . strtolower($this->type) : strtolower($this->type);
+//		$attr .= $this->element['class'] ? ' class="' . (string)$this->element['class'] . ' chzn-done"' : ' class="chzn-done"';
 
 		// To avoid user's confusion, readonly="true" should imply disabled="true".
 		if ((string)$this->element['readonly'] == 'true' || (string)$this->element['disabled'] == 'true') {
@@ -76,20 +93,19 @@ class JFormFieldDynamicFields extends JFormFieldList
 		else {
 			if (count($options) == 1) {
 				$icon = (isset($options[0]->icon) ? $options[0]->icon : "");
-				if (strlen($icon)) $icon_html = '<i data-dynamic="false" class="icon ' . $this->element['name'] . " " . $options[0]->value . '"></i>';
-				else $icon_html = "";
+				if (strlen($icon)) $icon_html = '<i data-dynamic="false" class="icon ' . $this->element['name'] . " " . $options[0]->value . '"></i>'; else $icon_html = "";
 
-				$html[] = '<div class="single-layout">'.$icon_html.' ' . $options[0]->text . "</div>\n";
+				$html[] = '<div class="single-layout">' . $icon_html . ' ' . $options[0]->text . "</div>\n";
 				$attr .= ' style="display: none;" ';
 			}
 
 			$listattr = array(
-				'list.attr'   => $attr,
-				'id'          => $this->id,
-				'list.select' => $this->value,
-				'option.text' => 'text',
-				'option.value'=> 'value',
-				'option.attr' => 'attr'
+				'list.attr'    => $attr,
+				'id'           => $this->id,
+				'list.select'  => $this->value,
+				'option.text'  => 'text',
+				'option.value' => 'value',
+				'option.attr'  => 'attr'
 			);
 
 			$list   = JHtml::_('select.genericlist', $options, $this->name, $listattr);
@@ -99,6 +115,37 @@ class JFormFieldDynamicFields extends JFormFieldList
 		return implode('', $html);
 	}
 
+	protected function getProviderClasses()
+	{
+
+		$provider_classes = array();
+		$params           = $this->container['roksprocket.providers.registered'];
+
+		$form_wrapper = $this->container['roksprocket.form.wrapper.class'];
+		$wrapper_form = new $form_wrapper($this->form);
+
+		$provider_id = $wrapper_form->getData()->get('params')->provider;
+
+		/** @var $provider RokSprocket_IProvider */
+		$provider_class = $this->container[sprintf('roksprocket.providers.registered.%s.class', $provider_id)];
+		$available      = call_user_func(array($provider_class, 'isAvailable'));
+		if ($available) {
+			if (call_user_func_array(array(
+					$provider_class,
+					'shouldShowField'
+				), array(
+					$this->type,
+					$this->fieldname
+				)) == RokSprocket_IProvider::ATTACH_TO_PROVIDER
+			) {
+				if (empty($provider_classes)) {
+					$provider_classes[] = 'provider';
+				}
+				$provider_classes[] = 'provider_' . $provider_id;
+			}
+		}
+		return $provider_classes;
+	}
 
 	/**
 	 * Method to get the field options for the list of installed editors.
@@ -126,8 +173,8 @@ class JFormFieldDynamicFields extends JFormFieldList
 		foreach ($options as &$option) {
 			// Set some option attributes.
 			$option->attr = array(
-				'class'=> $option->value,
-				'rel'  => $fieldname . '_' . $option->value
+				'class' => $option->value,
+				'rel'   => $fieldname . '_' . $option->value
 			);
 		}
 		reset($options);

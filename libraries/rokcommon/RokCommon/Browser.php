@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: Browser.php 57540 2012-10-14 18:27:59Z btowles $
+ * @version   $Id: Browser.php 15601 2013-11-14 18:35:21Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - ${copyright_year} RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -127,6 +127,10 @@ class RokCommon_Browser
 			$result        = explode(' ', stristr(str_replace(';', ' ', $this->ua), 'msie'));
 			$this->name    = 'ie';
 			$this->version = $result[1];
+		} //IE 11+
+		elseif (preg_match('#Trident\/.*rv:([0-9]{1,}[\.0-9]{0,})#i',$this->ua,$matches)) {
+			$this->name    = 'ie';
+			$this->version = $matches[1];
 		} // Firefox
 		elseif (preg_match('/Firefox/', $this->ua)) {
 			$result        = explode('/', stristr($this->ua, 'Firefox'));

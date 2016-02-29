@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id$
+ * @version   $Id: Provider.php 19543 2014-03-07 21:49:38Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -185,6 +185,61 @@ abstract class RokSprocket_Provider implements RokSprocket_IProvider
 	{
 		$this->showUnpublished = $show;
 	}
+
+	/**
+	 * @param string $default
+	 * @param array  $currentTypes
+	 */
+	public function filterPerItemTypes($type, $name, array &$currentTypes)
+	{
+		return;
+	}
+
+	public static function shouldShowField($type, $name)
+	{
+		switch(strtolower($type))
+		{
+			case 'label':
+			case 'provideroptionedselector':
+				if (preg_match('/_default(s_title|_custom)*$/',strtolower($name)))
+				{
+					return self::ATTACH_TO_PROVIDER;
+				}
+			default:
+				return self::DO_NOTHING;
+		}
+	}
+
+	/**
+	 * @return int
+	 * @throws RokSprocket_Exception
+	 */
+	public static function addNewItem($module_id)
+	{
+		throw new RokSprocket_Exception('This provider does not support adding a new item.');
+	}
+
+	/**
+	 * @param $item_id
+	 * @param $module_id
+	 *
+	 * @return bool
+	 * @throws RokSprocket_Exception
+	 */
+	public static function removeItem($item_id, $module_id)
+	{
+		throw new RokSprocket_Exception('This provider does not support removing an item.');
+	}
+
+	/**
+	 * @param int|string $id
+	 */
+	public function postSave($id)
+	{
+		return;
+	}
+
+
 }
 
 

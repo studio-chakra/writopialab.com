@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id$
+ * @version   $Id: mod_roksprocket.php 19251 2014-02-27 21:49:01Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -37,7 +37,9 @@ try {
 		$roksprocket = new ModRokSprocket($module_parameters);
 		$items       = $roksprocket->getData();
 		echo $content_items = $roksprocket->render($items);
-
+		/** @var $header RokCommon_Header_Joomla */
+		$header = $container->getService('header');
+		$header->populate();
 	}
 } catch (Exception $e) {
 	JError::raiseWarning(100, $e->getMessage());

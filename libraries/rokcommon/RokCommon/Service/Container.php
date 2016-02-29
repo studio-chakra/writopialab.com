@@ -15,25 +15,25 @@
  * @package    symfony
  * @subpackage dependency_injection
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
- * @version    SVN: $Id: Container.php 57540 2012-10-14 18:27:59Z btowles $
+ * @version    SVN: $Id: Container.php 27318 2015-03-04 12:51:02Z matias $
  */
 interface RokCommon_Service_Container
 {
-  public function setParameters(array $parameters);
+    public function setParameters(array $parameters);
 
-  public function addParameters(array $parameters);
+    public function addParameters(array $parameters);
 
-  public function getParameters();
+    public function getParameters();
 
-  public function getParameter($name, $default=null);
+    public function getParameter($name, $default=null);
 
-  public function setParameter($name, $value);
+    public function setParameter($name, $value);
 
-  public function hasParameter($name);
+    public function hasParameter($name);
 
-  public function setService($id, $service);
+    public function setService($id, $service);
 
-  public function getService($id);
+    public function getService($id);
 
-  public function hasService($name);
+    public function hasService($name);
 }

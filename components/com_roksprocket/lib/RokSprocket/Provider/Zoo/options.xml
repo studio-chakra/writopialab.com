@@ -1,6 +1,7 @@
 <config>
     <fields name="params">
         <fieldset name="roksprocket" overwrite="true">
+            <field name="zoo_application_title" type="label" label="Choose your ZOO Application Type" optionorder="10.4"/>
             <field name="zoo_application_type" type="providerbasedlist" label="ROKSPROCKET_ZOO_APPLICATION_TYPE"
                    class="provider provider_zoo dynamicfield-subinstance dynamicfield-last-fire" optionorder="10.5"
                    description="" provider="zoo" populator="getCCKGroups" cckgroup="true"  attrs="data-provider-submit" data-provider-submit="zoo_application_type">

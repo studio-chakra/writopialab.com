@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id$
+ * @version   $Id: item.php 23394 2014-10-09 15:22:10Z james $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -19,15 +19,15 @@
 		<?php if ($parameters->get('lists_enable_accordion')): ?><span class="indicator"><span>+</span></span><?php endif; ?>
 	</h4>
 	<?php endif; ?>
-	<span class="sprocket-lists-item" data-lists-content>
-		<span class="sprocket-padding">
+	<div class="sprocket-lists-item" data-lists-content>
+		<div class="sprocket-padding">
 			<?php if ($item->getPrimaryImage()) :?>
-			<img src="<?php echo $item->getPrimaryImage()->getSource(); ?>" class="sprocket-lists-image" />
+			<img src="<?php echo $item->getPrimaryImage()->getSource(); ?>" class="sprocket-lists-image" alt="<?php echo $item->getPrimaryImage()->getAlttext(); ?>" />
 			<?php endif; ?>
 			<?php echo $item->getText(); ?>
 			<?php if ($item->getPrimaryLink()) : ?>
 			<a href="<?php echo $item->getPrimaryLink()->getUrl(); ?>" class="readon"><span><?php rc_e('READ_MORE'); ?></span></a>
 			<?php endif; ?>
-		</span>
-	</span>
+		</div>
+	</div>
 </li>

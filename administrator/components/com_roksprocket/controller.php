@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id$
+ * @version   $Id: controller.php 11852 2013-06-28 21:17:33Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -71,7 +71,9 @@ class RokSprocketController extends RokSprocketLegacyJController
 
    			return false;
    		}
-
+	    if (RokCommon_Session::get('roksprocket.' . $id, false)){
+	        RokCommon_Session::clear('roksprocket.' . $id);
+	    }
    		parent::display();
    	}
 

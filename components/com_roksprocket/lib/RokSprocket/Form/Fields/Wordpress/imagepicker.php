@@ -1,6 +1,6 @@
 <?php
 /**
- * @version   $Id: imagepicker.php 57423 2012-10-12 00:53:12Z djamil $
+ * @version   $Id: imagepicker.php 11812 2013-06-27 17:49:30Z djamil $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2012 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -20,6 +20,10 @@ class RokCommon_Form_Field_ImagePicker extends RokCommon_Form_AbstractField
 		//JHTML::_('behavior.modal');
 		//$this->_loadAssets();
 		$this->_setOptions();
+		$container = RokCommon_Service::getContainer();
+		/** @var RokSprocket_IProvider $provider */
+		$provider = $container->getParameter('roksprocket.current_provider');
+		$provider->filterPerItemTypes($this->type, $this->fieldname, $this->options);
 
 		$this->value = str_replace("'", '"', str_replace('\\', '', $this->value));
 		$link = $this->options['mediamanager']['attributes']['value'];
@@ -164,6 +168,9 @@ class RokCommon_Form_Field_ImagePicker extends RokCommon_Form_AbstractField
 		$list = "";
 		$displayValue = "mediamanager";
 		$options = $this->options;
+
+		if (isset($this->value) && !array_key_exists($this->value, $options)) $this->value = '-title-';
+		if (isset($this->value) && !array_key_exists($this->value, $options)) $this->value = '-none-';
 
 		foreach($options as $option){
 			$attributes = $option['attributes'];

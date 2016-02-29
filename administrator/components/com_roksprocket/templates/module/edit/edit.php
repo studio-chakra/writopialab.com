@@ -25,7 +25,7 @@
 <div id="module-form">
 	<form autocomplete="off" action="<?php echo JRoute::_('index.php?option=com_roksprocket&layout=edit&id=' . (int)$that->item->id); ?>"
 		  method="post" name="adminForm" id="adminForm" class="form-validate">
-
+		<?php echo $that->form->getInput('uuid'); ?>
 		<div id="details">
 			<ul>
 				<?php if ($that->item->edit_display_options->get('showTitle',true)):?>
@@ -79,7 +79,7 @@
 		</div>
 
 		<div id="tabs-container">
-			<div class="roksprocket-version">RokSprocket <span>v<?php echo str_replace("\1.8.10", "DEV", ROKSPROCKET_VERSION); ?></span></div>
+			<div class="roksprocket-version">RokSprocket <span>v<?php echo str_replace("\2.1.9", "DEV", ROKSPROCKET_VERSION); ?></span></div>
 			<ul class="tabs">
 				<li class="tab active" data-tab="options">
 					<i class="icon options"></i>
@@ -127,7 +127,11 @@
 			</ul>
 			<div class="panels clearfix">
 				<div data-panel="options" class="panel options active">
-					<?php  echo RokCommon_Composite::get('roksprocket.module.edit')->load('edit_roksprocket.php', array('that'=>$that)); ?>
+					<?php if ($that->item->id > 0): ?>
+					<?php echo RokCommon_Composite::get('roksprocket.module.edit')->load('edit_roksprocket.php', array('that'=>$that)); ?>
+					<?php else: ?>
+					<?php echo RokCommon_Composite::get('roksprocket.module.edit')->load('edit_roksprocket_new.php', array('that'=>$that)); ?>
+					<?php endif; ?>
 				</div>
 
 				<div data-panel="menu-assignment" class="panel options">

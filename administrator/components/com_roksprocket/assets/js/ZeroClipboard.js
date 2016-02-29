@@ -1,8 +1,9 @@
 /*
- * // Simple Set Clipboard System
- * // Author: Joseph Huckaby
- */
-((function(){var a="ZeroClipboard"+(Browser.Plugins.Flash&&Browser.Plugins.Flash.version>=10?"10":"")+".swf";this.ZeroClipboard={version:"1.0.7",clients:{},moviePath:"/components/com_roksprocket/assets/js/"+a,nextId:1,$:function(b){return document.id(b)||document.getElement(b)||null;
+// Simple Set Clipboard System
+// Author: Joseph Huckaby
+*/
+((function(){var a="ZeroClipboard"+(Browser.Plugins.Flash&&Browser.Plugins.Flash.version>=10?"10":"")+".swf";
+this.ZeroClipboard={version:"1.0.7",clients:{},moviePath:"/components/com_roksprocket/assets/js/"+a,nextId:1,$:function(b){return document.id(b)||document.getElement(b)||null;
 },setMoviePath:function(b){this.moviePath=b;},dispatch:function(e,c,d){var b=this.clients[e];if(b){b.receiveEvent(c,d);}},register:function(c,b){this.clients[c]=b;
 },getDOMObjectPosition:function(d,b){var c={left:0,top:0,width:d.width?d.width:d.offsetWidth,height:d.height?d.height:d.offsetHeight};while(d&&(d!=b)){c.left+=d.offsetLeft;
 c.top+=d.offsetTop;d=d.offsetParent;}return c;},Client:function(b){this.handlers={};this.id=ZeroClipboard.nextId++;this.movieId="ZeroClipboardMovie_"+this.id;

@@ -10,6 +10,8 @@
             populator="RokSprocket_Provider_Wordpress_CategoryPopulator"/>
     <filter name="posttype" label="Post Type" type="RokCommon_Filter_Type_PickList"
             populator="RokSprocket_Provider_Wordpress_PosttypePopulator"/>
+    <filter name="parentpage" label="Parent Page" type="RokCommon_Filter_Type_PickList"
+            populator="RokSprocket_Provider_Wordpress_ParentpagePopulator"/>
     <filter name="createddate" label="Created Date" type="RokCommon_Filter_Type_Date"/>
     <filter name="modified" label="Last Modified Date" type="RokCommon_Filter_Type_Date"/>
     <filter name="author" label="Author" type="RokSprocket_Provider_Wordpress_Filter_Type_User"/>

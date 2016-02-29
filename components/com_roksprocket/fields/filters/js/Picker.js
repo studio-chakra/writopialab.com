@@ -1,12 +1,12 @@
 /*
- * ---
- * name: Picker
- * description: Creates a Picker, which can be used for anything
- * authors: Arian Stolwijk
- * requires: [Core/Element.Dimensions, Core/Fx.Tween, Core/Fx.Transitions]
- * provides: Picker
- * ...
- */
+---
+name: Picker
+description: Creates a Picker, which can be used for anything
+authors: Arian Stolwijk
+requires: [Core/Element.Dimensions, Core/Fx.Tween, Core/Fx.Transitions]
+provides: Picker
+...
+*/
 var Picker=new Class({Implements:[Options,Events],options:{pickerClass:"datepicker",inject:null,animationDuration:400,useFadeInOut:true,positionOffset:{x:0,y:0},pickerPosition:"bottom",draggable:true,showOnInit:true,columns:1,footer:false},initialize:function(a){this.setOptions(a);
 this.constructPicker();if(this.options.showOnInit){this.show();}},constructPicker:function(){var c=this.options;var b=this.picker=new Element("div",{"class":c.pickerClass,styles:{left:0,top:0,display:"none",opacity:0}}).inject(c.inject||document.body);
 b.addClass("column_"+c.columns);if(c.useFadeInOut){b.set("tween",{duration:c.animationDuration,link:"cancel"});}var h=this.header=new Element("div.header").inject(b);

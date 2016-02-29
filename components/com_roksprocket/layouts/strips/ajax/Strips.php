@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: Strips.php 59520 2013-04-14 19:13:58Z kevin $
+ * @version   $Id: Strips.php 19249 2014-02-27 19:21:50Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -70,7 +70,7 @@ class RokSprocketSiteLayoutAjaxModelStrips extends RokSprocket_AbstractAjaxRende
 				$index++;
 			}
 			$html .= ob_get_clean();
-
+			$html = $platformHelper->processOutputForEvents($html, $module_params);
 			$result->setPayload(array(
 			                         'html'  => $html,
 			                         'page'  => $params->page

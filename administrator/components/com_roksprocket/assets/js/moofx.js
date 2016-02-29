@@ -1,14 +1,17 @@
 /*
- * ---
- * provides: moo / frame
- * requires: stupid namespace / nodes wrapper / moo
- * author: "[Valerio Proietti](http://mad4milk.net)"
- * license: "[MIT](http://mootools.net/license.txt)"
- * ...
- */
-(function(c){var a={},b=function(f){var e=a[f];if(!e){e=a[f]={};var d=e.exports={};c[f].call(d,b,e,d,window);}return e.exports;};window.moofx=b("0");})({"0":function(c,e,b,f){var a=c("1"),g=c("2");
-var d=typeof document!=="undefined"?c("7"):c("b");d.requestFrame=function(h){g.request(h);return this;};d.cancelFrame=function(h){g.cancel(h);return this;
-};d.color=a;e.exports=d;},"1":function(j,e,w,q){var k={maroon:"#800000",red:"#ff0000",orange:"#ffA500",yellow:"#ffff00",olive:"#808000",purple:"#800080",fuchsia:"#ff00ff",white:"#ffffff",lime:"#00ff00",green:"#008000",navy:"#000080",blue:"#0000ff",aqua:"#00ffff",teal:"#008080",black:"#000000",silver:"#c0c0c0",gray:"#808080",transparent:"#0000"};
+---
+provides: moofx
+version: 3.1.0
+description: A CSS3-enabled javascript animation library
+homepage: http://moofx.it
+author: Valerio Proietti <@kamicane> (http://mad4milk.net)
+license: MIT (http://mootools.net/license.txt)
+includes: cubic-bezier by Arian Stolwijk (https://github.com/arian/cubic-bezier)
+...
+*/
+(function(c){var a={},b=function(f){var e=a[f];
+if(!e){e=a[f]={};var d=e.exports={};c[f].call(d,b,e,d,window);}return e.exports;};window.moofx=b("0");})({"0":function(c,e,b,f){var a=c("1"),g=c("2");var d=typeof document!=="undefined"?c("7"):c("b");
+d.requestFrame=function(h){g.request(h);return this;};d.cancelFrame=function(h){g.cancel(h);return this;};d.color=a;e.exports=d;},"1":function(j,e,w,q){var k={maroon:"#800000",red:"#ff0000",orange:"#ffA500",yellow:"#ffff00",olive:"#808000",purple:"#800080",fuchsia:"#ff00ff",white:"#ffffff",lime:"#00ff00",green:"#008000",navy:"#000080",blue:"#0000ff",aqua:"#00ffff",teal:"#008080",black:"#000000",silver:"#c0c0c0",gray:"#808080",transparent:"#0000"};
 var d=function(z,y,c,x){if(x==null||x===""){x=1;}z=parseFloat(z);y=parseFloat(y);c=parseFloat(c);x=parseFloat(x);if(!(z<=255&&z>=0&&y<=255&&y>=0&&c<=255&&c>=0&&x<=1&&x>=0)){return null;
 }return[Math.round(z),Math.round(y),Math.round(c),x];};var v=function(D){if(D.length===3){D+="f";}if(D.length===4){var C=D.charAt(0),B=D.charAt(1),z=D.charAt(2),x=D.charAt(3);
 D=C+C+B+B+z+z+x+x;}if(D.length===6){D+="ff";}var y=[];for(var A=0,c=D.length;A<c;A+=2){y.push(parseInt(D.substr(A,2),16)/(A===6?255:1));}return y;};var l=function(y,x,c){if(c<0){c+=1;

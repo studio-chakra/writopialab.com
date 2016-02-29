@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: File.php 39425 2011-07-04 00:32:54Z btowles $
+ * @version   $Id: WPArticles.php 11824 2013-06-27 19:40:15Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -25,7 +25,41 @@ class RokSprocketAdminAjaxModelWPArticles extends RokCommon_Ajax_AbstractModel
 	 *
 	 * @param $params
 	 *
-	 * @throws #C\Exception|?
+	 * @throws Exception
+	 * @throws RokCommon_Ajax_Exception
+	 * @return \RokCommon_Ajax_Result
+	 */
+	public function getItemsWithNew($params)
+	{
+		$container = RokCommon_Service::getContainer();
+		// add a new item
+		$provider_class = $container->getParameter(sprintf('roksprocket.providers.registered.%s.class', strtolower($params->provider)));
+		if ($params->uuid != '0')
+		{
+			$params->module_id = $params->uuid;
+		}
+		call_user_func_array(array($provider_class, 'addNewItem'), array($params->module_id));
+		return $this->getItems($params);
+	}
+
+	/**
+	 * Get the items for the module and provider based on the filters passed and paginated
+	 * $params object should be a json like
+	 * <code>
+	 * {
+	 *  "page": 3,
+	 *  "items_per_page":6,
+	 *  "module_id": 5,
+	 *  "provider":"joomla",
+	 *  "filters":  {"1":{"root":{"access":"1"}},"2":{"root":{"author":"43"}}},
+	 *  "sortby":"date",
+	 *  "get_remaining": true
+	 * }
+	 * </code>
+	 *
+	 * @param $params
+	 *
+	 * @throws Exception
 	 * @throws RokCommon_Ajax_Exception
 	 * @return \RokCommon_Ajax_Result
 	 */
@@ -33,10 +67,16 @@ class RokSprocketAdminAjaxModelWPArticles extends RokCommon_Ajax_AbstractModel
 	{
 		$result = new RokCommon_Ajax_Result();
 		try {
-			$html = '';
+			$html              = '';
+			$provider_filters  = null;
+			$provider_articles = null;
 
-			$provider_filters  = RokCommon_JSON::decode($params->filters);
-			$provider_articles = RokCommon_JSON::decode($params->articles);
+			if (isset($params->filters)) {
+				$provider_filters = RokCommon_JSON::decode($params->filters);
+			}
+			if (isset($params->articles)) {
+				$provider_articles = RokCommon_JSON::decode($params->articles);
+			}
 
 			$decoded_sort_parameters = array();
 			try {
@@ -53,8 +93,16 @@ class RokSprocketAdminAjaxModelWPArticles extends RokCommon_Ajax_AbstractModel
 			if (isset($params->extras)) {
 				$extras = $params->extras;
 			}
+			if ($params->uuid != '0') {
+				$params->module_id = $params->uuid;
+			}
+			$items = RokSprocket::getItemsWithFilters($params->module_id, $params->provider, $provider_filters, $provider_articles, $sort_filters, $sort_type, $sort_append, new RokCommon_Registry($extras), false, true);
 
-			$items             = RokSprocket::getItemsWithFilters($params->module_id, $params->provider, $provider_filters, $provider_articles, $sort_filters, $sort_type, $sort_append, new RokCommon_Registry($extras), false, true);
+			$container           = RokCommon_Service::getContainer();
+			$template_path_param = sprintf('roksprocket.providers.registered.%s.templatepath', strtolower($params->provider));
+			if ($container->hasParameter($template_path_param)) {
+				RokCommon_Composite::addPackagePath('rs_templates', $container->getParameter($template_path_param), 30);
+			}
 			$total_items_count = $items->count();
 			$page              = $params->page;
 			$more              = false;
@@ -78,23 +126,23 @@ class RokSprocketAdminAjaxModelWPArticles extends RokCommon_Ajax_AbstractModel
 			foreach ($items as $article):
 				$per_item_form = $this->getPerItemsForm($params->layout);
 				$per_item_form->setFormControl(sprintf('items[%s]', $article->getArticleId()));
-				$per_item_form->bind(array('params'=> $article->getParams()));
+				$per_item_form->bind(array('params' => $article->getParams()));
 				echo RokCommon_Composite::get('rs_templates.edit')->load('edit_article.php', array(
-				                                                                                        'itemform' => $per_item_form,
-				                                                                                        'article'  => $article,
-				                                                                                        'order'    => $order
-				                                                                                   ));
+				                                                                                  'itemform' => $per_item_form,
+				                                                                                  'article'  => $article,
+				                                                                                  'order'    => $order
+				                                                                             ));
 				$order++;
 			endforeach;
 			$html .= ob_get_clean();
 
 
 			$result->setPayload(array(
-			                         'more'     => $more,
-			                         'page'     => $page,
-			                         'next_page'=> $next_page,
-			                         'amount'   => $total_items_count,
-			                         'html'     => $html
+			                         'more'      => $more,
+			                         'page'      => $page,
+			                         'next_page' => $next_page,
+			                         'amount'    => $total_items_count,
+			                         'html'      => $html
 			                    ));
 		} catch (Exception $e) {
 
@@ -103,92 +151,18 @@ class RokSprocketAdminAjaxModelWPArticles extends RokCommon_Ajax_AbstractModel
 		return $result;
 	}
 
-	/**
-	 * Returns the informations related to an article
-	 * $params object should be a json like
-	 * <code>
-	 * {
-	 *  "id":"joomla-71"
-	 * }
-	 * </code>
-	 *
-	 * @param $params
-	 *
-	 * @return RokCommon_Ajax_Result
-	 */
-	public function getInfo($params)
+	protected function loadLayoutLanguage($layout)
 	{
-		$result = new RokCommon_Ajax_Result();
-		try {
-			$html = '';
-
-			list($provider_type, $id) = explode('-', $params->id);
-
-			$container = RokCommon_Service::getContainer();
-			//$provider_type = $params->provider;
-
-			/** @var $provider RokSprocket_IProvider */
-			$provider_service = $container['roksprocket.providers.registered.' . $provider_type . '.service'];
-			$provider         = $container->$provider_service;
-
-
-			$article = $provider->getArticleInfo($id, true);
-
-			ob_start();
-			echo RokCommon_Composite::get('rs_templates.edit')->load('edit_article_info_' . $provider_type . '.php', array('article'=> $article));
-			$html .= ob_get_clean();
-
-			$result->setPayload(array('html' => $html));
-		} catch (Exception $e) {
-			throw $e;
-		}
-		return $result;
-	}
-
-	/**
-	 * Returns the preview of an article
-	 * $params object should be a json like
-	 * <code>
-	 * {
-	 *  "id":"joomla-71"
-	 * }
-	 * </code>
-	 *
-	 * @param $params
-	 *
-	 * @throws #C\Exception|?
-	 * @return \RokCommon_Ajax_Result
-	 */
-	public function getPreview($params)
-	{
-		$result = new RokCommon_Ajax_Result();
-		try {
-			$html = '';
-
-			list($provider_type, $id) = explode('-', $params->id);
-
-			$container = RokCommon_Service::getContainer();
-			//$provider_type = $params->provider;
-
-			/** @var $provider RokSprocket_IProvider */
-			$provider_service = $container['roksprocket.providers.registered.' . $provider_type . '.service'];
-			$provider         = $container->$provider_service;
-
-			if (isset($params->extras)) {
-				$extras = new RokCommon_Registry($params->extras);
-				$provider->setParams($extras);
+		$container = RokCommon_Service::getContainer();
+		/** @var $i18n RokCommon_I18N_Wordpress */
+		$i18n              = $container->i18n;
+		$layout_lang_paths = $container[sprintf('roksprocket.layouts.%s.paths', $layout)];
+		foreach ($layout_lang_paths as $lang_path) {
+			if (is_dir($lang_path . '/language')) {
+				rs_load_plugin_textdomain('wp_roksprocket_layout_' . $layout, $lang_path . '/language');
 			}
-			$article = $provider->getArticlePreview($id);
-
-			ob_start();
-			echo RokCommon_Composite::get('rs_templates.edit')->load('edit_article_preview.php', array('article'=> $article));
-			$html .= ob_get_clean();
-
-			$result->setPayload(array('html' => $html));
-		} catch (Exception $e) {
-			throw $e;
 		}
-		return $result;
+		$i18n->addDomain('wp_roksprocket_layout_' . $layout);
 	}
 
 	/**
@@ -221,17 +195,131 @@ class RokSprocketAdminAjaxModelWPArticles extends RokCommon_Ajax_AbstractModel
 		return $rcform;
 	}
 
-	protected function loadLayoutLanguage($layout)
+	/**
+	 * Remove an item
+	 * $params object should be a json like
+	 * <code>
+	 * {
+	 *  "module_id": 5,
+	 *  "provider":"simple",
+	 *  "item_id":  123,
+	 * }
+	 * </code>
+	 *
+	 * @param $params
+	 *
+	 * @throws Exception
+	 * @throws RokCommon_Ajax_Exception
+	 * @return \RokCommon_Ajax_Result
+	 */
+	public function removeItem($params)
 	{
-		$container = RokCommon_Service::getContainer();
-		/** @var $i18n RokCommon_I18N_Wordpress */
-		$i18n              = $container->i18n;
-		$layout_lang_paths = $container[sprintf('roksprocket.layouts.%s.paths', $layout)];
-		foreach ($layout_lang_paths as $lang_path) {
-			if (is_dir($lang_path . '/language')) {
-				load_plugin_textdomain('wp_roksprocket_layout_' . $layout, ltrim(str_replace(ABSPATH, '', $lang_path . '/language'), '/\\'));
-			}
+		$result = new RokCommon_Ajax_Result();
+
+		//get the provider and id values
+
+		list($provider, $item_id) = explode('-',$params->item_id);
+		if ($params->uuid != '0')
+		{
+			$params->module_id = $params->uuid;
 		}
-		$i18n->addDomain('wp_roksprocket_layout_' . $layout);
+		// get the provider
+		$container      = RokCommon_Service::getContainer();
+		$provider_class = $container->getParameter(sprintf('roksprocket.providers.registered.%s.class', strtolower($provider)));
+		// have the provider remove the item
+		if (call_user_func_array(array($provider_class, 'removeItem'), array($item_id, $params->module_id)))
+		{
+			$result->setPayload(RokCommon_JSON::encode(array('removed_item'=>$params->item_id)));
+		}
+		return $result;
+	}
+
+	/**
+	 * Returns the informations related to an article
+	 * $params object should be a json like
+	 * <code>
+	 * {
+	 *  "id":"joomla-71"
+	 * }
+	 * </code>
+	 *
+	 * @param $params
+	 *
+	 * @throws Exception
+	 * @return RokCommon_Ajax_Result
+	 */
+	public function getInfo($params)
+	{
+		$result = new RokCommon_Ajax_Result();
+		try {
+			$html = '';
+
+			list($provider_type, $id) = explode('-', $params->id);
+
+			$container = RokCommon_Service::getContainer();
+			//$provider_type = $params->provider;
+
+			/** @var $provider RokSprocket_IProvider */
+			$provider_service = $container['roksprocket.providers.registered.' . $provider_type . '.service'];
+			$provider         = $container->$provider_service;
+
+
+			$article = $provider->getArticleInfo($id, true);
+
+			ob_start();
+			echo RokCommon_Composite::get('rs_templates.edit')->load('edit_article_info_' . $provider_type . '.php', array('article' => $article));
+			$html .= ob_get_clean();
+
+			$result->setPayload(array('html' => $html));
+		} catch (Exception $e) {
+			throw $e;
+		}
+		return $result;
+	}
+
+	/**
+	 * Returns the preview of an article
+	 * $params object should be a json like
+	 * <code>
+	 * {
+	 *  "id":"joomla-71"
+	 * }
+	 * </code>
+	 *
+	 * @param $params
+	 *
+	 * @throws Exception
+	 * @return \RokCommon_Ajax_Result
+	 */
+	public function getPreview($params)
+	{
+		$result = new RokCommon_Ajax_Result();
+		try {
+			$html = '';
+
+			list($provider_type, $id) = explode('-', $params->id);
+
+			$container = RokCommon_Service::getContainer();
+			//$provider_type = $params->provider;
+
+			/** @var $provider RokSprocket_IProvider */
+			$provider_service = $container['roksprocket.providers.registered.' . $provider_type . '.service'];
+			$provider         = $container->$provider_service;
+
+			if (isset($params->extras)) {
+				$extras = new RokCommon_Registry($params->extras);
+				$provider->setParams($extras);
+			}
+			$article = $provider->getArticlePreview($id);
+
+			ob_start();
+			echo RokCommon_Composite::get('rs_templates.edit')->load('edit_article_preview.php', array('article' => $article));
+			$html .= ob_get_clean();
+
+			$result->setPayload(array('html' => $html));
+		} catch (Exception $e) {
+			throw $e;
+		}
+		return $result;
 	}
 }

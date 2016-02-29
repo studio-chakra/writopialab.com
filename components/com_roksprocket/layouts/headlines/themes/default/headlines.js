@@ -1,35 +1,277 @@
-/*
+/*!
+ * @version   $Id: headlines.js 10889 2013-05-30 07:48:35Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
-((function(){if(typeof this.RokSprocket=="undefined"){this.RokSprocket={};}else{Object.merge(this.RokSprocket,{Headlines:null});}var a=new Class({Implements:[Options,Events],options:{settings:{}},initialize:function(b){this.setOptions(b);
-this.headlines=document.getElements("[data-headlines]");this.settings={};this.timers={};this.statuses={};},attach:function(b,c){b=typeOf(b)=="number"?document.getElements("[data-headlines="+this.getID(b)+"]"):b;
-c=typeOf(c)=="string"?JSON.decode(c):c;var d=(b?new Elements([b]).flatten():this.headlines);d.each(function(e){e.store("roksprocket:headlines:attached",true);
-this.setSettings(e,c,"restore");var g={mouseenter:e.retrieve("roksprocket:headlines:mouseenter",function(h){this.stopTimer.call(this,e);this.pause.call(this,e);
-}.bind(this)),mouseleave:e.retrieve("roksprocket:headlines:mouseleave",function(h){this.resume.call(this,e);this.startTimer.call(this,e);}.bind(this)),next:e.retrieve("roksprocket:headlines:next",function(i,h){this.direction.call(this,i,e,h,"next");
-}.bind(this)),previous:e.retrieve("roksprocket:headlines:previous",function(i,h){this.direction.call(this,i,e,h,"previous");}.bind(this)),swipe:e.retrieve("roksprocket:headlines:swipe",function(i,h){i.preventDefault();
-this.direction.call(this,i,e,h,(i.direction=="right"?"previous":"next"));}.bind(this))};["mouseenter","mouseleave"].each(function(h){e.addEvent(h,g[h]);
-});["next","previous"].each(function(h,j){var k="[data-headlines-"+h+"]";if(j>0){k+=", [data-"+h+"]";}e.addEvent("click:relay("+k+")",g[h]);},this);if(Browser.Features.Touch){e.addEvent("swipe",g.swipe);
-}var f=e.getElement("[data-headlines-item].active");if(!f){this.toPosition(e,0);}else{if(this.getSettings(e).autoplay&&this.getSettings(e).autoplay.toInt()){this.startTimer(e);
-}}},this);},detach:function(b){b=typeOf(b)=="number"?document.getElements("[data-headlines="+this.getID(b)+"]"):b;var c=(b?new Elements([b]).flatten():this.headlines);
-c.each(function(d){d.store("roksprocket:headlines:attached",false);var e={mouseenter:d.retrieve("roksprocket:headlines:mouseenter"),mouseleave:d.retrieve("roksprocket:headlines:mouseleave"),next:d.retrieve("roksprocket:headlines:next"),previous:d.retrieve("roksprocket:headlines:previous")};
-["mouseenter","mouseleave"].each(function(f){d.removeEvent(f,e[f]);});["next","previous"].each(function(f,g){var h="[data-headlines-"+f+"]";if(g>0){h+=", [data-"+f+"]";
-}d.removeEvent("click:relay("+h+")",e[f]);},this);if(Browser.Features.Touch){d.removeEvent("swipe",e.swipe);}},this);},setSettings:function(b,e,d){var f=this.getID(b),c=Object.clone(this.options.settings);
-if(!d||!this.settings["id-"+f]){this.settings["id-"+f]=Object.merge(c,e||c);}},getSettings:function(b){var c=this.getID(b);return this.settings["id-"+c];
-},getContainer:function(b){if(!b){b=document.getElements("[data-headlines]");}if(typeOf(b)=="number"){b=document.getElement("[data-headlines="+b+"]");}if(typeOf(b)=="string"){b=document.getElement(b);
-}return b;},getID:function(b){if(typeOf(b)=="number"){b=document.getElement("[data-headlines="+b+"]");}if(typeOf(b)=="string"){b=document.getElement(b);
-}return !b?b:b.get("data-headlines");},toPosition:function(d,b){d=this.getContainer(d);if(!d.retrieve("roksprocket:headlines:attached")){return;}var c=d.getElements("[data-headlines-item]"),e=d.getElements("[data-headlines-panel]"),f=this.getSettings(d);
-if(!c.length){return;}if(c[b].hasClass("active")){return;}if(b>c.length-1){b=0;}if(b<0){b=c.length-1;}c.removeClass("active");c[b].addClass("active");if(f.autoplay&&f.autoplay.toInt()){this.startTimer(d);
-}},toHeadline:function(f,d,e){if(f){f.preventDefault();}d=this.getContainer(d);if(!d.retrieve("roksprocket:headlines:attached")){return;}var c=d.getElements("[data-headlines-item]"),b=c.indexOf(e);
-if(b==-1){throw new Error('RokSprocket Headlines: Instance ID "'+d.get("data-headlines")+'", index not found.');}this.toPosition(d,b);},direction:function(e,b,d,c){if(e){e.preventDefault();
-}c=c||"next";this[c](b,d);},next:function(d,e){d=this.getContainer(d);if(!d.retrieve("roksprocket:headlines:attached")){return;}if(typeOf(d)=="elements"){return this.nextAll(d,e);
-}var c=d.getElements("[data-headlines-item]"),g=c.filter(function(h){return h.hasClass("active");}),b=c.indexOf(g.length?g[0]:"")||0,f=b+1;if(f>c.length-1){f=0;
-}this.toPosition(d,f);},nextAll:function(c,b){c=this.getContainer(c);if(typeOf(c)=="element"){return this.next(c,b);}c.each(function(d){this.next(d,b);
-},this);},previous:function(d,e){d=this.getContainer(d);if(!d.retrieve("roksprocket:headlines:attached")){return;}if(typeOf(d)=="elements"){return this.nextAll(d,e);
-}var c=d.getElements("[data-headlines-item]"),g=c.filter(function(h){return h.hasClass("active");}),b=c.indexOf(g.length?g[0]:"")||0,f=b-1;if(f<0){f=c.length-1;
-}this.toPosition(d,f);},previousAll:function(c,b){c=this.getContainer(c);if(typeOf(c)=="element"){return this.previous(c,b);}c.each(function(d){this.previous(d,b);
-},this);},startTimer:function(c){c=this.getContainer(c);if(!c.retrieve("roksprocket:headlines:attached")){return;}var e=this.getSettings(c),g=this.getID(c),b=this.statuses["id-"+g],f=e.autoplay.toInt(),d=(e.delay.toInt())*1000;
-clearTimeout(this.timers["id-"+g]);if(f&&b!="pause"){this.timers["id-"+g]=this.next.delay(d,this,c);}},stopTimer:function(b){b=this.getContainer(b);var c=this.getID(b);
-clearTimeout(this.timers["id-"+c]);},pause:function(b){b=this.getContainer(b);var c=this.getID(b);this.statuses["id-"+c]="pause";},resume:function(b){b=this.getContainer(b);
-var c=this.getID(b);this.statuses["id-"+c]="play";}});this.RokSprocket.Headlines=a;})());
+((function(){
+	if (typeof this.RokSprocket == 'undefined') this.RokSprocket = {};
+	else Object.merge(this.RokSprocket, {Headlines: null});
+
+	var Headlines = new Class({
+
+		Implements: [Options, Events],
+
+		options: {
+			settings: {}
+		},
+
+		initialize: function(options){
+			this.setOptions(options);
+
+			this.headlines = document.getElements('[data-headlines]');
+			this.settings = {};
+			this.timers = {};
+			this.statuses = {};
+		},
+
+		attach: function(headline, settings){
+			headline = typeOf(headline) == 'number' ?
+					document.getElements('[data-headlines=' + this.getID(headline) + ']')
+					:
+					headline;
+
+			settings = typeOf(settings) == 'string' ? JSON.decode(settings) : settings;
+			var containers = (headline ? new Elements([headline]).flatten() : this.headlines);
+
+			containers.each(function(container){
+				container.store('roksprocket:headlines:attached', true);
+
+				this.setSettings(container, settings, 'restore');
+
+				var relay = {
+					mouseenter: container.retrieve('roksprocket:headlines:mouseenter', function(event){
+						this.stopTimer.call(this, container);
+						this.pause.call(this, container);
+					}.bind(this)),
+
+					mouseleave: container.retrieve('roksprocket:headlines:mouseleave', function(event){
+						this.resume.call(this, container);
+						this.startTimer.call(this, container);
+					}.bind(this)),
+					next: container.retrieve('roksprocket:headlines:next', function(event, element){
+						this.direction.call(this, event, container, element, 'next');
+					}.bind(this)),
+
+					previous: container.retrieve('roksprocket:headlines:previous', function(event, element){
+						this.direction.call(this, event, container, element, 'previous');
+					}.bind(this)),
+
+					swipe: container.retrieve('roksprocket:headlines:swipe', function(event, element){
+						event.preventDefault();
+						this.direction.call(this, event, container, element, (event.direction == 'right' ? 'previous' : 'next'));
+					}.bind(this))
+				};
+
+				['mouseenter', 'mouseleave'].each(function(type){
+					container.addEvent(type, relay[type]);
+				});
+
+				['next', 'previous'].each(function(dir, i){
+					var query = '[data-headlines-' + dir + ']';
+					if (i > 0) query += ', [data-' + dir + ']';
+
+					container.addEvent('click:relay(' + query + ')', relay[dir]);
+				}, this);
+
+				if (Browser.Features.Touch) container.addEvent('swipe', relay['swipe']);
+
+				var active = container.getElement('[data-headlines-item].active');
+
+				if (!active) this.toPosition(container, 0);
+				else {
+					if (this.getSettings(container).autoplay && this.getSettings(container).autoplay.toInt())
+						this.startTimer(container);
+				}
+
+			}, this);
+		},
+
+		detach: function(headline){
+			headline = typeOf(headline) == 'number' ?
+					document.getElements('[data-headlines=' + this.getID(headline) + ']')
+					:
+					headline;
+
+			var containers = (headline ? new Elements([headline]).flatten() : this.headlines);
+
+			containers.each(function(container){
+				container.store('roksprocket:headlines:attached', false);
+				var relay = {
+					mouseenter: container.retrieve('roksprocket:headlines:mouseenter'),
+					mouseleave: container.retrieve('roksprocket:headlines:mouseleave'),
+					next: container.retrieve('roksprocket:headlines:next'),
+					previous: container.retrieve('roksprocket:headlines:previous')
+				};
+
+				['mouseenter', 'mouseleave'].each(function(type){
+					container.removeEvent(type, relay[type]);
+				});
+
+				['next', 'previous'].each(function(dir, i){
+					var query = '[data-headlines-' + dir + ']';
+					if (i > 0) query += ', [data-' + dir + ']';
+
+					container.removeEvent('click:relay(' + query + ')', relay[dir]);
+				}, this);
+
+				if (Browser.Features.Touch) container.removeEvent('swipe', relay['swipe']);
+
+			}, this);
+		},
+
+		setSettings: function(container, settings, restore){
+			var id = this.getID(container),
+				options = Object.clone(this.options.settings);
+
+			if (!restore || !this.settings['id-' + id]){
+				this.settings['id-' + id] = Object.merge(options, settings || options);
+			}
+		},
+
+		getSettings: function(container){
+			var id = this.getID(container);
+
+			return this.settings['id-' + id];
+		},
+
+		getContainer: function(container){
+			if (!container) container = document.getElements('[data-headlines]');
+			if (typeOf(container) == 'number') container = document.getElement('[data-headlines='+container+']');
+			if (typeOf(container) == 'string') container = document.getElement(container);
+
+			return container;
+		},
+
+		getID: function(id){
+			if (typeOf(id) == 'number') id = document.getElement('[data-headlines='+id+']');
+			if (typeOf(id) == 'string') id = document.getElement(id);
+			return !id ? id : id.get('data-headlines');
+		},
+
+		toPosition: function(container, position){
+			container = this.getContainer(container);
+			if (!container.retrieve('roksprocket:headlines:attached')) return;
+
+			var headlines = container.getElements('[data-headlines-item]'),
+				panels = container.getElements('[data-headlines-panel]'),
+				settings = this.getSettings(container);
+
+			if (!headlines.length) return;
+			if (headlines[position].hasClass('active')) return;
+
+			if (position > headlines.length - 1) position = 0;
+			if (position < 0) position = headlines.length - 1;
+
+			headlines.removeClass('active');
+			headlines[position].addClass('active');
+
+			if (settings.autoplay && settings.autoplay.toInt()) this.startTimer(container);
+		},
+
+		toHeadline: function(event, container, headline){
+			if (event) event.preventDefault();
+			container = this.getContainer(container);
+			if (!container.retrieve('roksprocket:headlines:attached')) return;
+
+			var headlines = container.getElements('[data-headlines-item]'),
+				position = headlines.indexOf(headline);
+
+			if (position == -1) throw new Error('RokSprocket Headlines: Instance ID "' + container.get('data-headlines') + '", index not found.');
+
+			this.toPosition(container, position);
+		},
+
+		direction: function(event, container, element, dir){
+			if (event) event.preventDefault();
+
+			dir = dir || 'next';
+			this[dir](container, element);
+		},
+
+		next: function(container, element){
+			container = this.getContainer(container);
+			if (!container.retrieve('roksprocket:headlines:attached')) return;
+			if (typeOf(container) == 'elements') return this.nextAll(container, element);
+
+			var headlines = container.getElements('[data-headlines-item]'),
+				active = headlines.filter(function(headline){ return headline.hasClass('active'); }),
+				position = headlines.indexOf(active.length ? active[0] : '') || 0,
+				next = position + 1;
+
+			if (next > headlines.length - 1) next = 0;
+			this.toPosition(container, next);
+		},
+
+		nextAll: function(containers, element){
+			containers = this.getContainer(containers);
+			if (typeOf(containers) == 'element') return this.next(containers, element);
+
+			containers.each(function(container){
+				this.next(container, element);
+			}, this);
+		},
+
+		previous: function(container, element){
+			container = this.getContainer(container);
+			if (!container.retrieve('roksprocket:headlines:attached')) return;
+			if (typeOf(container) == 'elements') return this.nextAll(container, element);
+
+			var headlines = container.getElements('[data-headlines-item]'),
+				active = headlines.filter(function(headline){ return headline.hasClass('active'); }),
+				position = headlines.indexOf(active.length ? active[0] : '') || 0,
+				previous = position - 1;
+
+			if (previous < 0) previous = headlines.length - 1;
+			this.toPosition(container, previous);
+		},
+
+		previousAll: function(containers, element){
+			containers = this.getContainer(containers);
+			if (typeOf(containers) == 'element') return this.previous(containers, element);
+
+			containers.each(function(container){
+				this.previous(container, element);
+			}, this);
+		},
+
+		startTimer: function(container){
+			container = this.getContainer(container);
+			if (!container.retrieve('roksprocket:headlines:attached')) return;
+
+			var settings = this.getSettings(container),
+				id = this.getID(container),
+				status = this.statuses['id-' + id],
+				autoplay = settings.autoplay.toInt(),
+				delay = (settings.delay.toInt()) * 1000;
+
+			clearTimeout(this.timers['id-' + id]);
+			if (autoplay && status != 'pause') this.timers['id-' + id] = this.next.delay(delay, this, container);
+		},
+
+		stopTimer: function(container){
+			container = this.getContainer(container);
+
+			var id = this.getID(container);
+			clearTimeout(this.timers['id-' + id]);
+		},
+
+		pause: function(container){
+			container = this.getContainer(container);
+
+			var id = this.getID(container);
+			this.statuses['id-' + id] = 'pause';
+		},
+
+		resume: function(container){
+			container = this.getContainer(container);
+
+			var id = this.getID(container);
+			this.statuses['id-' + id] = 'play';
+		}
+
+	});
+
+	this.RokSprocket.Headlines = Headlines;
+
+})());

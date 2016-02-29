@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id$
+ * @version   $Id: Cpt.php 21657 2014-06-19 18:02:32Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -66,6 +66,7 @@ class RokSprocket_Provider_Cpt extends RokSprocket_Provider_AbstarctWordpressBas
 		$texts                      = array();
 		$texts['text_post_content'] = $raw_item->post_content;
 		$texts['text_post_excerpt'] = $raw_item->post_excerpt;
+		$texts['text_post_title'] = $raw_item->post_title;
         $texts = $this->processPlugins($texts);
         $item->setTextFields($texts);
 
@@ -92,10 +93,9 @@ class RokSprocket_Provider_Cpt extends RokSprocket_Provider_AbstarctWordpressBas
 		$item->setPrimaryLink($primary_link);
 
 		$item->setCommentCount($raw_item->comment_count);
-		if (isset($raw_item->tags)) {
-			$tags = (explode(',', $raw_item->tags)) ? explode(',', $raw_item->tags) : array();
-			$item->setTags($tags);
-		}
+        if (!empty($raw_item->tags)) {
+            $item->setTags($raw_item->tags);
+        }
 
 		$item->setDbOrder($dborder);
 
@@ -117,7 +117,7 @@ class RokSprocket_Provider_Cpt extends RokSprocket_Provider_AbstarctWordpressBas
 	 */
 	public static function getImageTypes()
 	{
-		return;
+		return array();
 	}
 
 	/**
@@ -125,7 +125,7 @@ class RokSprocket_Provider_Cpt extends RokSprocket_Provider_AbstarctWordpressBas
 	 */
 	public static function getLinkTypes()
 	{
-		return;
+		return array();
 	}
 
 	/**
@@ -136,6 +136,7 @@ class RokSprocket_Provider_Cpt extends RokSprocket_Provider_AbstarctWordpressBas
 		$list = array(
 			'text_post_content' => array('group' => null, 'display' => 'Post Content'),
 			'text_post_excerpt' => array('group' => null, 'display' => 'Post Excerpt'),
+			'text_post_title' => array('group' => null, 'display' => 'Post Title'),
 		);
 		return $list;
 	}

@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: rokcommon.php 58568 2012-12-04 14:20:40Z steph $
+ * @version   $Id: rokcommon.php 27322 2015-03-04 13:11:37Z matias $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - ${copyright_year} RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -28,13 +28,13 @@ class plgSystemRokCommon extends JPlugin
 	 */
 	const ROKCOMMON_CONFIG_TYPE_METACONFIG = 'metaconfig';
 
-	const ROKCOMMON_PLUGIN_VERSION = '3.1.6';
+	const ROKCOMMON_PLUGIN_VERSION = '3.2.0';
 
 
 	/**
 	 * @var RokCommon_Service_Container
 	 */
-	protected $contaier;
+	protected $container;
 
 	/**
 	 * @var RokCommon_Logger
@@ -51,33 +51,30 @@ class plgSystemRokCommon extends JPlugin
 	 */
 	public function __construct(&$subject, $config = array())
 	{
-		parent::__construct($subject, $config);
-
-
 		if ($this->loadCommonLib()) {
 
 			if (!defined('ROKCOMMON')) {
 				$error_string = 'RokCommon System Plug-in is missing the RokCommon Library.  Please Reinstall.';
-			} else if (ROKCOMMON != self::ROKCOMMON_PLUGIN_VERSION) {
+			} elseif (ROKCOMMON != self::ROKCOMMON_PLUGIN_VERSION) {
 				$error_string = sprintf('RokCommon Library Version (%s) does not match the RokCommon System Plug-in Version (%s).  Please Reinstall.', ROKCOMMON, self::ROKCOMMON_PLUGIN_VERSION);
 			}
 			if (!empty($error_string)) {
-				if (JError::$legacy) {
-					return JError::raiseWarning(500, $error_string);
-				} else {
-					throw new Exception($error_string);
-				}
-			} else {
-				RokCommon_ClassLoader::addPath(dirname(__FILE__) . '/lib');
-				$conf = JFactory::getConfig();
-				RokCommon_Service::setTempFileDir($conf->get('tmp_path'));
-				RokCommon_Service::setDevelopmentMode($this->params->get('developmentMode', false));
-				$this->contaier   = RokCommon_Service::getContainer();
-				$this->logger     = $this->contaier->logger;
-				$this->dispatcher = $this->contaier->dispatcher;
-				$this->processRegisteredConfigs();
-				if (!defined('ROKCOMMON_PLUGIN_LOADED')) define('ROKCOMMON_PLUGIN_LOADED', self::ROKCOMMON_PLUGIN_VERSION);
+				JFactory::getApplication()->enqueueMessage($error_string, 'warning');
+				return;
 			}
+
+			// Only register plugin on success.
+			parent::__construct($subject, $config);
+
+			RokCommon_ClassLoader::addPath(dirname(__FILE__) . '/lib');
+			$conf = JFactory::getConfig();
+			RokCommon_Service::setTempFileDir($conf->get('tmp_path'));
+			RokCommon_Service::setDevelopmentMode($this->params->get('developmentMode', false));
+			$this->container   = RokCommon_Service::getContainer();
+			$this->logger     = $this->container->logger;
+			$this->dispatcher = $this->container->dispatcher;
+			$this->processRegisteredConfigs();
+			if (!defined('ROKCOMMON_PLUGIN_LOADED')) define('ROKCOMMON_PLUGIN_LOADED', self::ROKCOMMON_PLUGIN_VERSION);
 		}
 	}
 
@@ -98,7 +95,7 @@ class plgSystemRokCommon extends JPlugin
 			$included_files = get_included_files();
 			if (!in_array($rokcommon_inlcude_path, $included_files) && ($libret = require_once($rokcommon_inlcude_path)) !== 'ROKCOMMON_LIB_INCLUDED') {
 				if (!defined('ROKCOMMON_ERROR_MISSING_LIBS')) define('ROKCOMMON_ERROR_MISSING_LIBS', true);
-				$errors = $libret;
+				$errors = (array) $libret;
 			} else {
 				$ret = true;
 			}
@@ -107,7 +104,12 @@ class plgSystemRokCommon extends JPlugin
 		}
 
 		if (!empty($errors)) {
-			throw new Exception('RokCommon: ' . implode('<br /> - ', $errors), 100);
+			$app = JFactory::getApplication();
+			if ($app->isAdmin()) {
+				foreach ($errors as $error) {
+					$app->enqueueMessage('RokCommon: ' . $error, 'warning');
+				}
+			}
 		}
 
 		return $ret;
@@ -180,7 +182,7 @@ class plgSystemRokCommon extends JPlugin
 	public function onBeforeCompileHead()
 	{
 		/** @var $header RokCommon_Header_Joomla */
-		$header = $this->contaier->getService('header');
+		$header = $this->container->getService('header');
 		$header->populate();
 	}
 }

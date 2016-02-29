@@ -3,9 +3,9 @@
         <fieldset name="peritem" overwrite="false">
             <field name="tabs_item_title" label="ROKSPROCKET_LAYOUT_TABS_TITLE_LABEL" type="peritempicker"
                    default="-default-" icon="tab" optionorder="54" description="ROKSPROCKET_LAYOUT_TABS_TITLE_DESC">
-                <option value="-none-">JNONE</option>
                 <option value="-default-">JDEFAULT</option>
                 <option value="-title-">ROKSPROCKET_ARTICLE_TITLE</option>
+                <option value="-none-">JNONE</option>
                 <option value="divider"></option>
                 <option value="">ROKSPROCKET_CUSTOM</option>
             </field>

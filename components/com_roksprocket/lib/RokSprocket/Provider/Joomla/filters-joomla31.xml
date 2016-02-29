@@ -8,6 +8,7 @@
     <filter name="featured" label="Featured" type="RokCommon_Filter_Type_Boolean"/>
     <filter name="category" label="Category" type="RokCommon_Filter_Type_PickList"
             populator="RokSprocket_Provider_Joomla_CategoryPopulator"/>
+    <filter name="tag" label="Tag" type="RokCommon_Filter_Type_PickList" populator="RokSprocket_Provider_Joomla_TagPopulator"/>
     <filter name="createddate" label="Created Date" type="RokCommon_Filter_Type_Date"/>
     <filter name="modifieddate" label="Last Modified Date" type="RokCommon_Filter_Type_Date"/>
     <filter name="modifiedby" label="Last Modified By" type="RokSprocket_Provider_Joomla_Filter_Type_User"/>

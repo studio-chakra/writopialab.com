@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id$
+ * @version   $Id: Lists.php 19259 2014-02-27 22:30:09Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -70,6 +70,7 @@ class RokSprocketSiteLayoutAjaxModelLists extends RokSprocket_AbstractAjaxRender
 				$index++;
 			}
 			$html .= ob_get_clean();
+			$html = $platformHelper->processOutputForEvents($html, $module_params);
 
 			$result->setPayload(array(
 			                         'html'  => $html,

@@ -1,14 +1,15 @@
 <?php
+
 /**
- * @version   $Id$
+ * @version   $Id: K2.php 19225 2014-02-27 00:15:10Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
-
 class RokSprocket_Provider_K2 extends RokSprocket_Provider_AbstarctJoomlaBasedProvider
 {
 
+	protected static $available;
 	protected static $extra_fields;
 
 	/**
@@ -17,26 +18,32 @@ class RokSprocket_Provider_K2 extends RokSprocket_Provider_AbstarctJoomlaBasedPr
 	 */
 	public static function isAvailable()
 	{
+		if (isset(self::$available)) {
+			return self::$available;
+		}
+
+
 		if (!class_exists('JFactory')) {
-			return false;
-		}
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query->select('a.extension_id');
-		$query->from('#__extensions AS a');
-		$query->where('a.type = "component"');
-		$query->where('a.element = "com_k2"');
-		$query->where('a.enabled = 1');
-
-		$db->setQuery($query);
-
-		if ($db->loadResult()) {
-			return true;
+			self::$available = false;
 		} else {
-			return false;
-		}
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
 
+			$query->select('a.extension_id');
+			$query->from('#__extensions AS a');
+			$query->where('a.type = "component"');
+			$query->where('a.element = "com_k2"');
+			$query->where('a.enabled = 1');
+
+			$db->setQuery($query);
+
+			if ($db->loadResult()) {
+				self::$available = true;
+			} else {
+				self::$available = false;
+			}
+		}
+		return self::$available;
 	}
 
 	/**
@@ -111,40 +118,41 @@ class RokSprocket_Provider_K2 extends RokSprocket_Provider_AbstarctJoomlaBasedPr
 		// Get default Text fields for an item
 		$texts['text_introtext'] = $raw_item->introtext;
 		$texts['text_fulltext']  = $raw_item->fulltext;
+		$texts['text_title']     = $raw_item->title;
 		$texts['text_metadesc']  = $raw_item->metadesc;
 
 
 		// get all extra fields for an item
 		$item_extra_field_values = json_decode($raw_item->extra_fields);
 
-        if(!empty($item_extra_field_values)){
-            foreach ($item_extra_field_values as $item_extra_field) {
-                $field_info = self::getExtraFieldInfo($item_extra_field->id);
-                if ($field_info !== false && isset($item_extra_field->value)) {
-                    switch ($field_info->type) {
-                        case 'image':
-                            $image = new RokSprocket_Item_Image();
-                            $image->setSource($item_extra_field->value);
-                            $image->setIdentifier('item_image_' . $field_info->field_name);
-                            $image->setCaption('');
-                            $image->setAlttext('');
-                            $images[$image->getIdentifier()] = $image;
-                            break;
-                        case 'link':
-                            $link = new RokSprocket_Item_Link();
-                            $link->setUrl($item_extra_field->value[1]);
-                            $link->setText($item_extra_field->value[0]);
-                            $link->setIdentifier('item_link_' . $item_extra_field->id);
-                            $links[$link->getIdentifier()] = $link;
-                            break;
-                        case 'textarea':
-                        case 'textfield':
-                            $texts['text_' . $item_extra_field->id] = $item_extra_field->value;
-                            break;
-                    }
-                }
-            }
-        }
+		if (!empty($item_extra_field_values)) {
+			foreach ($item_extra_field_values as $item_extra_field) {
+				$field_info = self::getExtraFieldInfo($item_extra_field->id);
+				if ($field_info !== false && isset($item_extra_field->value)) {
+					switch ($field_info->type) {
+						case 'image':
+							$image = new RokSprocket_Item_Image();
+							$image->setSource($item_extra_field->value);
+							$image->setIdentifier('item_image_' . $field_info->field_name);
+							$image->setCaption('');
+							$image->setAlttext('');
+							$images[$image->getIdentifier()] = $image;
+							break;
+						case 'link':
+							$link = new RokSprocket_Item_Link();
+							$link->setUrl($item_extra_field->value[1]);
+							$link->setText($item_extra_field->value[0]);
+							$link->setIdentifier('item_link_' . $item_extra_field->id);
+							$links[$link->getIdentifier()] = $link;
+							break;
+						case 'textarea':
+						case 'textfield':
+							$texts['text_' . $item_extra_field->id] = $item_extra_field->value;
+							break;
+					}
+				}
+			}
+		}
 
 		// set the item fields
 		$item->setImages($images);
@@ -246,6 +254,7 @@ class RokSprocket_Provider_K2 extends RokSprocket_Provider_AbstarctJoomlaBasedPr
 		}
 		$static = array(
 			'text_introtext' => array('group' => null, 'display' => 'Intro Text'),
+			'text_title'     => array('group' => null, 'display' => 'Article Title'),
 			'text_fulltext'  => array('group' => null, 'display' => 'Full Text'),
 			'text_metadesc'  => array('group' => null, 'display' => 'Meta Description Text'),
 		);

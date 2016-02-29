@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id$
+ * @version   $Id: Filter.php 21664 2014-06-19 19:53:13Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -14,6 +14,21 @@ class RokSprocket_Provider_Types_Filter extends RokSprocket_Provider_AbstractWor
     protected function setBaseQuery()
     {
         global $wpdb;
+
+	    $created_types = get_option( 'wpcf-custom-types' );
+
+	    if( is_array( $created_types ) && !empty( $created_types ) ) {
+		    foreach ( $created_types as $match ) {
+			    $match = trim( $match['slug'] );
+			    if ( !empty( $match ) ) {
+				    $types_query[] = 'p.post_type = "' . $match . '"';
+			    }
+		    }
+		    if ( !empty( $types_query ) ) {
+			    $combined_types_query = '(' . implode( ' OR ', $types_query ) . ')';
+		    }
+	    }
+
         $this->base_query = '';
         $this->base_query .= 'SELECT p.ID as post_id, p.post_author, p.post_date, p.post_content, p.post_title, p.post_excerpt, p.post_status, p.post_password';
         $this->base_query .= ', p.post_name, p.post_name, p.post_modified, p.post_parent, p.menu_order, p.post_type, p.comment_count';
@@ -29,7 +44,7 @@ class RokSprocket_Provider_Types_Filter extends RokSprocket_Provider_AbstractWor
         $this->base_query .= ' LEFT JOIN ' . $wpdb->prefix . 'postmeta as pm ON (pm.post_id = p.ID AND pm.meta_key = "_thumbnail_id")';
 
         //join over postmeta to get custom fields
-        $this->base_query .= ' LEFT JOIN ' . $wpdb->prefix . 'postmeta as pm2 ON (pm2.post_id = p.ID AND pm2.meta_key LIKE "%wpcf%")';
+        $this->base_query .= ' LEFT JOIN ' . $wpdb->prefix . 'postmeta as pm2 ON (pm2.post_id = p.ID AND pm2.meta_key LIKE "_wp_types_group_fields")';
 
         //join over taxonomy to get tags
         $this->base_query .= ' LEFT JOIN ' . $wpdb->prefix . 'term_relationships as tr ON tr.object_id = p.ID';
@@ -44,9 +59,9 @@ class RokSprocket_Provider_Types_Filter extends RokSprocket_Provider_AbstractWor
         //join over users
         $this->base_query .= ' LEFT JOIN ' . $wpdb->base_prefix . 'users as u ON u.ID = p.post_author';
 
-        //only posts and pages
-        $this->base_where[] = '(p.post_type = "post" OR p.post_type = "page")';
-        $this->base_where[] = '(p.post_status != "auto-draft" AND p.post_status != "inherit")';
+        //only Types created post types
+	    $this->base_where[] = $combined_types_query;
+	    $this->base_where[] = '(p.post_status != "auto-draft" AND p.post_status != "inherit")';
 
         //group by id
         $this->group_by[] = 'p.ID';
@@ -277,21 +292,20 @@ class RokSprocket_Provider_Types_Filter extends RokSprocket_Provider_AbstractWor
     /**
      * @param $data
      */
-    protected function articletext($data)
+    protected function content($data)
     {
         global $wpdb;
         $wheres = array();
         foreach ($data as $match) {
             $match = trim($match);
             if (!empty($match)) {
-                $wheres[] = 'p.post_content LIKE ' . $this->db->quote('%' . $this->db->escape($match, true) . '%');
+	            $wheres[] = 'p.post_content LIKE "%' . esc_sql($match) . '%"';
             }
         }
         if (!empty($wheres)) {
             $this->filter_where[] = '(' . implode(' OR ', $wheres) . ')';
         }
     }
-
 
     /**
      * @param $data

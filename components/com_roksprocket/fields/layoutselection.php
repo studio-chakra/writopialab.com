@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id$
+ * @version   $Id: layoutselection.php 19225 2014-02-27 00:15:10Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 defined('JPATH_PLATFORM') or die;
@@ -12,15 +12,25 @@ jimport('joomla.form.formfield');
 jimport('joomla.form.helper');
 JFormHelper::loadFieldClass('list');
 
-require_once(dirname(__FILE__) . '/dynamicfields.php');
+//require_once(dirname(__FILE__) . '/dynamicfields.php');
 
-class JFormFieldLayoutSelection extends JFormFieldDynamicFields
+class JFormFieldLayoutSelection extends JFormField
 {
 
 	protected static $loaded_icons = array();
 
 	protected $type = 'LayoutSelection';
 
+	protected function getLabel()
+	{
+		return "";
+	}
+
+
+	protected function getInput()
+	{
+		return '<input id="'.$this->id.'" type="hidden" name="' . $this->name . '" value="' . $this->value . '"/>';
+	}
 	/**
 	 * Method to get the field options for the list of installed editors.
 	 *

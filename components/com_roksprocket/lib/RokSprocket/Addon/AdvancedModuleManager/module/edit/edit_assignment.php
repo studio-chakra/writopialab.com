@@ -1,43 +1,72 @@
 <?php
 /**
- * @package		Joomla.Administrator
+ * @package        Joomla.Administrator
  * @subpackage     com_modules
  * @copyright      Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
- * @license		GNU General Public License version 2 or later; see LICENSE.txt
+ * @license        GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 // No direct access.
 defined('_JEXEC') or die;
 
-class RenderAMM
-{
-	public $item;
-	public $config;
-	public $assignments;
-	public $form;
-
-	public function render(&$form, $name = '')
+$jversion = new JVersion();
+if (version_compare($jversion->getShortVersion(), '3.0', '>=')) {
+	class RenderAMM
 	{
-		$items = array();
-		foreach ($form->getFieldset($name) as $field) {
-			$items[] = $field->label . $field->input;
-		}
-		if (empty ($items)) {
-			return '';
+		public $item;
+		public $config;
+		public $assignments;
+		public $form;
+
+		public function render(&$form, $name = '')
+		{
+			$items = array();
+			foreach ($form->getFieldset($name) as $field) {
+				$items[] = '<div class="control-group"><div class="control-label">' . $field->label . '</div><div class="controls">' . $field->input . '</div></div>';
+			}
+			if (empty ($items)) {
+				return '';
+			}
+
+			return implode('', $items);
 		}
 
-		return '<li>' . implode('</li><li>', $items) . '</li>';
+		public function renderPage()
+		{
+			include(JPATH_ADMINISTRATOR . '/components/com_advancedmodules/views/module/tmpl/edit_assignment.php');
+		}
 	}
+} else {
 
-	public function renderPage()
+	class RenderAMM
 	{
-		include(JPATH_ADMINISTRATOR . '/components/com_advancedmodules/views/module/tmpl/edit_assignment.php');
+		public $item;
+		public $config;
+		public $assignments;
+		public $form;
+
+		public function render(&$form, $name = '')
+		{
+			$items = array();
+			foreach ($form->getFieldset($name) as $field) {
+				$items[] = $field->label . $field->input;
+			}
+			if (empty ($items)) {
+				return '';
+			}
+
+			return '<li>' . implode('</li><li>', $items) . '</li>';
+		}
+
+		public function renderPage()
+		{
+			include(JPATH_ADMINISTRATOR . '/components/com_advancedmodules/views/module/tmpl/edit_assignment.php');
+		}
 	}
 }
 
-$jversion = new JVersion();
 if (version_compare($jversion->getShortVersion(), '3.0', '>=')) {
-    JHtml::_('jquery.framework');
+	JHtml::_('jquery.framework');
 }
 
 $juri_base = preg_replace("/administrator$/", "", JURI::base(true));
@@ -64,31 +93,34 @@ if (!isset($renderer->assignments)) {
 }
 
 if ($renderer->config->show_color) {
-    if(isset($renderer->config->main_colors)){
-	    $colors = explode(',', $renderer->config->main_colors);
-        foreach ($colors as $i=> $c)
-        {
-            $colors[$i] = strtoupper('#'.preg_replace('#[^a-z0-9]#i', '', $c));
-        }
-        $script = "
-            mainColors = new Array( '".implode("', '", $colors)."' );";
-        RokCommon_Header::addInlineScript($script);
-    }
+	if (isset($renderer->config->main_colors)) {
+		$colors = explode(',', $renderer->config->main_colors);
+		foreach ($colors as $i => $c) {
+			$colors[$i] = strtoupper('#' . preg_replace('#[^a-z0-9]#i', '', $c));
+		}
+		$script = "
+            mainColors = new Array( '" . implode("', '", $colors) . "' );";
+		RokCommon_Header::addInlineScript($script);
+	}
 }
-
 
 ?>
 <fieldset class="adminform">
 	<div class="advanced-module-manager">
 		<!-- opening divs twice for fixing joomla accordions -->
-		<?php if ($renderer->config->show_color) : ?>
-		<?php echo $renderer->render($renderer->assignments, 'color'); ?>
-		<?php endif; ?>
-
-		<div>
+		<?php if ($renderer->config->show_color) :
+		echo $renderer->render($renderer->assignments, 'color');
+		endif;
+		if(version_compare($jversion->getShortVersion(), '3.0', '>=')):
+			$renderer->renderPage();
+		else:?>
 			<div>
-				<?php $renderer->renderPage();?>
-			</div>
+				<div>
+					<?php $renderer->renderPage(); ?>
+				</div>
+		<?php
+		endif;
+		?>
 </fieldset>
 
 

@@ -1,8 +1,9 @@
 /*
- * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
- * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
- */
+* @version	$Id: rokmediaqueries.js 10889 2013-05-30 07:48:35Z btowles $
+* @author		RocketTheme http://www.rockettheme.com
+* @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
+* @license	http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
+*/
 ((function(){window.matchMedia=window.matchMedia||window.msMatchMedia||(function(e,f){var c,a=e.documentElement,b=a.firstElementChild||a.firstChild,d=e.createElement("body"),g=e.createElement("div");
 g.id="mq-test-1";g.style.cssText="position:absolute;top:-100em";d.style.background="none";d.appendChild(g);return function(h){g.innerHTML='&shy;<style media="'+h+'"> #mq-test-1 { width: 42px; }</style>';
 a.insertBefore(d,b);c=g.offsetWidth==42;a.removeChild(d);return{matches:c,media:h,addListener:function(i){if(!Browser.ie9&&!window.opera){return"";}if(window.retrieve("rokmediaqueries:listener:"+h.replace(/[a-z]|[(|)|:|\s|-]/gi,""),false)){return;

@@ -1,14 +1,23 @@
 /*
- * ---
- * name: PowerTools
- * description: Provides mobile implementation into MooTools
- * authors: Christoph Pojer (@cpojer)
- * license: MIT-style license.
- * ...
- */
-(function(){Browser.Device={name:"other"};if(Browser.Platform.ios){var a=navigator.userAgent.toLowerCase().match(/(ip(ad|od|hone))/)[0];Browser.Device[a]=true;
-Browser.Device.name=a;}if(this.devicePixelRatio==2){Browser.hasHighResolution=true;}Browser.isMobile=!["mac","linux","win"].contains(Browser.Platform.name);
-}).call(this);(function(){[Element,Window,Document].invoke("implement",{hasEvent:function(f){var e=this.retrieve("events"),g=(e&&e[f])?e[f].values:null;
+---
+
+name: Browser.Mobile
+
+description: Provides useful information about the browser environment
+
+authors: Christoph Pojer (@cpojer)
+
+license: MIT-style license.
+
+requires: [Core/Browser]
+
+provides: Browser.Mobile
+
+...
+*/
+(function(){Browser.Device={name:"other"};
+if(Browser.Platform.ios){var a=navigator.userAgent.toLowerCase().match(/(ip(ad|od|hone))/)[0];Browser.Device[a]=true;Browser.Device.name=a;}if(this.devicePixelRatio==2){Browser.hasHighResolution=true;
+}Browser.isMobile=!["mac","linux","win"].contains(Browser.Platform.name);}).call(this);(function(){[Element,Window,Document].invoke("implement",{hasEvent:function(f){var e=this.retrieve("events"),g=(e&&e[f])?e[f].values:null;
 if(g){var d=g.length;while(d--){if(d in g){return true;}}}return false;}});var c=function(e,f,d){f=e[f];d=e[d];return function(h,g){if(d&&!this.hasEvent(g)){d.call(this,h,g);
 }if(f){f.call(this,h,g);}};};var a=function(e,d,f){return function(h,g){d[f].call(this,h,g);e[f].call(this,h,g);};};var b=Element.Events;Element.defineCustomEvent=function(d,f){var e=b[f.base];
 f.onAdd=c(f,"onAdd","onSetup");f.onRemove=c(f,"onRemove","onTeardown");b[d]=e?Object.append({},f,{base:e.base,condition:function(h,g){return(!e.condition||e.condition.call(this,h,g))&&(!f.condition||f.condition.call(this,h,g));

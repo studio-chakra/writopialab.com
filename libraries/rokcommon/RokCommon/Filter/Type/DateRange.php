@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: DateRange.php 53534 2012-06-06 18:21:34Z btowles $
+ * @version   $Id: DateRange.php 14555 2013-10-16 21:48:55Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - ${copyright_year} RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 defined('ROKCOMMON') or die;
@@ -65,7 +65,7 @@ class RokCommon_Filter_Type_DateRange extends RokCommon_Filter_Type
 	protected function getSelectList($name = RokCommon_Filter_Type::JAVASCRIPT_NAME_VARIABLE, $value = null)
 	{
 		$options = array();
-		$attribs = array('class'   => $this->type,
+		$attribs = array('class'   => $this->type . ' chzn-done',
 		                 'data-key'=> $this->type
 		);
 		foreach ($this->select_options as $select_option_value => $select_option_label) {

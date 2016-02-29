@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: edit_article_info_easyblog.php 59007 2013-02-01 04:27:51Z steph $
+ * @version   $Id: edit_article_info_easyblog.php 10885 2013-05-30 06:31:41Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 $now = JFactory::getDate()->toSql();

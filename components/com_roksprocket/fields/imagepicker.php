@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id$
+ * @version   $Id: imagepicker.php 19227 2014-02-27 00:37:34Z djamil $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 defined('JPATH_PLATFORM') or die;
@@ -25,6 +25,10 @@ class JFormFieldImagePicker extends JFormField
 		JHtml::_('behavior.modal');
 		//$this->_loadAssets();
 		$this->_setOptions();
+		$container = RokCommon_Service::getContainer();
+		/** @var RokSprocket_IProvider $provider */
+		$provider = $container->getParameter('roksprocket.current_provider');
+		$provider->filterPerItemTypes($this->type, $this->fieldname, $this->options);
 
 		$this->value = str_replace("'", '"', str_replace('\\', '', $this->value));
 		$link = $this->options['mediamanager']['attributes']['value'];
@@ -70,7 +74,7 @@ class JFormFieldImagePicker extends JFormField
 		$html[] = '		<input data-imagepicker-display="true" data-original-title="'.rc__($tipTitle).'" type="text" value="'.$path.'" '.$class.$placeholder.' />';
 		$html[] = '		<input type="hidden" id="'.$this->id.'" name="'.$this->name.'" value="'.str_replace('"', "'", $this->value).'" />';
 		$html[] = $this->_getDropdown();
-		$html[] = '		<a href="'.$link.'" class="modal imagepicker" title="Select Image" rel="{handler: \'iframe\', size: {x: 695, y: 450}}"><i class="icon tool picker"></i></a>';
+		$html[] = '		<a href="'.$link.'" class="modal imagepicker" title="Select Image" rel="{handler: \'iframe\', size: {x: 790, y: 450}}"><i class="icon tool picker"></i></a>';
 		$html[] = '</div>';
 
 		return implode("\n", $html);
@@ -163,6 +167,9 @@ class JFormFieldImagePicker extends JFormField
 		$displayValue = "mediamanager";
 		$options = $this->options;
 
+		if (isset($this->value) && !array_key_exists($this->value, $options)) $this->value = '-title-';
+		if (isset($this->value) && !array_key_exists($this->value, $options)) $this->value = '-none-';
+
 		foreach($options as $option){
 			$attributes = $option['attributes'];
 			$class = (isset($attributes['class']) ? $attributes['class'] : "") . (isset($attributes['disabled']) ? " disabled" : "");
@@ -193,7 +200,7 @@ class JFormFieldImagePicker extends JFormField
 			$output[] = '	<a href="#" class="btn dropdown-toggle" data-toggle="dropdown">';
 			if (strlen($icon))
 				$output[] = '		<i data-dynamic="false" class="icon '.$class.'"></i> ';
-			$output[] = ' 		<span class="name">'.(!$this->isCustom ? $this->options[$this->value]['name'] : '').'</span>';
+			$output[] = ' 		<span class="name">'.(!$this->isCustom && isset($this->options[$this->value]) ? $this->options[$this->value]['name'] : '').'</span>';
 			$output[] = ' 		<span class="caret"></span>';
 			$output[] = '	</a>';
 			$output[] = '	<ul class="dropdown-menu">';
@@ -210,6 +217,7 @@ class JFormFieldImagePicker extends JFormField
 
 		// original select
 		$output[] = '		<select class="chzn-done" '.((count($options) == 1) ? ' style="display: none;"' : '').'>';
+
 		foreach($options as $option){
 			$attributes = $option['attributes'];
 			$divider = (isset($attributes['data-divider']))? $attributes['data-divider'] : "";

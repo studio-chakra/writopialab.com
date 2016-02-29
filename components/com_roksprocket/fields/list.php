@@ -273,9 +273,11 @@ class JFormFieldList extends JFormField
 	protected function attachJavaScript(){
 		$js = array();
 		$js[] = "window.addEvent('domready', function(){";
-		$js[] = "	RokSprocket.articles.addEvent('onModelSuccess', function(response){";
-		$js[] = "		RokSprocket.dropdowns.attach(document.getElements('.articles .dropdown-original select'));";
-		$js[] = "	});";
+		$js[] = "	if (typeof RokSprocket != 'undefined' && typeof RokSprocket.articles != 'undefined'){";
+		$js[] = "		RokSprocket.articles.addEvent('onModelSuccess', function(response){";
+		$js[] = "			RokSprocket.dropdowns.attach(document.getElements('.articles .dropdown-original select'));";
+		$js[] = "		});";
+		$js[] = "	};";
 		$js[] = "});";
 
 		return implode("\n", $js);

@@ -20,6 +20,7 @@ if (version_compare(JVERSION, '3.0', '<')) {
 		{
 			$this->rsPrepareTable($table);
 		}
+
 		abstract protected function rsPrepareTable($table);
 	}
 } else {
@@ -48,24 +49,20 @@ class RokSprocketModelModule extends RokSprocketModelModuleIntermediate
 	 * @var RokCommon_Service_Container
 	 */
 	protected $container;
-
 	/**
 	 * @var RokCommon_Dispatcher
 	 */
 	protected $dispatcher;
-
 	/**
 	 * @var    string  The prefix to use with controller messages.
 	 * @since  1.6
 	 */
 	protected $text_prefix = 'COM_MODULES';
-
 	/**
 	 * @var    string  The help screen key for the module.
 	 * @since  1.6
 	 */
 	protected $helpKey = 'JHELP_EXTENSIONS_MODULE_MANAGER_EDIT';
-
 	/**
 	 * @var    string  The help screen base URL for the module.
 	 * @since  1.6
@@ -84,39 +81,12 @@ class RokSprocketModelModule extends RokSprocketModelModuleIntermediate
 		$this->dispatcher = $container->roksprocket_dispatcher;
 	}
 
-
-	/**
-	 * Method to auto-populate the model state.
-	 *
-	 * Note. Calling getState in this method will result in recursion.
-	 *
-	 * @return  void
-	 *
-	 * @since   1.6
-	 */
-	protected function populateState()
-	{
-		$app = JFactory::getApplication('administrator');
-
-		// Load the User state.
-		if (!($pk = (int)JFactory::getApplication()->input->getInt('id'))) {
-			if ($extensionId = (int)$app->getUserState('com_modules.add.module.extension_id')) {
-				$this->setState('extension.id', $extensionId);
-			}
-		}
-		$this->setState('module.id', $pk);
-
-		// Load the parameters.
-		$params = JComponentHelper::getParams('com_modules');
-		$this->setState('params', $params);
-	}
-
 	/**
 	 * Method to perform batch operations on a set of modules.
 	 *
-	 * @param   array  $commands  An array of commands to perform.
-	 * @param   array  $pks       An array of item ids.
-	 * @param   array  $contexts  An array of item contexts.
+	 * @param   array $commands  An array of commands to perform.
+	 * @param   array $pks       An array of item ids.
+	 * @param   array $contexts  An array of item contexts.
 	 *
 	 * @return  boolean  Returns true on success, false on failure.
 	 *
@@ -269,11 +239,77 @@ class RokSprocketModelModule extends RokSprocketModelModuleIntermediate
 	}
 
 	/**
+	 * Returns a reference to the a Table object, always creating it.
+	 *
+	 * @param   string $type    The table type to instantiate
+	 * @param   string $prefix  A prefix for the table class name. Optional.
+	 * @param   array  $config  Configuration array for model. Optional.
+	 *
+	 * @return  JTable  A database object
+	 *
+	 * @since   1.6
+	 */
+	public function getTable($type = 'Module', $prefix = 'JTable', $config = array())
+	{
+		return JTable::getInstance($type, $prefix, $config);
+	}
+
+	/**
+	 * Method to change the title.
+	 *
+	 * @param   integer $category_id  The id of the category. Not used here.
+	 * @param   string  $title        The title.
+	 * @param   string  $position     The position.
+	 *
+	 * @return    array  Contains the modified title.
+	 *
+	 * @since    2.5
+	 */
+	protected function generateNewTitle($category_id, $title, $position)
+	{
+		// Alter the title & alias
+		$table = $this->getTable();
+		while ($table->load(array(
+		                         'position' => $position,
+		                         'title'    => $title
+		                    ))) {
+			$title = JString::increment($title);
+		}
+
+		return array($title);
+	}
+
+	/**
+	 * Custom clean cache method for different clients
+	 *
+	 * @param null|string $group
+	 * @param int         $client_id
+	 *
+	 * @return void
+	 */
+	protected function cleanCache($group = null, $client_id = 0)
+	{
+		parent::cleanCache('com_modules', $this->getClient());
+	}
+
+	/**
+	 * Method to get the client object
+	 *
+	 * @return  void
+	 *
+	 * @since   1.6
+	 */
+	function &getClient()
+	{
+		return $this->_client;
+	}
+
+	/**
 	 * Batch move modules to a new position or current.
 	 *
-	 * @param   integer  $value      The new value matching a module position.
-	 * @param   array    $pks        An array of row IDs.
-	 * @param   array    $contexts   An array of item contexts.
+	 * @param   integer $value      The new value matching a module position.
+	 * @param   array   $pks        An array of row IDs.
+	 * @param   array   $contexts   An array of item contexts.
 	 *
 	 * @return  boolean  True if successful, false otherwise and internal error is set.
 	 *
@@ -371,6 +407,7 @@ class RokSprocketModelModule extends RokSprocketModelModuleIntermediate
 
 		// Clear modules cache
 		$this->cleanCache();
+		$this->cleanOrphanedRSItems();
 
 		return true;
 	}
@@ -378,7 +415,7 @@ class RokSprocketModelModule extends RokSprocketModelModuleIntermediate
 	/**
 	 * Method to duplicate modules.
 	 *
-	 * @param   array  &$pks  An array of primary key IDs.
+	 * @param   array &$pks  An array of primary key IDs.
 	 *
 	 * @return  boolean  True if successful.
 	 *
@@ -473,47 +510,10 @@ class RokSprocketModelModule extends RokSprocketModelModuleIntermediate
 	}
 
 	/**
-	 * Method to change the title.
-	 *
-	 * @param   integer $category_id  The id of the category. Not used here.
-	 * @param   string  $title        The title.
-	 * @param   string  $position     The position.
-	 *
-	 * @return    array  Contains the modified title.
-	 *
-	 * @since    2.5
-	 */
-	protected function generateNewTitle($category_id, $title, $position)
-	{
-		// Alter the title & alias
-		$table = $this->getTable();
-		while ($table->load(array(
-		                         'position' => $position,
-		                         'title'    => $title
-		                    ))) {
-			$title = JString::increment($title);
-		}
-
-		return array($title);
-	}
-
-	/**
-	 * Method to get the client object
-	 *
-	 * @return  void
-	 *
-	 * @since   1.6
-	 */
-	function &getClient()
-	{
-		return $this->_client;
-	}
-
-	/**
 	 * Method to get the record form.
 	 *
-	 * @param   array    $data      Data for the form.
-	 * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
+	 * @param   array   $data      Data for the form.
+	 * @param   boolean $loadData  True if the form is to load its own data (default case), false if not.
 	 *
 	 * @return  JForm  A JForm object on success, false on failure
 	 *
@@ -526,6 +526,11 @@ class RokSprocketModelModule extends RokSprocketModelModuleIntermediate
 			$item     = $this->getItem();
 			$clientId = $item->client_id;
 			$module   = $item->module;
+			if ($item->id == 0) {
+				$item->uuid = RokCommon_UUID::generate();
+			} else {
+				$item->uuid = 0;
+			}
 		} else {
 			$clientId = JArrayHelper::getValue($data, 'client_id');
 			$module   = JArrayHelper::getValue($data, 'module');
@@ -566,36 +571,9 @@ class RokSprocketModelModule extends RokSprocketModelModuleIntermediate
 	}
 
 	/**
-	 * Method to get the data that should be injected in the form.
-	 *
-	 * @return  mixed  The data for the form.
-	 *
-	 * @since   1.6
-	 */
-	protected function loadFormData()
-	{
-		$app = JFactory::getApplication();
-
-		// Check the session for previously entered form data.
-		$data = JFactory::getApplication()->getUserState('com_modules.edit.module.data', array());
-
-		if (empty($data)) {
-			$data = $this->getItem();
-
-			// This allows us to inject parameter settings into a new module.
-			$params = $app->getUserState('com_modules.add.module.params');
-			if (is_array($params)) {
-				$data->set('params', $params);
-			}
-		}
-
-		return $data;
-	}
-
-	/**
 	 * Method to get a single record.
 	 *
-	 * @param   integer  $pk  The id of the primary key.
+	 * @param   integer $pk  The id of the primary key.
 	 *
 	 * @return  mixed  Object on success, false on failure.
 	 *
@@ -733,86 +711,10 @@ class RokSprocketModelModule extends RokSprocketModelModuleIntermediate
 	}
 
 	/**
-	 * Returns a reference to the a Table object, always creating it.
-	 *
-	 * @param   string  $type    The table type to instantiate
-	 * @param   string  $prefix  A prefix for the table class name. Optional.
-	 * @param   array   $config  Configuration array for model. Optional.
-	 *
-	 * @return  JTable  A database object
-	 *
-	 * @since   1.6
-	 */
-	public function getTable($type = 'Module', $prefix = 'JTable', $config = array())
-	{
-		return JTable::getInstance($type, $prefix, $config);
-	}
-
-
-	/**
-	 * Method to preprocess the form
-	 *
-	 * @param   JForm   $form   A form object.
-	 * @param   mixed   $data   The data expected for the form.
-	 * @param   string  $group  The name of the plugin group to import (defaults to "content").
-	 *
-	 * @return  void
-	 *
-	 * @since   1.6
-	 * @throws  Exception if there is an error loading the form.
-	 */
-	protected function preprocessForm(JForm $form, $data, $group = 'content')
-	{
-		jimport('joomla.filesystem.file');
-		jimport('joomla.filesystem.folder');
-
-		// Initialise variables.
-		$lang     = JFactory::getLanguage();
-		$clientId = $this->getState('item.client_id');
-		$module   = $this->getState('item.module');
-
-		$client   = JApplicationHelper::getClientInfo($clientId);
-		$formFile = JPath::clean($client->path . '/modules/' . $module . '/' . $module . '.xml');
-
-		// Load the core and/or local language file(s).
-		$lang->load($module, $client->path, $lang->getDefault(), false, false);
-		$lang->load($module, $client->path, null, false, false);
-		$lang->load($module, $client->path . '/modules/' . $module, $lang->getDefault(), false, false);
-		$lang->load($module, $client->path . '/modules/' . $module, null, false, false);
-
-
-		if (file_exists($formFile)) {
-			// Get the module form.
-			if (!$form->loadFile($formFile, false, '//config')) {
-				throw new Exception(JText::_('JERROR_LOADFILE_FAILED'));
-			}
-
-			// Attempt to load the xml file.
-			if (!$xml = simplexml_load_file($formFile)) {
-				throw new Exception(JText::_('JERROR_LOADFILE_FAILED'));
-			}
-
-			// Get the help data from the XML file if present.
-			$help = $xml->xpath('/extension/help');
-			if (!empty($help)) {
-				$helpKey = trim((string)$help[0]['key']);
-				$helpURL = trim((string)$help[0]['url']);
-
-				$this->helpKey = $helpKey ? $helpKey : $this->helpKey;
-				$this->helpURL = $helpURL ? $helpURL : $this->helpURL;
-			}
-
-		}
-
-		// Trigger the default form events.
-		parent::preprocessForm($form, $data, $group);
-	}
-
-	/**
 	 * Loads ContentHelper for filters before validating data.
 	 *
-	 * @param   object  $form  The form to validate against.
-	 * @param   array   $data  The data to validate.
+	 * @param   object $form  The form to validate against.
+	 * @param   array  $data  The data to validate.
 	 *
 	 * @return  mixed  Array of filtered data if valid, false otherwise.
 	 *
@@ -822,28 +724,13 @@ class RokSprocketModelModule extends RokSprocketModelModuleIntermediate
 	{
 		require_once JPATH_ADMINISTRATOR . '/components/com_content/helpers/content.php';
 
-		return parent::validate($form, $data, $group);
-	}
-
-
-	/**
-	 * Prepare and sanitise the table prior to saving.
-	 *
-	 * @param   JTable  &$table  The database object
-	 *
-	 * @return  void
-	 *
-	 * @since   1.6
-	 */
-	protected function rsPrepareTable($table)
-	{
-		$table->title = htmlspecialchars_decode($table->title, ENT_QUOTES);
+		return parent::validate($form,$data,$group);
 	}
 
 	/**
 	 * Method to save the form data.
 	 *
-	 * @param   array  $data  The form data.
+	 * @param   array $data  The form data.
 	 *
 	 * @return  boolean  True on success.
 	 *
@@ -998,7 +885,7 @@ class RokSprocketModelModule extends RokSprocketModelModuleIntermediate
 
 		if ($error = $db->getErrorMsg()) {
 			JError::raiseWarning(500, $error);
-			return;
+			return false;
 		}
 
 		$this->setState('module.extension_id', $extensionId);
@@ -1039,6 +926,10 @@ class RokSprocketModelModule extends RokSprocketModelModuleIntermediate
 		}
 
 		$all_new_items = $this->getArticles((int)$table->id, $table->params);
+
+		if ($isNew && isset($data['uuid']) && $data['uuid'] != '0') {
+			RokCommon_Session::clear('roksprocket.' . $data['uuid']);
+		}
 
 		if ($task != 'save2copy') {
 			// delete old items per module
@@ -1154,47 +1045,26 @@ class RokSprocketModelModule extends RokSprocketModelModuleIntermediate
 			}
 		}
 
+		$this->cleanOrphanedRSItems();
+
 		// Clear modules cache
 		$this->cleanCache();
 
 		// Clean module cache
 		parent::cleanCache($table->module, $table->client_id);
 
+		// fire the providers postSave for any provider cleanup
+		$container = RokCommon_Service::getContainer();
+		/** @var RokSprocket_IProvider $provider */
+		$provider = $container->getService("roksprocket.provider.{$data['params']['provider']}");
+		$provider->postSave($this->getState('module.id'));
+
+
+		// clear the session cache
+		RokCommon_Session::clear('roksprocket.' . $table->id);
 		$app->setUserState('com_roksprocket.module_id', $table->id);
 		return true;
 	}
-
-	/**
-	 * A protected method to get a set of ordering conditions.
-	 *
-	 * @param   object  $table  A record object.
-	 *
-	 * @return  array  An array of conditions to add to add to ordering queries.
-	 *
-	 * @since   1.6
-	 */
-	protected function getReorderConditions($table)
-	{
-		$condition   = array();
-		$condition[] = 'client_id = ' . (int)$table->client_id;
-		$condition[] = 'position = ' . $this->_db->Quote($table->position);
-
-		return $condition;
-	}
-
-	/**
-	 * Custom clean cache method for different clients
-	 *
-	 * @param null|string $group
-	 * @param int         $client_id
-	 *
-	 * @return void
-	 */
-	protected function cleanCache($group = null, $client_id = 0)
-	{
-		parent::cleanCache('com_modules', $this->getClient());
-	}
-
 
 	public function getArticles($module_id, $params)
 	{
@@ -1254,9 +1124,18 @@ class RokSprocketModelModule extends RokSprocketModelModuleIntermediate
 		}
 	}
 
+	protected function cleanOrphanedRSItems()
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->delete('#__roksprocket_items')->where('CAST(module_id as UNSIGNED) not in (select id from #__modules)');
+		$db->setQuery($query);
+		$dbret = false;
+		if (method_exists($db, 'execute')) $dbret = $db->execute(); elseif (method_exists($db, 'query')) $dbret = $db->query();
+	}
+
 	public function duplicatePerItemsForModule(RokCommon_Event $event)
 	{
-
 		$db        = JFactory::getDbo();
 		$arguments = $event->getParameters();
 		$old_pk    = $arguments['old_pk'];
@@ -1279,5 +1158,149 @@ class RokSprocketModelModule extends RokSprocketModelModuleIntermediate
 			}
 
 		}
+	}
+
+	/**
+	 * Method to auto-populate the model state.
+	 *
+	 * Note. Calling getState in this method will result in recursion.
+	 *
+	 * @return  void
+	 *
+	 * @since   1.6
+	 */
+	protected function populateState()
+	{
+		$app = JFactory::getApplication('administrator');
+
+		// Load the User state.
+		if (!($pk = (int)JFactory::getApplication()->input->getInt('id'))) {
+			if ($extensionId = (int)$app->getUserState('com_modules.add.module.extension_id')) {
+				$this->setState('extension.id', $extensionId);
+			}
+		}
+		$this->setState('module.id', $pk);
+
+		// Load the parameters.
+		$params = JComponentHelper::getParams('com_modules');
+		$this->setState('params', $params);
+	}
+
+	/**
+	 * Method to get the data that should be injected in the form.
+	 *
+	 * @return  mixed  The data for the form.
+	 *
+	 * @since   1.6
+	 */
+	protected function loadFormData()
+	{
+		$app = JFactory::getApplication();
+
+		// Check the session for previously entered form data.
+		$data = JFactory::getApplication()->getUserState('com_modules.edit.module.data', array());
+
+		if (empty($data)) {
+			$data = $this->getItem();
+
+			// This allows us to inject parameter settings into a new module.
+			$params = $app->getUserState('com_modules.add.module.params');
+			if (is_array($params)) {
+				$data->set('params', $params);
+			}
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Method to preprocess the form
+	 *
+	 * @param   JForm  $form   A form object.
+	 * @param   mixed  $data   The data expected for the form.
+	 * @param   string $group  The name of the plugin group to import (defaults to "content").
+	 *
+	 * @return  void
+	 *
+	 * @since   1.6
+	 * @throws  Exception if there is an error loading the form.
+	 */
+	protected function preprocessForm(JForm $form, $data, $group = 'content')
+	{
+		jimport('joomla.filesystem.file');
+		jimport('joomla.filesystem.folder');
+
+		// Initialise variables.
+		$lang     = JFactory::getLanguage();
+		$clientId = $this->getState('item.client_id');
+		$module   = $this->getState('item.module');
+
+		$client   = JApplicationHelper::getClientInfo($clientId);
+		$formFile = JPath::clean($client->path . '/modules/' . $module . '/' . $module . '.xml');
+
+		// Load the core and/or local language file(s).
+		$lang->load($module, $client->path, $lang->getDefault(), false, false);
+		$lang->load($module, $client->path, null, false, false);
+		$lang->load($module, $client->path . '/modules/' . $module, $lang->getDefault(), false, false);
+		$lang->load($module, $client->path . '/modules/' . $module, null, false, false);
+
+
+		if (file_exists($formFile)) {
+			// Get the module form.
+			if (!$form->loadFile($formFile, false, '//config')) {
+				throw new Exception(JText::_('JERROR_LOADFILE_FAILED'));
+			}
+
+			// Attempt to load the xml file.
+			if (!$xml = simplexml_load_file($formFile)) {
+				throw new Exception(JText::_('JERROR_LOADFILE_FAILED'));
+			}
+
+			// Get the help data from the XML file if present.
+			$help = $xml->xpath('/extension/help');
+			if (!empty($help)) {
+				$helpKey = trim((string)$help[0]['key']);
+				$helpURL = trim((string)$help[0]['url']);
+
+				$this->helpKey = $helpKey ? $helpKey : $this->helpKey;
+				$this->helpURL = $helpURL ? $helpURL : $this->helpURL;
+			}
+
+		}
+
+		// Trigger the default form events.
+		parent::preprocessForm($form, $data, $group);
+	}
+
+	/**
+	 * Prepare and sanitise the table prior to saving.
+	 *
+	 * @param   JTable &$table  The database object
+	 *
+	 * @return  void
+	 *
+	 * @since   1.6
+	 */
+	protected function rsPrepareTable($table)
+	{
+		$table->title = htmlspecialchars_decode($table->title, ENT_QUOTES);
+	}
+
+	/**
+	 * A protected method to get a set of ordering conditions.
+	 *
+	 * @param   object $table  A record object.
+	 *
+	 * @return  array  An array of conditions to add to add to ordering queries.
+	 *
+	 * @since   1.6
+	 */
+	protected function getReorderConditions($table)
+	{
+		$condition   = array();
+		$condition[] = 'client_id = ' . (int)$table->client_id;
+		$condition[] = 'position = ' . $this->_db->Quote($table->position);
+
+		return $condition;
 	}
 }

@@ -1,8 +1,8 @@
 <?php
 /**
- * @version   $Id: RokSprocket_Layout_Strips.php 59562 2013-04-17 00:13:32Z djamil $
+ * @version   $Id: RokSprocket_Layout_Strips.php 28636 2015-07-09 15:40:49Z james $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2015 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -37,23 +37,34 @@ class RokSprocket_Layout_Strips extends RokSprocket_AbstractLayout
 				$desc = strip_tags($desc);
 			}
 			$words_amount = $this->parameters->get('strips_previews_length', 20);
-			if ($words_amount === '∞' || $words_amount == '0'){
+			if ($words_amount === '∞' || $words_amount == '0') {
 				$words_amount = false;
 			}
-			$htmlmanip    = new RokSprocket_Util_HTMLManipulator();
-			$preview      = $htmlmanip->truncateHTML($desc, $words_amount);
-			$append       = strlen($desc) != strlen($preview) ? '<span class="roksprocket-ellipsis">…</span>' : "";
+			$htmlmanip = new RokSprocket_Util_HTMLManipulator();
+			$preview   = $htmlmanip->truncateHTML($desc, $words_amount);
+			$append    = strlen($desc) != strlen($preview) ? '<span class="roksprocket-ellipsis">…</span>' : "";
 			$item->setText($preview . $append);
 
 			// resizing images if needed
-			if ($item->getPrimaryImage() && $this->parameters->get('strips_resize_enable', false)) {
-				$width  = $this->parameters->get('strips_resize_width', 0);
-				$height = $this->parameters->get('strips_resize_height', 0);
-				$item->getPrimaryImage()->resize($width, $height);
+			if ($item->getPrimaryImage()) {
+				if ($this->parameters->get('strips_resize_enable', false)) {
+					$width  = $this->parameters->get('strips_resize_width', 0);
+					$height = $this->parameters->get('strips_resize_height', 0);
+					$item->getPrimaryImage()->resize($width, $height);
+				}
+				/** @var RokCommon_PlatformInfo $platforminfo */
+				$platforminfo = $this->container->platforminfo;
+				$urlbase = ($platforminfo->getUrlBase()) ? $platforminfo->getUrlBase() : '/';
+				if (!$platforminfo->isLinkexternal($item->getPrimaryImage()->getSource())
+					&& strpos($item->getPrimaryImage()->getSource(), '/') !== 0
+					&& strpos($item->getPrimaryImage()->getSource(), $urlbase) !== 0) {
+					$source = rtrim($urlbase, '/') . '/' . $item->getPrimaryImage()->getSource();
+					$item->getPrimaryImage()->setSource($source);
+				}
 			}
 		}
 	}
-
+	
 	/**
 	 * @return RokSprocket_ItemCollection
 	 */
@@ -80,8 +91,7 @@ class RokSprocket_Layout_Strips extends RokSprocket_AbstractLayout
 		$theme_basefile = $this->container[sprintf('roksprocket.layouts.%s.themes.%s.basefile', $this->name, $this->theme)];
 		$items          = $this->items->slice(0, $this->parameters->get('strips_items_per_page', 5));
 
-		if (!$this->items->count() && !count($items)) $pages = 0;
-		else $pages          = ceil($this->items->count() / count($items));
+		if (!$this->items->count() && !count($items)) $pages = 0; else $pages = ceil($this->items->count() / count($items));
 
 		return $this->theme_context->load($theme_basefile, array(
 		                                                        'layout'     => $this,
@@ -96,9 +106,10 @@ class RokSprocket_Layout_Strips extends RokSprocket_AbstractLayout
 	 */
 	public function renderInstanceHeaders()
 	{
-		RokCommon_Header::addScript($this->theme_context->getUrl('strips.js'));
-		RokCommon_Header::addScript($this->theme_context->getUrl('strips-speeds.js'));
-		RokCommon_Header::addStyle($this->theme_context->getUrl('strips.css'));
+		$filename = ($this->theme == 'default' ? 'strips' : $this->theme);
+		RokCommon_Header::addStyle($this->theme_context->getUrl($filename . '.css'));
+		RokCommon_Header::addScript($this->theme_context->getUrl($filename . '.js'));
+		RokCommon_Header::addScript($this->theme_context->getUrl($filename . '-speeds.js'));
 
 		$id                  = $this->parameters->get('module_id');
 		$settings            = new stdClass();
@@ -111,6 +122,17 @@ class RokSprocket_Layout_Strips extends RokSprocket_AbstractLayout
 		$js[] = "window.addEvent('domready', function(){";
 		$js[] = "	RokSprocket.instances.strips.attach(" . $id . ", '" . $options . "');";
 		$js[] = "});";
+        $js[] = "window.addEvent('load', function(){";
+        $js[] = "   var overridden = false;";
+        $js[] = "   if (!overridden && window.G5 && window.G5.offcanvas){";
+        $js[] = "       var mod = document.getElement('[data-".$this->name."=\"" . $id . "\"]');";
+        $js[] = "       mod.addEvents({";
+        $js[] = "           touchstart: function(){ window.G5.offcanvas.detach(); },";
+        $js[] = "           touchend: function(){ window.G5.offcanvas.attach(); }";
+        $js[] = "       });";
+        $js[] = "       overridden = true;";
+        $js[] = "   };";
+        $js[] = "});";
 		RokCommon_Header::addInlineScript(implode("\n", $js) . "\n");
 	}
 
@@ -122,8 +144,11 @@ class RokSprocket_Layout_Strips extends RokSprocket_AbstractLayout
 		if (!self::$instanceHeadersRendered) {
 
 			$root_assets = RokCommon_Composite::get($this->basePackage . '.assets.js');
-            RokCommon_Header::addScript($root_assets->getUrl('moofx.js'));
+			$layout_assets = RokCommon_Composite::get($this->layoutPackage . '.assets.js');
+			RokCommon_Header::addScript($root_assets->getUrl('moofx.js'));
 			RokCommon_Header::addScript($root_assets->getUrl('roksprocket.request.js'));
+			RokCommon_Header::addScript($layout_assets->getUrl('strips.js'));
+			RokCommon_Header::addScript($layout_assets->getUrl('strips-speeds.js'));
 
 			$instance   = array();
 			$instance[] = "window.addEvent('domready', function(){";
