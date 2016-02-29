@@ -3350,24 +3350,24 @@ h6 small {
   color: #999999;
 }
 h1 {
-  font-size: 42px;
-  line-height: 50px;
+  font-size: 40px;
+  line-height: 1.2;
   font-weight: 700;
 }
 h1 small {
   font-size: 32px;
 }
 h2 {
-  font-size: 36px;
-  line-height: 50px;
+  font-size: 34px;
+  line-height: 1.2;
   font-weight: 700;
 }
 h2 small {
   font-size: 24px;
 }
 h3 {
-  font-size: 32px;
-  line-height: 50px;
+  font-size: 30px;
+  line-height: 1.2;
   font-weight: 700;
   color: #414141;
 }
@@ -3376,25 +3376,26 @@ h3 small {
 }
 h4 {
   font-size: 26px;
-  line-height: 25px;
+  line-height: 1.2;
   font-weight: 700;
-  color: #ff009a;
+  color: #515151;
 }
 h4 small {
   font-size: 16px;
 }
 h5 {
   font-size: 22px;
-  line-height: 25px;
+  line-height: 1.2;
   font-weight: 600;
-  text-transform: uppercase;
+  color: #616161;
+  // text-transform: uppercase;
 }
 h5 small {
   font-size: 14px;
 }
 h6 {
   font-size: 18px;
-  line-height: 25px;
+  line-height: 1.2;
   font-weight: 600;
   text-transform: uppercase;
   color: #797979;
@@ -3501,6 +3502,7 @@ dd {
 }
 dt {
   font-weight: bold;
+  margin-top: 10px;
 }
 dd {
   margin-left: 12.5px;
@@ -3509,6 +3511,7 @@ dd {
   float: left;
   width: 120px;
   clear: left;
+  margin-top: 0;
   text-align: right;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -3653,7 +3656,7 @@ blockquote:after {
 }
 address {
   display: block;
-  margin-bottom: 0;
+  margin-bottom: 25px;
   font-style: normal;
   line-height: 25px;
 }
