@@ -2148,10 +2148,15 @@ ul.menu-sidebar > li.active a {
 .module-hometesti .layout-showcase {
   position: inherit;
 }
+.module-hometesti blockquote {
+  padding: 0;
+  margin: 0;
+  border-left: none;
+}
 .module-hometesti .module-ct {
   color: #ffffff;
   padding: 14px 14px 0px 14px;
-  padding-bottom: 80px;
+  padding-bottom: 48px;
   *zoom: 1;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
@@ -2168,8 +2173,12 @@ ul.menu-sidebar > li.active a {
 }
 .module-hometesti .module-ct p {
   margin-bottom: 14px;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
 }
-.module-hometesti .module-ct cite {
+.module-hometesti .module-ct cite,
+.module-hometesti .module-ct small {
   font-size: 15px;
   line-height: 21px;
   color: #ffcceb;
@@ -3468,6 +3477,11 @@ h6 {
 .item-title {
   font-weight: bold;
 }
+
+.article-content > h1 {
+  margin-top: 0;
+}
+
 ul,
 ol {
   padding: 0;
@@ -3862,17 +3876,18 @@ ul.menu-ghm > li.active a {
   padding-bottom: 58px;
 }
 .titlebar-header {
-  padding: 42px 0 0 0;
+  padding: 24px 0 0 0;
 }
 ul.menu-pm {
-  margin: 20px 0 0 -36px;
+  margin: 0 0 0 -36px;
+  //margin: 20px 0 0 -36px;
 }
 ul.menu-pm > li {
   list-style: none;
   margin: 0;
   padding: 0 0 0 36px;
   line-height: 25px;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 300;
   text-transform: lowercase;
   display: inline-block;
@@ -3894,7 +3909,8 @@ ul.menu-pm > li.active a {
   color: #1a1a1a;
 }
 .t3-mainbody {
-  padding: 50px 0;
+  padding: 24px 0 48px 0;
+  //padding: 50px 0;
 }
 .sidebar-inner {
   padding: 18px 0 0 60px;
@@ -4109,7 +4125,7 @@ ul.menu-mfm ul > li > a:hover {
 }
 .home-1 {
   background: transparent url(../images/testi-bg.png) repeat center top;
-  padding: 50px 0 0 0;
+  padding: 28px 0 0 0;
 }
 .home-2 {
   background: transparent url(../images/home1-line.png) repeat-x center top;
@@ -4318,9 +4334,8 @@ div .off-canvas-toggle{ float: right;}
 	.module-connect h3.module-title{ font-size: 28px; line-height: 36px;}
 	.module-slideshow .layout-showcase h2, .module-hometesti h3.module-title{ font-size: 32px;}
 	.module-hometesti h3.module-title{ font-weight: 300; margin: 0; }
-	.module-hometesti .module-ct{ padding-bottom: 60px;}
 	.module-hometesti{ font-weight: 600; font-size: 18px;}
-	.home-1{ padding: 30px 0 0 0;}
+	.home-1{ padding: 28px 0 0 0;}
 	.module-slideshow .layout-showcase .sprocket-features-content{ width: 100%;}
 	.module-slideshow{ padding-bottom: 50px;}
 	.module-slideshow .owl-controls{ display: none !important;}
@@ -4328,7 +4343,10 @@ div .off-canvas-toggle{ float: right;}
 	.bod-header h2.article-title{ font-size: 28px;}
 	.module-testi .module-ct p{ line-height: 24px;}
 	.titlebar .page-title, .titlebar .page-header h1{ font-size: 32px;}
-	.titlebar-header { padding: 25px 0 0;}
+	.titlebar-header { padding: 12px 0 0;}
+  ul.menu-pm > li {
+    font-size: 18px;
+  }
 	.titlebar{ padding-bottom: 40px;}
 	.t3-mainbody{ padding: 0;}
 }
@@ -4361,7 +4379,7 @@ div .off-canvas-toggle{ float: right;}
 	h3{ font-size: 22px;}
 	h4{ font-size: 20px;}
 	.titlebar .page-title, .titlebar .page-header h1, h1{ font-size: 28px; }
-	.t3-mainbody{ padding: 30px 0;}
+	.t3-mainbody{ padding: 12px 0;}
 	.connect-list img{ max-width: 40px;}
 	.module-slideshow .layout-showcase .sprocket-features-arrows .arrow{ top: 12%;}
 	.module-strips .sprocket-features-content{ padding: 15px;}

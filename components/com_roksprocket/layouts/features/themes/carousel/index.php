@@ -12,6 +12,13 @@
  * @var $parameters RokCommon_Registry
  */
 
+	$autoPlay = $parameters->get('features_autoplay') ? 'true' : 'false';
+	$autoPlayDelay  = $parameters->get('features_autoplay_delay', 5);
+
+	if ($autoPlay == "true") {
+		$autoPlay = $autoPlayDelay * 1000;
+	}
+
 ?>
 <script type="text/javascript">
 jQuery(document).ready(function() {
@@ -21,18 +28,21 @@ jQuery(document).ready(function() {
 		itemsDesktopSmall: false,
 		navigation: false,
 		pagination: <?php echo $parameters->get('features_show_pagination') ? 'true' : 'false'; ?>,
-		autoPlay: false,
+		//autoPlay: true,
+		//autoPlay: <?php echo $parameters->get('features_autoplay') ? 'true' : 'false'; ?>,
+		autoPlay: <?php echo $autoPlay; ?>,
+		stopOnHover: true,
 		autoHeight: true
 	});
 	var owl<?php echo $parameters->get('module_id'); ?> = jQuery('.owl-carousel-<?php echo $parameters->get('module_id'); ?>').data('owlCarousel');
-	
+
 	jQuery('.boxowl<?php echo $parameters->get('module_id'); ?> .prev ').on('click', function(event){
         owl<?php echo $parameters->get('module_id'); ?>.prev();
     });
 	jQuery('.boxowl<?php echo $parameters->get('module_id'); ?> .next ').on('click', function(event){
         owl<?php echo $parameters->get('module_id'); ?>.next();
     });
-	
+
 });
 </script>
 <div class="boxowl<?php echo $parameters->get('module_id'); ?> sprocket-features layout-showcase">
@@ -48,8 +58,8 @@ jQuery(document).ready(function() {
 	<?php if ($parameters->get('features_show_arrows')!='hide') : ?>
 	<div class="sprocket-features-arrows">
 		<span class="arrow prev" data-showcase-previous><span>&lsaquo;</span></span>
-		<span class="arrow next" data-showcase-next><span>&rsaquo;</span></span>		
+		<span class="arrow next" data-showcase-next><span>&rsaquo;</span></span>
 	</div>
 	<?php endif; ?>
-	
+
 </div>
